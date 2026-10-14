@@ -1,0 +1,25 @@
+{
+  "name": "nongjiale-web",
+  "private": true,
+  "version": "0.1.0",
+  "packageManager": "pnpm@10.34.6",
+  "scripts": {
+    "dev:portal": "pnpm --filter portal dev",
+    "dev:admin": "pnpm --filter admin dev",
+    "build": "pnpm -r build",
+    "build:portal": "pnpm --filter portal build",
+    "build:admin": "pnpm --filter admin build"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "vue-demi"
+    ]
+  },
+  "devDependencies": {
+    "puppeteer-core": "^25.13.0"
+  }
+}
