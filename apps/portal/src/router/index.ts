@@ -22,6 +22,21 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     { path: '/booking/success', name: 'booking-success', component: () => import('../views/BookingSuccessView.vue') },
+    {
+      path: '/me/intents',
+      name: 'my-intents',
+      component: () => import('../views/MyIntentsView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/me/intents/:id',
+      name: 'my-intent',
+      component: () => import('../views/MyIntentDetailView.vue'),
+      meta: { requiresAuth: true },
+    },
+    { path: '/articles', name: 'articles', component: () => import('../views/ArticlesView.vue') },
+    { path: '/articles/:id', name: 'article', component: () => import('../views/ArticleDetailView.vue') },
+    { path: '/merchant/apply', name: 'merchant-apply', component: () => import('../views/MerchantApplyView.vue') },
   ],
   scrollBehavior() {
     return { top: 0 }

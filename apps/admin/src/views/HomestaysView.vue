@@ -49,6 +49,7 @@ onMounted(load)
 <template>
   <div>
     <h2>房源</h2>
+    <p style="color:#666">这里的上架/下架是运营代操作（POST /api/admin/homestays/{id}/status）。商家申请请到「上下架审核」。</p>
     <p v-if="!auth.isOperator" style="color:#b42318">当前角色非 OPERATOR，只能查看，不能改状态。</p>
     <el-table :data="items" v-loading="loading" stripe>
       <el-table-column prop="id" label="ID" width="70" />
