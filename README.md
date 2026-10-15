@@ -1,8 +1,8 @@
 # nongjiale-web
 
-苏中农家乐垂直平台前端。Vue 3 + TypeScript + Vite + Vue Router + Pinia 的 pnpm monorepo。门户业务页已接入，运营端和商家端仍是路由壳。
+苏中农家乐垂直平台前端。Vue 3 + TypeScript + Vite + Vue Router + Pinia 的 pnpm monorepo。门户和商家业务页已接入，运营端仍是路由壳。
 
-端口、路由、token key 和脚本见 [docs/FRONTEND.md](docs/FRONTEND.md)。脚手架设计见 [docs/FE-1-SCAFFOLD.md](docs/FE-1-SCAFFOLD.md)。门户页面见 [docs/FE-2-PORTAL.md](docs/FE-2-PORTAL.md)。
+端口、路由、token key 和脚本见 [docs/FRONTEND.md](docs/FRONTEND.md)。脚手架设计见 [docs/FE-1-SCAFFOLD.md](docs/FE-1-SCAFFOLD.md)。门户页面见 [docs/FE-2-PORTAL.md](docs/FE-2-PORTAL.md)。商家页面见 [docs/FE-3-MERCHANT.md](docs/FE-3-MERCHANT.md)。
 
 ```bash
 pnpm install
