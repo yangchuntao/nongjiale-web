@@ -34,6 +34,8 @@ export type HomestayCard = {
   priceFrom: number
   status: string
   regionId: number
+  homeRecommended?: boolean
+  homeRecommendSort?: number
 }
 
 export type HomestayRoom = {

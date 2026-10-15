@@ -55,8 +55,14 @@ export function updateIntentStatus(
   return request<AdminIntent>(`/api/admin/intents/${id}/status`, { body, token })
 }
 
+export type AdminHomestayRow = Pick<HomestayCard, 'id' | 'name' | 'status' | 'priceFrom' | 'regionId'> & {
+  version: number
+  homeRecommended?: boolean
+  homeRecommendSort?: number
+}
+
 export function fetchHomestays(token: string, page = 1) {
-  return request<PageResult<Pick<HomestayCard, 'id' | 'name' | 'status' | 'priceFrom' | 'regionId'> & { version: number }>>(
+  return request<PageResult<AdminHomestayRow>>(
     `/api/admin/homestays?page=${page}&pageSize=20`,
     { token },
   )
@@ -68,6 +74,14 @@ export function updateHomestayStatus(
   body: { status: string; version: number },
 ) {
   return request(`/api/admin/homestays/${id}/status`, { body, token })
+}
+
+export function updateHomestayRecommend(
+  token: string,
+  id: number | string,
+  body: { homeRecommended?: boolean; homeRecommendSort?: number; version?: number },
+) {
+  return request<AdminHomestayRow>(`/api/admin/homestays/${id}`, { method: 'PUT', body, token })
 }
 
 export function fetchMerchantApplications(

@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
+import { ApiError } from '../utils/http'
 import { useAuthStore } from '../stores/auth'
 
 const auth = useAuthStore()
@@ -10,8 +11,18 @@ const router = useRouter()
 const phone = ref('')
 const password = ref('')
 const loading = ref(false)
+const errorText = ref('')
+
+function loginFailure(e: unknown) {
+  if (e instanceof ApiError && e.httpStatus === 401) {
+    if (e.message.includes('停用')) return '账号已停用，请联系运营'
+    return '没有可用的商家账号（手机号或密码错误，或尚未开通）'
+  }
+  return e instanceof Error ? e.message : '登录失败'
+}
 
 async function submit() {
+  errorText.value = ''
   if (!phone.value.trim() || !password.value) {
     ElMessage.warning('请填写手机号和密码')
     return
@@ -25,7 +36,8 @@ async function submit() {
     }
     router.replace((route.query.redirect as string) || '/')
   } catch (e) {
-    ElMessage.error(e instanceof Error ? e.message : '登录失败')
+    errorText.value = loginFailure(e)
+    ElMessage.error(errorText.value)
   } finally {
     loading.value = false
   }
@@ -37,7 +49,8 @@ async function submit() {
     <el-card style="width:400px">
       <p style="margin:0 0 4px;color:#8a5a2b;font-weight:700">商家中心</p>
       <h2 style="margin:0 0 8px">商家登录</h2>
-      <p style="color:#666;font-size:13px">与运营后台账号隔离。演示账号将在后端 v1.1 实现后由种子提供，此处不预置密码。</p>
+      <p style="color:#666;font-size:13px">与运营后台账号隔离。种子账号 13800001111 / 13800002222，密码 password。没有已开通账号时登录失败，不会进入商家中心。</p>
+      <el-alert v-if="errorText" :title="errorText" type="error" show-icon style="margin-bottom:12px" />
       <el-form @submit.prevent="submit">
         <el-form-item label="手机号">
           <el-input v-model="phone" autocomplete="username" />

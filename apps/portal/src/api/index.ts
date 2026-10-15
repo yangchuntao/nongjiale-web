@@ -47,6 +47,7 @@ export function fetchHomeFeed() {
   return request<{
     regions: Region[]
     hotHomestays: HomestayCard[]
+    recommendedHomestays?: HomestayCard[]
     topics: unknown[]
     articles: Article[]
   }>('/api/home/feed')

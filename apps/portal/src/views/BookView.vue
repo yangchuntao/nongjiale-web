@@ -3,6 +3,7 @@ import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import type { HomestayDetail } from '@nongjiale/shared'
 import * as api from '../api'
+import { ApiError } from '../utils/http'
 import { useAuthStore } from '../stores/auth'
 
 const route = useRoute()
@@ -17,6 +18,7 @@ const travelMode = ref('自驾')
 const contactName = ref(auth.user?.displayName || '')
 const contactPhone = ref(auth.user?.phone || '')
 const error = ref('')
+const unavailable = ref(false)
 const submitting = ref(false)
 
 onMounted(async () => {
@@ -29,7 +31,12 @@ onMounted(async () => {
     checkIn.value = tomorrow.toISOString().slice(0, 10)
     checkOut.value = dayAfter.toISOString().slice(0, 10)
   } catch (e) {
-    error.value = e instanceof Error ? e.message : '加载失败'
+    if (e instanceof ApiError && e.httpStatus === 410) {
+      unavailable.value = true
+      error.value = '该农家乐暂不可预订'
+    } else {
+      error.value = e instanceof Error ? e.message : '加载失败'
+    }
   }
 })
 
@@ -64,7 +71,14 @@ async function submit() {
       },
     })
   } catch (e) {
-    error.value = e instanceof Error ? e.message : '提交失败'
+    if (e instanceof ApiError && e.httpStatus === 409) {
+      error.value = '预订意向未提交：该农家乐当前不可订。请返回详情查看。'
+    } else if (e instanceof ApiError && e.httpStatus === 410) {
+      unavailable.value = true
+      error.value = '该农家乐暂不可预订'
+    } else {
+      error.value = e instanceof Error ? e.message : '提交失败'
+    }
   } finally {
     submitting.value = false
   }
@@ -74,8 +88,13 @@ async function submit() {
 <template>
   <section class="card" style="max-width:520px;margin:0 auto">
     <h1 class="page-title">提交预订意向</h1>
-    <p v-if="detail" class="muted">{{ detail.name }} · ¥{{ detail.priceFrom }} 起</p>
-    <form @submit.prevent="submit">
+    <div v-if="unavailable" class="card">
+      <p>该农家乐暂不可预订</p>
+      <p class="muted">详情不可订，意向不会提交。这和提交时被拒绝不是同一种结果。</p>
+      <router-link class="btn secondary" :to="`/homestays/${id}`">返回详情</router-link>
+    </div>
+    <p v-else-if="detail" class="muted">{{ detail.name }} · ¥{{ detail.priceFrom }} 起</p>
+    <form v-if="!unavailable" @submit.prevent="submit">
       <div class="field">
         <label>入住日期</label>
         <input v-model="checkIn" type="date" required />

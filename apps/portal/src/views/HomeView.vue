@@ -10,6 +10,7 @@ const router = useRouter()
 const config = useConfigStore()
 const regions = ref<Region[]>([])
 const hot = ref<HomestayCard[]>([])
+const recommended = ref<HomestayCard[]>([])
 const articles = ref<Article[]>([])
 const keyword = ref('')
 const error = ref('')
@@ -22,12 +23,24 @@ async function load() {
     const feed = await api.fetchHomeFeed()
     regions.value = Array.isArray(feed?.regions) ? feed.regions : []
     hot.value = Array.isArray(feed?.hotHomestays) ? feed.hotHomestays : []
+    const floor = Array.isArray(feed?.recommendedHomestays) ? feed.recommendedHomestays : []
+    recommended.value = sortRecommended(floor.filter((item) => item.homeRecommended !== false))
     articles.value = Array.isArray(feed?.articles) ? feed.articles : []
   } catch (e) {
     error.value = e instanceof Error ? e.message : '加载失败'
   } finally {
     loading.value = false
   }
+}
+
+function sortRecommended(items: HomestayCard[]) {
+  if (!items.some((item) => typeof item.homeRecommendSort === 'number')) return items
+  return [...items].sort((a, b) => {
+    const sortA = typeof a.homeRecommendSort === 'number' ? a.homeRecommendSort : 0
+    const sortB = typeof b.homeRecommendSort === 'number' ? b.homeRecommendSort : 0
+    if (sortA !== sortB) return sortA - sortB
+    return a.id - b.id
+  })
 }
 
 function search() {
@@ -62,11 +75,17 @@ onMounted(load)
       </div>
       <p v-if="!regions.length" class="muted">暂无地区</p>
 
+      <h2 class="page-title">首页推荐</h2>
+      <div class="grid">
+        <HomestayCardItem v-for="h in recommended" :key="h.id" :item="h" />
+      </div>
+      <p v-if="!recommended.length" class="muted">暂无首页推荐</p>
+
       <h2 class="page-title">热门农家乐</h2>
       <div class="grid">
         <HomestayCardItem v-for="h in hot" :key="h.id" :item="h" />
       </div>
-      <p v-if="!hot.length" class="muted">暂无推荐</p>
+      <p v-if="!hot.length" class="muted">暂无热门房源</p>
 
       <h2 class="page-title">攻略 / 资讯</h2>
       <div class="list">
