@@ -2,6 +2,7 @@
 import { computed, ref, watch } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 import { fetchStore } from '../api/portal'
+import { LISTING_UNAVAILABLE } from '../api/errors'
 import { canSubmitIntent, priceLabel, storeTestLabel, type StoreDetail } from '../api/readers'
 import IntentNoticeBanner from '../components/IntentNoticeBanner.vue'
 import { INTENT_NOTICE } from '../domain/copy'
@@ -26,7 +27,6 @@ const images = computed(() => {
 const bookable = computed(() => (store.value ? canSubmitIntent(store.value.shelfStatus) : false))
 const intentTo = computed(() => `/listings/${id.value}/intent`)
 const phone = computed(() => store.value?.phone || site.phone)
-const unavailable = computed(() => errorKind.value === 'gone' || errorKind.value === 'notFound')
 
 async function load() {
   store.value = null
@@ -45,9 +45,14 @@ function packageName(item: StoreDetail['packages'][number]): string {
 <template>
   <section class="detail-layout" :class="{ 'detail-pad': bookable || store }">
     <div v-if="loading" class="skeleton-card" aria-busy="true"></div>
-    <div v-else-if="unavailable" class="empty-state">
-      <p>{{ error || '房源已下架或不可用' }}</p>
+    <div v-else-if="errorKind === 'gone'" class="empty-state">
+      <p>{{ LISTING_UNAVAILABLE }}</p>
+      <p v-if="error && error !== LISTING_UNAVAILABLE">{{ error }}</p>
       <p>该房源暂不可提交意向</p>
+      <RouterLink class="btn btn-secondary" to="/listings">返回列表</RouterLink>
+    </div>
+    <div v-else-if="errorKind === 'notFound'" class="empty-state">
+      <p>{{ error || '房源不存在' }}</p>
       <RouterLink class="btn btn-secondary" to="/listings">返回列表</RouterLink>
     </div>
     <div v-else-if="error" class="empty-state">
@@ -102,9 +107,10 @@ function packageName(item: StoreDetail['packages'][number]): string {
         >
           提交意向
         </RouterLink>
-        <button v-else class="btn btn-primary btn-lg" type="button" disabled>该房源暂不可提交意向</button>
+        <button v-else class="btn btn-primary btn-lg" type="button" disabled>{{ LISTING_UNAVAILABLE }}</button>
         <a class="btn btn-secondary btn-lg" :href="`tel:${phone.replace(/\s+/g, '')}`">拨打电话</a>
-        <p class="muted">提交意向 · 客服将联系确认 · 意向不等于已锁房</p>
+        <p v-if="bookable" class="muted">提交意向 · 客服将联系确认 · 意向不等于已锁房</p>
+        <p v-else class="muted">该房源暂不可提交意向</p>
       </div>
     </template>
   </section>

@@ -76,7 +76,7 @@ describe('createHttpClient', () => {
       vi.fn(
         async () =>
           new Response(
-            JSON.stringify({ code: 409, message: '该房源当前不可提交意向', data: null }),
+            JSON.stringify({ code: 409, message: '到店日期不能早于今天', data: null }),
             { status: 409 },
           ),
       ),
@@ -86,7 +86,7 @@ describe('createHttpClient', () => {
       name: 'ApiError',
       code: 409,
       httpStatus: 409,
-      message: '该房源当前不可提交意向',
+      message: '到店日期不能早于今天',
     })
   })
 

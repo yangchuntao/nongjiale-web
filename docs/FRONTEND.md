@@ -70,6 +70,15 @@ VITE_CONTACT_PHONE=400-000-0000
 - 否则抛 `ApiError`
 - 401 时清除本端 token，并跳到 `/login?redirect=`
 
+门户对房源可用性的错误码：
+
+| HTTP | 含义 | 门户表现 |
+|------|------|----------|
+| 410 | 下架或不可订。详情 `GET /api/stores/{id}` 与提交意向 `POST /api/booking-intents` 使用同一码 | 禁用提交，文案「房源已下架或不可用」 |
+| 409 | 非法日期等冲突或校验，不表示下架 | 留在意向表，展示接口说明，改完可再提交 |
+| 404 | 房源不存在，或意向不属于本人 | 「不存在或无权查看」一类文案 |
+| 401 | 未登录 | 清 `nj_portal_token`，进入 `/login?redirect=` |
+
 门户房源列表只发送 BE-4 已有参数：`regionId`、`tag`、`priceMin`、`priceMax`、`sort`、`page`、`pageSize`。没有 `keyword`。首页搜索和列表里的 `q` 会当成 `tag`；若 URL 已有 `tag`，以 `tag` 为准。`sort` 只接受 `comprehensive`、`price_asc`、`price_desc`。
 
 ## 意向状态
