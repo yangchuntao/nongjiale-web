@@ -38,7 +38,8 @@ watch(() => route.params.id, load)
   <section>
     <p v-if="loading" class="muted">加载中…</p>
     <div v-else-if="offShelf" class="card">
-      <h1>已下架</h1>
+      <h1>该农家乐暂不可预订</h1>
+      <p>房源已下架或尚未上架，详情现在不可订。</p>
       <p class="error">{{ error }}</p>
       <router-link class="btn secondary" to="/search">返回列表</router-link>
     </div>

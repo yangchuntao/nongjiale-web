@@ -1,24 +1,37 @@
 <script setup lang="ts">
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { useAuthStore } from './stores/auth'
 import { useConfigStore } from './stores/config'
-import { useRouter } from 'vue-router'
 
 const auth = useAuthStore()
 const config = useConfigStore()
 const router = useRouter()
+const keyword = ref('')
 
 function logout() {
   auth.logout()
   router.push('/')
+}
+
+function search() {
+  const q = keyword.value.trim()
+  router.push({ path: '/search', query: q ? { q } : {} })
 }
 </script>
 
 <template>
   <div class="app-shell">
     <header class="topbar">
-      <router-link to="/" class="brand">农家乐 · 长三角</router-link>
+      <router-link to="/" class="brand">{{ config.siteName }}</router-link>
+      <form class="nav-search" @submit.prevent="search">
+        <input v-model="keyword" aria-label="搜索农家乐" placeholder="搜索农家乐" />
+      </form>
       <nav class="nav">
-        <router-link to="/search">找民宿</router-link>
+        <router-link to="/">首页</router-link>
+        <router-link to="/search">地区</router-link>
+        <router-link to="/articles">攻略/资讯</router-link>
+        <router-link to="/me/intents">我的意向</router-link>
         <a v-if="config.contactPhone" :href="`tel:${config.contactPhone}`">客服 {{ config.contactPhone }}</a>
         <template v-if="auth.isLoggedIn">
           <span class="user">{{ auth.user?.displayName || auth.user?.phone }}</span>
@@ -31,7 +44,9 @@ function logout() {
       <router-view />
     </main>
     <footer class="footer">
-      意向预订 · 无在线支付 · 客服确认后入住
+      <a v-if="config.contactPhone" :href="`tel:${config.contactPhone}`">客服 {{ config.contactPhone }}</a>
+      · <router-link to="/merchant/apply">商家入驻</router-link>
+      · 意向预订，无在线支付
     </footer>
   </div>
 </template>

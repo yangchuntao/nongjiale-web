@@ -20,32 +20,38 @@ type RequestOpts = {
 }
 
 export async function request<T>(path: string, opts: RequestOpts = {}): Promise<T> {
+  const isForm = typeof FormData !== 'undefined' && opts.body instanceof FormData
   const headers: Record<string, string> = {
     Accept: 'application/json',
     ...(opts.headers || {}),
   }
-  if (opts.body !== undefined) {
+  if (opts.body !== undefined && !isForm) {
     headers['Content-Type'] = 'application/json'
   }
   if (opts.token) {
     headers.Authorization = `Bearer ${opts.token}`
   }
 
-  const res = await fetch(`${BASE}${path}`, {
-    method: opts.method || (opts.body !== undefined ? 'POST' : 'GET'),
-    headers,
-    body: opts.body !== undefined ? JSON.stringify(opts.body) : undefined,
-  })
+  let res: Response
+  try {
+    res = await fetch(`${BASE}${path}`, {
+      method: opts.method || (opts.body !== undefined ? 'POST' : 'GET'),
+      headers,
+      body: isForm ? (opts.body as FormData) : opts.body !== undefined ? JSON.stringify(opts.body) : undefined,
+    })
+  } catch {
+    throw new ApiError('无法连接服务器，请确认后端已在 localhost:8080 启动', 0, 0)
+  }
 
   let json: ApiResponse<T> | null = null
   try {
     json = (await res.json()) as ApiResponse<T>
   } catch {
-    throw new ApiError(res.statusText || '网络错误', res.status, res.status)
+    throw new ApiError(res.status === 404 ? '接口尚未实现或资源不存在' : (res.statusText || '网络错误'), res.status, res.status)
   }
 
-  if (!res.ok || (json && json.code !== 0)) {
-    throw new ApiError(json?.message || res.statusText || '请求失败', json?.code ?? res.status, res.status)
+  if (!json || !res.ok || json.code !== 0) {
+    throw new ApiError(json?.message || (res.status === 404 ? '接口尚未实现或资源不存在' : res.statusText || '请求失败'), json?.code ?? res.status, res.status)
   }
   return json.data
 }

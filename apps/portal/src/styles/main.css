@@ -75,3 +75,15 @@ button, input, select, textarea {
 .hero h1 { margin: 0 0 8px; font-size: 1.6rem; }
 .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
 .page-title { margin: 0 0 14px; }
+.nav-search input, .hero-search input {
+  padding: 8px 12px; border-radius: 8px; border: 1px solid var(--line); background: #fff; color: var(--ink);
+}
+.hero-search { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
+.hero-search input { min-width: 220px; flex: 1; }
+.list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; }
+.list a.card { display: block; color: inherit; }
+.list a.card:hover { text-decoration: none; border-color: var(--brand); }
+.prose { white-space: pre-wrap; line-height: 1.7; }
+.trust { margin-top: 18px; }
+.row-between { display: flex; justify-content: space-between; gap: 8px; align-items: center; }
+button.chip { cursor: pointer; }
