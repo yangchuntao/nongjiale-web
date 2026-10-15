@@ -1,24 +1,21 @@
 {
-  "name": "suzhong-seed",
+  "name": "nongjiale-web",
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "packageManager": "pnpm@10.33.4",
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
-    "dev": "vite",
-    "build": "vue-tsc -b && vite build",
-    "preview": "vite preview"
-  },
-  "dependencies": {
-    "pinia": "^4.1.0",
-    "vue": "^3.5.42",
-    "vue-router": "^4.6.4"
-  },
-  "devDependencies": {
-    "@types/node": "^24.13.3",
-    "@vitejs/plugin-vue": "^6.0.8",
-    "@vue/tsconfig": "^0.9.1",
-    "typescript": "~6.0.2",
-    "vite": "^8.3.0",
-    "vue-tsc": "^3.3.11"
+    "dev:portal": "pnpm --filter @nongjiale/portal dev",
+    "dev:admin": "pnpm --filter @nongjiale/admin dev",
+    "dev:merchant": "pnpm --filter @nongjiale/merchant dev",
+    "build": "pnpm --filter @nongjiale/portal --filter @nongjiale/admin --filter @nongjiale/merchant build",
+    "build:portal": "pnpm --filter @nongjiale/portal build",
+    "build:admin": "pnpm --filter @nongjiale/admin build",
+    "build:merchant": "pnpm --filter @nongjiale/merchant build",
+    "typecheck": "pnpm --filter @nongjiale/shared --filter @nongjiale/portal --filter @nongjiale/admin --filter @nongjiale/merchant typecheck",
+    "test": "pnpm --filter @nongjiale/shared --filter @nongjiale/portal --filter @nongjiale/admin --filter @nongjiale/merchant test"
   }
 }
