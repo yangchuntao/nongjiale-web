@@ -1,0 +1,133 @@
+# 前端工程说明
+
+Vue 3 + TypeScript + Vite + Vue Router + Pinia 的 pnpm monorepo。业务页面尚未实现，当前是路由壳。
+
+## 端口
+
+| 应用 | 开发地址 | 接口基址 |
+|------|----------|----------|
+| 门户 `apps/portal` | http://localhost:43123 | `VITE_API_BASE`，默认 http://localhost:8080 |
+| 运营 `apps/admin` | http://localhost:43124 | 同上 |
+| 商家 `apps/merchant` | http://localhost:43125 | 同上 |
+
+商家是独立应用，路径不加 `/merchant` 前缀。
+
+## 脚本
+
+在仓库根目录执行：
+
+```bash
+pnpm install
+pnpm dev:portal
+pnpm dev:admin
+pnpm dev:merchant
+pnpm build
+pnpm build:portal
+pnpm build:admin
+pnpm build:merchant
+pnpm typecheck
+pnpm test
+```
+
+`typecheck` 会在 shared 上跑 `tsc --noEmit`，并在三个 app 上跑 `vue-tsc --noEmit`（含 `tsconfig.node.json`）。`build` 会先做各 app 的类型检查，再执行 `vite build`。
+
+需要 Node.js 22 或更高版本，包管理器为 pnpm 10。
+
+## Token keys
+
+三端分开存储，不要混用：
+
+| Key | 应用 |
+|-----|------|
+| `nj_portal_token` | 门户 |
+| `nj_admin_token` | 运营 |
+| `nj_merchant_token` | 商家 |
+
+常量在 `@nongjiale/shared` 的 `TOKEN_KEYS`。
+
+## 环境变量
+
+每个 app 有 `.env.example`。未提供 `.env` 时使用下列默认值：
+
+```bash
+VITE_API_BASE=http://localhost:8080
+VITE_USE_MOCK=false
+VITE_SITE_NAME=站点名称
+VITE_PRIMARY_COLOR=#2F6B4F
+VITE_CONTACT_PHONE=400-000-0000
+```
+
+`VITE_USE_MOCK=true` 不会打开假数据。站名、主色、客服电话只作为占位，正式值以后走站点配置接口。
+
+## HTTP
+
+共享 `createHttpClient`：
+
+- 请求头 `Accept: application/json`
+- 有 token 时附加 `Authorization: Bearer <token>`
+- 响应必须是 `{ code, message, data }`
+- `code === 0` 时返回 `data`
+- 否则抛 `ApiError`
+- 401 时清除本端 token，并跳到 `/login?redirect=`
+
+门户列表查询在 `apps/portal/src/api/query.ts` 把 `q` 映射为 `keyword`。
+
+## 意向状态
+
+`CHECKED_IN` 的中文是「已入住」。不要写成「已成交」或「已达成」。
+
+## 路由
+
+未登录访问需登录的页面时，进入该端 `/login?redirect=<原路径>`。已登录再打开登录页会离开登录页。门户的注册页同样只对未登录游客开放。
+
+### 门户（43123）
+
+| 路径 | 鉴权 | 说明 |
+|------|------|------|
+| `/` | 公开 | 首页 |
+| `/listings` | 公开 | 房源列表 |
+| `/listings/:id` | 公开 | 房源详情 |
+| `/login` | 游客；已登录则离开 | 手机号 + 密码登录桩 |
+| `/register` | 游客；已登录则离开 | 注册壳 |
+| `/listings/:id/intent` | 需登录 | 提交意向壳 |
+| `/intents/:id/success` | 需登录 | 意向成功壳 |
+| `/my/intents` | 需登录 | 我的意向 |
+| `/my/intents/:id` | 需登录 | 意向详情 |
+| `/guides` | 公开 | 攻略列表 |
+| `/guides/:id` | 公开 | 攻略详情 |
+| `/merchant/apply` | 公开 | 入驻申请壳 |
+
+### 商家（43125）
+
+| 路径 | 鉴权 | 说明 |
+|------|------|------|
+| `/login` | 游客；已登录则去 `/stores` | 手机号 + 密码登录桩 |
+| `/stores` | 需登录 | 门店列表 |
+| `/stores/:id` | 需登录 | 门店编辑 |
+| `/stores/:id/shelf` | 需登录 | 上下架申请 |
+| `/intents` | 需登录 | 本店意向 |
+| `/intents/:id` | 需登录 | 意向详情 |
+
+`/` 重定向到 `/stores`。
+
+### 运营（43124）
+
+| 路径 | 鉴权 | 说明 |
+|------|------|------|
+| `/login` | 游客；已登录则去 `/applies` 或 `redirect` | 手机号 + 密码登录桩 |
+| `/applies` | 需登录 | 入驻队列 |
+| `/applies/:id` | 需登录 | 入驻详情 |
+| `/merchants` | 需登录 | 商家 |
+| `/listings` | 需登录 | 房源 |
+| `/listings/:id` | 需登录 | 房源编辑 |
+| `/shelf-requests` | 需登录 | 上下架队列 |
+| `/intents` | 需登录 | 意向 |
+| `/intents/:id` | 需登录 | 意向详情 |
+| `/guides/:id?` | 需登录 | 无 id 为攻略列表，有 id 为攻略编辑 |
+| `/site` | 需登录 | 站点配置 |
+
+`/` 重定向到 `/applies`。
+
+## 设计令牌
+
+`apps/*/src/styles/tokens.css` 定义 `--color-brand`、间距、圆角、字体。运营端和商家端通过 Element Plus，并把 `--el-color-primary` 指到 `--color-brand`。

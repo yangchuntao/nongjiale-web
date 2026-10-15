@@ -1,0 +1,33 @@
+import ElementPlus from 'element-plus'
+import { createPinia } from 'pinia'
+import { createApp } from 'vue'
+import { setUnauthorizedHandler } from './api/client'
+import App from './App.vue'
+import router from './router'
+import { useAuthStore } from './stores/auth'
+import { useSiteStore } from './stores/site'
+import './styles/tokens.css'
+import 'element-plus/dist/index.css'
+import './styles/base.css'
+
+const app = createApp(App)
+const pinia = createPinia()
+app.use(pinia)
+app.use(ElementPlus)
+
+const auth = useAuthStore(pinia)
+auth.hydrate()
+useSiteStore(pinia).applyBrand()
+
+setUnauthorizedHandler(() => {
+  auth.logout()
+  const current = router.currentRoute.value
+  if (current.name === 'login') return
+  void router.replace({
+    path: '/login',
+    query: { redirect: current.fullPath },
+  })
+})
+
+app.use(router)
+app.mount('#app')
