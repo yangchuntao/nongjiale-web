@@ -1,3 +1,5 @@
+> FE-2 已把默认主色改为 `#4BA3D9`，并把门户列表查询从 `keyword` 改为 BE-4 的 `tag` 等参数。下文里的 `#2F6B4F` 和 `q` → `keyword` 只记录脚手架当时的做法，现行约定见 `docs/FRONTEND.md` 与 `docs/FE-2-PORTAL.md`。
+
 ## ① 概要设计
 
 在本 Origin 空仓上重建前端工程底座：pnpm monorepo，三个 Vue 3 + TypeScript + Vite 应用，外加一个只放契约的共享包。本任务只交付可编译的路由壳、鉴权守卫和 HTTP 封装，不实现业务页面，也不从旧 GitHub 仓 `yangchuntao/nongjiale-web` 拷贝代码。

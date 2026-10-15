@@ -1,13 +1,14 @@
 :root {
-  --color-brand: #2f6b4f;
-  --color-brand-hover: #255a41;
-  --color-brand-soft: #e8f2ec;
+  --color-brand: #4ba3d9;
+  --color-brand-hover: #3a8fc4;
+  --color-brand-soft: #e8f4fc;
+  --color-on-brand: #1a1a1a;
   --color-text: #1a1a1a;
   --color-text-secondary: #5c5c5c;
   --color-text-inverse: #ffffff;
   --color-border: #e5e5e5;
   --color-surface: #ffffff;
-  --color-surface-muted: #f7f7f5;
+  --color-surface-muted: #f4f8fb;
   --color-overlay: rgba(0, 0, 0, 0.45);
   --color-success: #1b7f4e;
   --color-warning: #c47e00;

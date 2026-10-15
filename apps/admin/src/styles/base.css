@@ -27,3 +27,10 @@ body {
 a {
   color: var(--color-brand);
 }
+
+.el-button--primary {
+  --el-button-text-color: var(--color-on-brand);
+  --el-button-hover-text-color: var(--color-on-brand);
+  --el-button-active-text-color: var(--color-on-brand);
+  --el-button-disabled-text-color: var(--color-on-brand);
+}

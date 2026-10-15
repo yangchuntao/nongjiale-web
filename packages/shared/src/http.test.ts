@@ -46,13 +46,13 @@ describe('createHttpClient', () => {
       getToken: () => 'portal-token',
     })
     const data = await client.request<{ id: number }>('/api/stores', {
-      query: { page: 1, keyword: '田', skip: undefined },
+      query: { page: 1, tag: '河鲜', skip: undefined },
     })
 
     expect(data).toEqual({ id: 7 })
     expect(fetchMock).toHaveBeenCalledOnce()
     const [url, init] = fetchMock.mock.calls[0] ?? []
-    expect(url).toBe('http://localhost:8080/api/stores?page=1&keyword=%E7%94%B0')
+    expect(url).toBe('http://localhost:8080/api/stores?page=1&tag=%E6%B2%B3%E9%B2%9C')
     const headers = new Headers(init?.headers)
     expect(headers.get('Authorization')).toBe('Bearer portal-token')
     expect(init?.credentials).toBe('omit')
