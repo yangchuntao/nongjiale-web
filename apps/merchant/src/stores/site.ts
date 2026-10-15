@@ -1,3 +1,4 @@
+import { applyBrandColor } from '@nongjiale/shared'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { contactPhone, primaryColor, siteName } from '../env'
@@ -8,10 +9,7 @@ export const useSiteStore = defineStore('site', () => {
   const phone = ref(contactPhone)
 
   function applyBrand() {
-    if (typeof document === 'undefined') return
-    const root = document.documentElement
-    root.style.setProperty('--color-brand', color.value)
-    root.style.setProperty('--el-color-primary', color.value)
+    applyBrandColor(color.value)
   }
 
   return { name, color, phone, applyBrand }

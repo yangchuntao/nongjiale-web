@@ -1,5 +1,6 @@
 import type { Router } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
+import { useSiteStore } from '../stores/site'
 
 export function safeInternalPath(value: unknown, fallback: string): string {
   const raw = Array.isArray(value) ? value[0] : value
@@ -27,7 +28,8 @@ export function installAuthGuard(router: Router, homePath: string) {
 
   router.afterEach((to) => {
     if (typeof document === 'undefined') return
-    const title = to.meta.title || '脚手架'
-    document.title = `${title} · 脚手架`
+    const site = useSiteStore()
+    const title = to.meta.title || '页面'
+    document.title = `${title} · ${site.name}`
   })
 }

@@ -1,42 +1,34 @@
 import type { RouteRecordRaw } from 'vue-router'
+import GuideDetailView from '../views/GuideDetailView.vue'
+import GuidesView from '../views/GuidesView.vue'
+import HomeView from '../views/HomeView.vue'
+import IntentFormView from '../views/IntentFormView.vue'
+import IntentSuccessView from '../views/IntentSuccessView.vue'
+import ListingDetailView from '../views/ListingDetailView.vue'
+import ListingsView from '../views/ListingsView.vue'
 import LoginView from '../views/LoginView.vue'
-import ShellView from '../views/ShellView.vue'
+import MerchantApplyView from '../views/MerchantApplyView.vue'
+import MyIntentDetailView from '../views/MyIntentDetailView.vue'
+import MyIntentsView from '../views/MyIntentsView.vue'
+import NotFoundView from '../views/NotFoundView.vue'
+import RegisterView from '../views/RegisterView.vue'
 
 export const HOME_PATH = '/'
 
 export const routes: RouteRecordRaw[] = [
-  {
-    path: '/',
-    name: 'home',
-    component: ShellView,
-    meta: {
-      title: '首页',
-      pageId: 'P-HOME',
-      hint: '首页脚手架。站名、主色、客服电话使用环境变量占位，不请求业务接口。',
-    },
-  },
-  {
-    path: '/listings',
-    name: 'listings',
-    component: ShellView,
-    meta: { title: '房源列表', pageId: 'P-LIST', hint: '房源列表脚手架。不填入假房源。' },
-  },
+  { path: '/', name: 'home', component: HomeView, meta: { title: '首页', pageId: 'P-HOME' } },
+  { path: '/listings', name: 'listings', component: ListingsView, meta: { title: '找农家乐', pageId: 'P-LIST' } },
   {
     path: '/listings/:id/intent',
     name: 'listing-intent',
-    component: ShellView,
-    meta: {
-      title: '提交意向',
-      pageId: 'P-INTENT-FORM',
-      requiresAuth: true,
-      hint: '提交意向脚手架。无支付、无锁房。',
-    },
+    component: IntentFormView,
+    meta: { title: '提交意向', pageId: 'P-INTENT-FORM', requiresAuth: true },
   },
   {
     path: '/listings/:id',
     name: 'listing-detail',
-    component: ShellView,
-    meta: { title: '房源详情', pageId: 'P-DETAIL', hint: '房源详情脚手架。' },
+    component: ListingDetailView,
+    meta: { title: '房源详情', pageId: 'P-DETAIL' },
   },
   {
     path: '/login',
@@ -47,68 +39,44 @@ export const routes: RouteRecordRaw[] = [
   {
     path: '/register',
     name: 'register',
-    component: ShellView,
-    meta: {
-      title: '注册',
-      pageId: 'P-REGISTER',
-      guestOnly: true,
-      hint: '注册页脚手架。完整注册表单不在本期。',
-    },
+    component: RegisterView,
+    meta: { title: '注册', pageId: 'P-REGISTER', guestOnly: true },
   },
   {
     path: '/intents/:id/success',
     name: 'intent-success',
-    component: ShellView,
-    meta: {
-      title: '意向提交成功',
-      pageId: 'P-INTENT-SUCCESS',
-      requiresAuth: true,
-      hint: '意向成功页脚手架。',
-    },
+    component: IntentSuccessView,
+    meta: { title: '意向已提交', pageId: 'P-INTENT-SUCCESS', requiresAuth: true },
   },
   {
     path: '/my/intents',
     name: 'my-intents',
-    component: ShellView,
-    meta: { title: '我的意向', pageId: 'P-MY-INTENTS', requiresAuth: true, hint: '我的意向脚手架。' },
+    component: MyIntentsView,
+    meta: { title: '我的意向', pageId: 'P-MY-INTENTS', requiresAuth: true },
   },
   {
     path: '/my/intents/:id',
     name: 'my-intent-detail',
-    component: ShellView,
-    meta: {
-      title: '意向详情',
-      pageId: 'P-MY-INTENT-DETAIL',
-      requiresAuth: true,
-      hint: '意向详情脚手架。游客只读。',
-    },
+    component: MyIntentDetailView,
+    meta: { title: '意向详情', pageId: 'P-MY-INTENT-DETAIL', requiresAuth: true },
   },
-  {
-    path: '/guides',
-    name: 'guides',
-    component: ShellView,
-    meta: { title: '攻略', pageId: 'P-GUIDE-LIST', hint: '攻略列表脚手架。' },
-  },
+  { path: '/guides', name: 'guides', component: GuidesView, meta: { title: '攻略', pageId: 'P-GUIDE-LIST' } },
   {
     path: '/guides/:id',
     name: 'guide-detail',
-    component: ShellView,
-    meta: { title: '攻略详情', pageId: 'P-GUIDE-DETAIL', hint: '攻略详情脚手架。' },
+    component: GuideDetailView,
+    meta: { title: '攻略详情', pageId: 'P-GUIDE-DETAIL' },
   },
   {
     path: '/merchant/apply',
     name: 'merchant-apply',
-    component: ShellView,
-    meta: {
-      title: '商家入驻申请',
-      pageId: 'P-MERCHANT-APPLY',
-      hint: '入驻申请脚手架。完整申请表不在本期。',
-    },
+    component: MerchantApplyView,
+    meta: { title: '商家入驻申请', pageId: 'P-MERCHANT-APPLY' },
   },
   {
     path: '/:pathMatch(.*)*',
     name: 'not-found',
-    component: ShellView,
-    meta: { title: '页面不存在', pageId: 'NOT-FOUND', hint: '未匹配到已登记路由。' },
+    component: NotFoundView,
+    meta: { title: '页面不存在', pageId: 'NOT-FOUND' },
   },
 ]

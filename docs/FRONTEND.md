@@ -1,6 +1,6 @@
 # 前端工程说明
 
-Vue 3 + TypeScript + Vite + Vue Router + Pinia 的 pnpm monorepo。业务页面尚未实现，当前是路由壳。
+Vue 3 + TypeScript + Vite + Vue Router + Pinia 的 pnpm monorepo。门户业务页已按 BE-4 接真实接口；运营端和商家端仍是路由壳。
 
 ## 端口
 
@@ -53,11 +53,11 @@ pnpm test
 VITE_API_BASE=http://localhost:8080
 VITE_USE_MOCK=false
 VITE_SITE_NAME=站点名称
-VITE_PRIMARY_COLOR=#2F6B4F
+VITE_PRIMARY_COLOR=#4BA3D9
 VITE_CONTACT_PHONE=400-000-0000
 ```
 
-`VITE_USE_MOCK=true` 不会打开假数据。站名、主色、客服电话只作为占位，正式值以后走站点配置接口。
+`VITE_USE_MOCK=true` 不会打开假数据。站名、主色、客服电话只作为占位。门户启动后请求 `GET /api/config/public`，用返回的 `siteName`、`brandColor`、`contactPhone` 覆盖占位。`brandColor` 写入 `--color-brand` 和 `--el-color-primary`。配置缺失或请求失败时回退环境变量，主色再回退 `#4BA3D9`。默认主色不再使用 `#2F6B4F`。
 
 ## HTTP
 
@@ -70,7 +70,16 @@ VITE_CONTACT_PHONE=400-000-0000
 - 否则抛 `ApiError`
 - 401 时清除本端 token，并跳到 `/login?redirect=`
 
-门户列表查询在 `apps/portal/src/api/query.ts` 把 `q` 映射为 `keyword`。
+门户对房源可用性的错误码：
+
+| HTTP | 含义 | 门户表现 |
+|------|------|----------|
+| 410 | 下架或不可订。详情 `GET /api/stores/{id}` 与提交意向 `POST /api/booking-intents` 使用同一码 | 禁用提交，文案「房源已下架或不可用」 |
+| 409 | 非法日期等冲突或校验，不表示下架 | 留在意向表，展示接口说明，改完可再提交 |
+| 404 | 房源不存在，或意向不属于本人 | 「不存在或无权查看」一类文案 |
+| 401 | 未登录 | 清 `nj_portal_token`，进入 `/login?redirect=` |
+
+门户房源列表只发送 BE-4 已有参数：`regionId`、`tag`、`priceMin`、`priceMax`、`sort`、`page`、`pageSize`。没有 `keyword`。首页搜索和列表里的 `q` 会当成 `tag`；若 URL 已有 `tag`，以 `tag` 为准。`sort` 只接受 `comprehensive`、`price_asc`、`price_desc`。
 
 ## 意向状态
 
@@ -84,18 +93,18 @@ VITE_CONTACT_PHONE=400-000-0000
 
 | 路径 | 鉴权 | 说明 |
 |------|------|------|
-| `/` | 公开 | 首页 |
-| `/listings` | 公开 | 房源列表 |
-| `/listings/:id` | 公开 | 房源详情 |
-| `/login` | 游客；已登录则离开 | 手机号 + 密码登录桩 |
-| `/register` | 游客；已登录则离开 | 注册壳 |
-| `/listings/:id/intent` | 需登录 | 提交意向壳 |
-| `/intents/:id/success` | 需登录 | 意向成功壳 |
+| `/` | 公开 | 首页。推荐与攻略来自 `GET /api/home/feed` |
+| `/listings` | 公开 | 房源列表。页码分页，筛选写入 URL |
+| `/listings/:id` | 公开 | 房源详情。套餐以 `packageText` 为准 |
+| `/login` | 游客；已登录则离开 | 手机号 + 密码，令牌写入 `nj_portal_token` |
+| `/register` | 游客；已登录则离开 | 手机号 + 密码注册 |
+| `/listings/:id/intent` | 需登录 | 提交意向。无支付、无锁房 |
+| `/intents/:id/success` | 需登录 | 意向成功，展示单号与客服电话 |
 | `/my/intents` | 需登录 | 我的意向 |
-| `/my/intents/:id` | 需登录 | 意向详情 |
-| `/guides` | 公开 | 攻略列表 |
+| `/my/intents/:id` | 需登录 | 意向详情。他人单据按接口 404 显示无权查看 |
+| `/guides` | 公开 | 已发布攻略列表 |
 | `/guides/:id` | 公开 | 攻略详情 |
-| `/merchant/apply` | 公开 | 入驻申请壳 |
+| `/merchant/apply` | 公开 | 入驻申请。可在已登录时预填手机 |
 
 ### 商家（43125）
 
@@ -130,4 +139,16 @@ VITE_CONTACT_PHONE=400-000-0000
 
 ## 设计令牌
 
-`apps/*/src/styles/tokens.css` 定义 `--color-brand`、间距、圆角、字体。运营端和商家端通过 Element Plus，并把 `--el-color-primary` 指到 `--color-brand`。
+`apps/*/src/styles/tokens.css` 定义浅蓝主色、间距、圆角、字体：
+
+| 变量 | 默认 |
+|------|------|
+| `--color-brand` | `#4BA3D9` |
+| `--color-brand-hover` | `#3A8FC4` |
+| `--color-brand-soft` | `#E8F4FC` |
+| `--color-surface-muted` | `#F4F8FB` |
+| `--color-on-brand` | `#1A1A1A`（浅蓝底上的按钮字；深色主色会改成白字） |
+
+运营端和商家端通过 Element Plus，并把 `--el-color-primary` 指到 `--color-brand`。主按钮字色跟随 `--color-on-brand`，避免浅蓝底配白字对比不足。
+
+门户页面用轻量 CSS，不引入 Element Plus。意向相关页展示非锁房说明。意向状态 `CHECKED_IN` 只显示「已入住」。详情没有支付、定金或锁房入口。页面与接口对照见 [FE-2-PORTAL.md](FE-2-PORTAL.md)。
