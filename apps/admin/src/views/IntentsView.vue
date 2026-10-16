@@ -136,16 +136,16 @@ async function onExport() {
         <el-input v-model="merchantOrgId" inputmode="numeric" style="width: 8rem" />
       </el-form-item>
       <el-form-item label="到店从">
-        <el-date-picker v-model="checkInFrom" type="date" value-format="YYYY-MM-DD" placeholder="到店从" />
+        <el-date-picker v-model="checkInFrom" type="date" format="YYYY-MM-DD" value-format="YYYY-MM-DD" placeholder="到店从" />
       </el-form-item>
       <el-form-item label="到店至">
-        <el-date-picker v-model="checkInTo" type="date" value-format="YYYY-MM-DD" placeholder="到店至" />
+        <el-date-picker v-model="checkInTo" type="date" format="YYYY-MM-DD" value-format="YYYY-MM-DD" placeholder="到店至" />
       </el-form-item>
       <el-form-item label="创建从">
-        <el-date-picker v-model="createdFrom" type="date" value-format="YYYY-MM-DD" placeholder="创建从" />
+        <el-date-picker v-model="createdFrom" type="date" format="YYYY-MM-DD" value-format="YYYY-MM-DD" placeholder="创建从" />
       </el-form-item>
       <el-form-item label="创建至">
-        <el-date-picker v-model="createdTo" type="date" value-format="YYYY-MM-DD" placeholder="创建至" />
+        <el-date-picker v-model="createdTo" type="date" format="YYYY-MM-DD" value-format="YYYY-MM-DD" placeholder="创建至" />
       </el-form-item>
       <el-button type="primary" native-type="submit">筛选</el-button>
     </el-form>

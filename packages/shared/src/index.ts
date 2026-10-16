@@ -13,6 +13,7 @@ export {
   normalizeHex,
   onBrandText,
 } from './brand'
+export { formatDate, formatDateTime } from './datetime'
 export { ApiError, createHttpClient, DEFAULT_API_BASE } from './http'
 export type { HttpClient, HttpClientOptions, RequestOptions, RequestQuery } from './http'
 export { TOKEN_KEYS, tokenStorageKey } from './token-keys'

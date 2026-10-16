@@ -164,7 +164,9 @@ describe('merchant readers', () => {
       merchantOrgId: '4',
       action: 'PUBLISH',
       status: 'PENDING',
+      createdAt: '2026-10-15 08:00',
     })
+    expect(row?.createdAt).not.toContain('T')
   })
 
   it('reads a masked phone as-is and masks a plain mobile', () => {

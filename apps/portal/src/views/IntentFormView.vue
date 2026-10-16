@@ -4,6 +4,7 @@ import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { LISTING_UNAVAILABLE, describePortalError } from '../api/errors'
 import { createIntent, fetchStore } from '../api/portal'
 import { canSubmitIntent, priceLabel, type StoreDetail } from '../api/readers'
+import DateField from '../components/DateField.vue'
 import IntentNoticeBanner from '../components/IntentNoticeBanner.vue'
 import { INTENT_FORM_NOTICE } from '../domain/copy'
 import { buildCreateIntentBody, todayIso, type IntentErrors } from '../domain/intent'
@@ -120,12 +121,12 @@ onMounted(async () => {
       </p>
       <label class="field">
         <span>到店日 *</span>
-        <input id="intent-checkIn" v-model="form.checkIn" type="date" required />
+        <DateField id="intent-checkIn" v-model="form.checkIn" required />
         <small v-if="errors.checkIn">{{ errors.checkIn }}</small>
       </label>
       <label class="field">
         <span>离店日</span>
-        <input id="intent-checkOut" v-model="form.checkOut" type="date" />
+        <DateField id="intent-checkOut" v-model="form.checkOut" />
         <small v-if="errors.checkOut">{{ errors.checkOut }}</small>
       </label>
       <label class="field">
