@@ -22,8 +22,10 @@ describe('intent status labels', () => {
   it('maps CHECKED_IN to 已入住', () => {
     expect(INTENT_STATUS_LABEL.CHECKED_IN).toBe('已入住')
     for (const label of Object.values(INTENT_STATUS_LABEL)) {
+      expect(label.includes('已落地')).toBe(false)
       expect(label.includes('已成交')).toBe(false)
       expect(label.includes('已达成')).toBe(false)
+      expect(label.includes('已落实')).toBe(false)
     }
   })
 })

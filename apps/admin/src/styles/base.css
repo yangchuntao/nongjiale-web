@@ -28,6 +28,10 @@ a {
   color: var(--color-brand);
 }
 
+.nav-toggle {
+  display: none;
+}
+
 .el-button--primary {
   --el-button-text-color: var(--color-on-brand);
   --el-button-hover-text-color: var(--color-on-brand);

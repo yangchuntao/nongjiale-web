@@ -1,7 +1,16 @@
 import type { RouteRecordRaw } from 'vue-router'
-import GuideShell from '../views/GuideShell.vue'
+import ApplyDetailView from '../views/ApplyDetailView.vue'
+import AppliesView from '../views/AppliesView.vue'
+import GuidesView from '../views/GuidesView.vue'
+import IntentDetailView from '../views/IntentDetailView.vue'
+import IntentsView from '../views/IntentsView.vue'
+import ListingEditView from '../views/ListingEditView.vue'
+import ListingsView from '../views/ListingsView.vue'
 import LoginView from '../views/LoginView.vue'
-import ShellView from '../views/ShellView.vue'
+import MerchantsView from '../views/MerchantsView.vue'
+import NotFoundView from '../views/NotFoundView.vue'
+import ShelfQueueView from '../views/ShelfQueueView.vue'
+import SiteConfigView from '../views/SiteConfigView.vue'
 
 export const HOME_PATH = '/applies'
 
@@ -16,77 +25,67 @@ export const routes: RouteRecordRaw[] = [
   {
     path: '/applies',
     name: 'applies',
-    component: ShellView,
-    meta: { title: '入驻申请', pageId: 'A-APPLY-QUEUE', requiresAuth: true, hint: '入驻队列脚手架。' },
+    component: AppliesView,
+    meta: { title: '入驻申请', pageId: 'A-APPLY-QUEUE', requiresAuth: true },
   },
   {
     path: '/applies/:id',
     name: 'apply-detail',
-    component: ShellView,
-    meta: { title: '入驻详情', pageId: 'A-APPLY-DETAIL', requiresAuth: true, hint: '入驻详情脚手架。' },
+    component: ApplyDetailView,
+    meta: { title: '入驻详情', pageId: 'A-APPLY-DETAIL', requiresAuth: true },
   },
   {
     path: '/merchants',
     name: 'merchants',
-    component: ShellView,
-    meta: { title: '商家', pageId: 'A-MERCHANT', requiresAuth: true, hint: '商家启停脚手架。无新建门店表单。' },
+    component: MerchantsView,
+    meta: { title: '商家', pageId: 'A-MERCHANT', requiresAuth: true },
   },
   {
     path: '/listings',
     name: 'listings',
-    component: ShellView,
-    meta: { title: '房源', pageId: 'A-LISTING-LIST', requiresAuth: true, hint: '房源列表脚手架。' },
+    component: ListingsView,
+    meta: { title: '房源', pageId: 'A-LISTING-LIST', requiresAuth: true },
   },
   {
     path: '/listings/:id',
     name: 'listing-edit',
-    component: ShellView,
-    meta: { title: '房源编辑', pageId: 'A-LISTING-EDIT', requiresAuth: true, hint: '房源编辑脚手架。' },
+    component: ListingEditView,
+    meta: { title: '房源编辑', pageId: 'A-LISTING-EDIT', requiresAuth: true },
   },
   {
     path: '/shelf-requests',
     name: 'shelf-requests',
-    component: ShellView,
-    meta: {
-      title: '上下架队列',
-      pageId: 'A-SHELF-QUEUE',
-      requiresAuth: true,
-      hint: '上下架审核脚手架。',
-    },
+    component: ShelfQueueView,
+    meta: { title: '上下架队列', pageId: 'A-SHELF-QUEUE', requiresAuth: true },
   },
   {
     path: '/intents',
     name: 'intents',
-    component: ShellView,
-    meta: { title: '意向', pageId: 'A-INTENT-LIST', requiresAuth: true, hint: '意向跟进脚手架。' },
+    component: IntentsView,
+    meta: { title: '意向', pageId: 'A-INTENT-LIST', requiresAuth: true },
   },
   {
     path: '/intents/:id',
     name: 'intent-detail',
-    component: ShellView,
-    meta: { title: '意向详情', pageId: 'A-INTENT-DETAIL', requiresAuth: true, hint: '意向详情脚手架。' },
+    component: IntentDetailView,
+    meta: { title: '意向详情', pageId: 'A-INTENT-DETAIL', requiresAuth: true },
   },
   {
     path: '/guides/:id?',
     name: 'guides',
-    component: GuideShell,
-    meta: {
-      title: '攻略',
-      pageId: 'A-GUIDE-LIST',
-      requiresAuth: true,
-      hint: '无 id 为攻略列表，有 id 为攻略编辑。',
-    },
+    component: GuidesView,
+    meta: { title: '攻略', pageId: 'A-GUIDE-LIST', requiresAuth: true },
   },
   {
     path: '/site',
     name: 'site',
-    component: ShellView,
-    meta: { title: '站点配置', pageId: 'A-SITE-CONFIG', requiresAuth: true, hint: '站点配置脚手架。' },
+    component: SiteConfigView,
+    meta: { title: '站点配置', pageId: 'A-SITE-CONFIG', requiresAuth: true },
   },
   {
     path: '/:pathMatch(.*)*',
     name: 'not-found',
-    component: ShellView,
-    meta: { title: '页面不存在', pageId: 'NOT-FOUND', hint: '未匹配到已登记路由。' },
+    component: NotFoundView,
+    meta: { title: '页面不存在', pageId: 'NOT-FOUND' },
   },
 ]
