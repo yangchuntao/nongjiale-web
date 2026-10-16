@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { ApiError, createHttpClient } from './http'
 import { TOKEN_KEYS, tokenStorageKey } from './token-keys'
-import { INTENT_STATUS_LABEL } from './types'
+import { FORBIDDEN_INTENT_LABELS, INTENT_STATUS_LABEL, intentDisplayLabel, normalizeIntentCopy } from './types'
 
 afterEach(() => {
   vi.unstubAllGlobals()
@@ -21,11 +21,13 @@ describe('token keys', () => {
 describe('intent status labels', () => {
   it('maps CHECKED_IN to 已入住', () => {
     expect(INTENT_STATUS_LABEL.CHECKED_IN).toBe('已入住')
-    for (const label of Object.values(INTENT_STATUS_LABEL)) {
-      expect(label.includes('已落地')).toBe(false)
-      expect(label.includes('已成交')).toBe(false)
-      expect(label.includes('已达成')).toBe(false)
-      expect(label.includes('已落实')).toBe(false)
+    for (const word of FORBIDDEN_INTENT_LABELS) {
+      expect(INTENT_STATUS_LABEL.CHECKED_IN).not.toBe(word)
+      expect(intentDisplayLabel('CHECKED_IN', word)).toBe('已入住')
+      expect(normalizeIntentCopy(`状态\n${word}`)).toBe('状态\n已入住')
+      for (const label of Object.values(INTENT_STATUS_LABEL)) {
+        expect(label.includes(word)).toBe(false)
+      }
     }
   })
 })

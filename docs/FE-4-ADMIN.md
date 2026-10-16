@@ -12,7 +12,7 @@
 
 `homeRecommended` 与 `homeSort` 只出现在房源编辑。入驻队列和上下架队列不编辑推荐。代上下架写入 `PUT /api/admin/stores/{id}` 的 `shelfStatus`，没有单独的 `/shelf`。
 
-意向终态 `CHECKED_IN` 全文展示「已入住」。筛选、详情标签、状态按钮、备注时间线和导出 CSV 都用这一句。文案表不使用「已落地」「已成交」「已达成」「已落实」。
+意向终态 `CHECKED_IN` 的验收只认「已入住」。筛选、详情标签、状态按钮、备注时间线和导出 CSV 都用这一句。文案表不使用「已订立」「已落实」「已落地」「已成交」「已达成」。
 
 主色沿用浅蓝 `#4BA3D9`，并写入 `--color-brand` 与 `--el-color-primary`。开发地址固定为 http://localhost:43124 。
 
@@ -94,9 +94,9 @@
 | `CHECKED_IN` | 已入住 | success |
 | `CLOSED` | 已关闭 | 中性 |
 
-`status === CHECKED_IN` 时忽略接口 `statusLabel`，固定「已入住」。`statusLabel` 若是「已落地」「已成交」「已达成」或「已落实」，也改成「已入住」。
+`status === CHECKED_IN` 时忽略接口 `statusLabel`，固定「已入住」。[nongjiale-api PR #6](https://cursor.com/codebase/andrew-yang/nongjiale-api/pull/6) 已合入 main，`statusLabel` 与导出 CSV 现为「已入住」。若响应或 CSV 仍带回「已订立」「已落实」「已落地」「已成交」或「已达成」，展示前归一成「已入住」。
 
-导出：`GET /api/admin/intents/export`，查询与列表筛选相同，不带分页。响应必须是原始 CSV。前端再把上述四个旧词替换成「已入住」。列是单号、店名、日期、人数、状态、联系人、手机、更新时间，没有佣金。
+导出：`GET /api/admin/intents/export`，查询与列表筛选相同，不带分页。响应必须是原始 CSV。前端再把上述五个禁词替换成「已入住」。列是单号、店名、日期、人数、状态、联系人、手机、更新时间，没有佣金。
 
 ### 攻略与站点
 
@@ -131,8 +131,9 @@
 | 3 | 入驻、商家、房源、上下架、意向、攻略、站点按 api#5 路径接线 |
 | 4 | 房源 PUT 使用 `homeRecommended`、`homeSort`、`shelfStatus`、`version`，去掉 `homeRecommendSort` 和单独 `/shelf` |
 | 5 | 启停只发 `{ status }`；一次性密码只在对话框展示 |
-| 6 | `CHECKED_IN` 文案表与展示层一律「已入住」，导出 CSV 同样改写旧词 |
+| 6 | `CHECKED_IN` 文案表与展示层一律「已入住」，导出 CSV 同样改写禁词 |
 | 7 | 更新 `docs/FRONTEND.md`、README，并新增本文 |
+| 8 | 文案热修：终态只输出「已入住」；「已订立」等五个禁词在展示层归一。对齐已合入的 api#6 |
 
 未改门户和商家的业务请求，也未打开业务 mock。
 
@@ -141,7 +142,7 @@
 | 对象 | 影响 |
 |------|------|
 | 后端 | 联调依赖已合入 main 的 [nongjiale-api PR #5](https://cursor.com/codebase/andrew-yang/nongjiale-api/pull/5)。CORS 放行 `http://localhost:43124` |
-| 文案 | Java 侧 `CHECKED_IN` 的 `statusLabel` 已热修为「已入住」。前端文案表同步为「已入住」。若响应或 CSV 仍带回「已落地」等旧词，展示层改写后再画到页面和文件 |
+| 文案 | [nongjiale-api PR #6](https://cursor.com/codebase/andrew-yang/nongjiale-api/pull/6) 已合入 main，`statusLabel` 与 CSV 为「已入住」。前端文案表同样只认「已入住」。五个禁词（已订立、已落实、已落地、已成交、已达成）若仍出现在响应或 CSV，显示前改成「已入住」 |
 | 房源 | 推荐字段归房源编辑。代上下架与保存是同一次 PUT。缺 `version` 不能提交 |
 | 商家 | 重置密码和开通的 `plainPassword` 只出现一次。代建门店只有路径，没有表单 |
 | 意向 | 导出不是信封。前端按当前筛选导出，并假定后端按这些条件返回全量，不按页截断 |
@@ -192,7 +193,7 @@
 | 意向改状态字段不统一 | `{ targetStatus, note?, version }` | 按该 body 提交 |
 | 意向筛选 `from` / `to` / `keyword` | `checkInFrom`、`checkInTo`、`createdFrom`、`createdTo`、`storeId`、`merchantOrgId` | 查询只用这些名字 |
 | 导出走信封 JSON | 原始 CSV，列无佣金 | 单独 `fetch`，拒绝以 `{` 开头的正文 |
-| `CHECKED_IN` 曾被写成「已落地」 | Java 热修后的 label 为「已入住」 | 文案表与映射一律「已入住」 |
+| `CHECKED_IN` 曾被写成「已落地」或「已订立」 | api#6 的 `statusLabel` 与 CSV 为「已入住」 | 文案表与映射只输出「已入住」 |
 | 站点配置键值列表 | 对象三字段，主色 `#` + 6 hex | 保存对象；主色规范成大写 |
 
 本地查看运营端：

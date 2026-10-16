@@ -182,6 +182,8 @@ describe('merchant readers', () => {
     })
     expect(intent?.contactName).toBe('张三')
     expect(intentStatusLabel(intent?.status ?? '')).toBe('已入住')
+    expect(intentStatusLabel('CHECKED_IN')).toBe('已入住')
+    expect(intentStatusLabel('CHECKED_IN')).not.toContain('已订立')
     expect(intentStatusLabel('CHECKED_IN')).not.toContain('已成交')
   })
 

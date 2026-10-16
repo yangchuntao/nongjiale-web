@@ -1,4 +1,4 @@
-import { INTENT_STATUS_LABEL, type IntentStatus, type PageResult } from '@nongjiale/shared'
+import { intentDisplayLabel, type PageResult } from '@nongjiale/shared'
 
 export const MERCHANT_PAGE_SIZE = 20
 
@@ -326,8 +326,7 @@ export function displayContactPhone(value: string | null | undefined): string {
 }
 
 export function intentStatusLabel(status: string): string {
-  if (status in INTENT_STATUS_LABEL) return INTENT_STATUS_LABEL[status as IntentStatus]
-  return status || '未知状态'
+  return intentDisplayLabel(status)
 }
 
 export function intentTagType(status: string): 'success' | 'warning' | 'primary' | undefined {

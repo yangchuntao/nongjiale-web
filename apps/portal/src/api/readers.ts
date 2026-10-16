@@ -1,4 +1,4 @@
-import { INTENT_STATUS_LABEL, type IntentStatus, type PageResult } from '@nongjiale/shared'
+import { intentDisplayLabel, type PageResult } from '@nongjiale/shared'
 
 export interface StoreCard {
   id: number
@@ -275,8 +275,7 @@ export function readTouristProfile(value: unknown): TouristProfile {
 }
 
 export function intentStatusLabel(status: string): string {
-  if (status in INTENT_STATUS_LABEL) return INTENT_STATUS_LABEL[status as IntentStatus]
-  return status || '未知状态'
+  return intentDisplayLabel(status)
 }
 
 export function intentStatusTone(status: string): 'warning' | 'info' | 'success' | 'neutral' {

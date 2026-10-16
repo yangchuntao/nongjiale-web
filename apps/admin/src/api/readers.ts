@@ -1,7 +1,9 @@
 import {
   INTENT_STATUS_LABEL,
   INTENT_STATUS_TRANSITIONS,
+  intentDisplayLabel,
   normalizeHex,
+  normalizeIntentCopy,
   type IntentStatus,
   type PageResult,
 } from '@nongjiale/shared'
@@ -13,10 +15,8 @@ export const ADMIN_PROFILE_KEY = 'nj_admin_profile'
 
 export const INTENT_CSV_HEADERS = ['单号', '店名', '日期', '人数', '状态', '联系人', '手机', '更新时间'] as const
 
-/** 终态中文。后端 statusLabel 若仍给旧词，展示层改成这一句。 */
-export const CHECKED_IN_LABEL = '已入住'
-
-const BLOCKED_STATUS_LABELS = ['已落地', '已成交', '已达成', '已落实'] as const
+/** 终态中文。接口或 CSV 若仍给禁词，展示层改成这一句。 */
+export const CHECKED_IN_LABEL = INTENT_STATUS_LABEL.CHECKED_IN
 
 export const SHELF_STATUSES = ['DRAFT', 'OFF_SHELF', 'ON_SHELF'] as const
 
@@ -663,18 +663,11 @@ export function readIntent(value: unknown): IntentRecord | null {
 }
 
 export function intentStatusLabel(status: string): string {
-  if (status === 'CHECKED_IN') return CHECKED_IN_LABEL
-  if (status in INTENT_STATUS_LABEL) return INTENT_STATUS_LABEL[status as IntentStatus]
-  return status || '未知状态'
+  return intentDisplayLabel(status)
 }
 
 export function displayIntentStatus(status: string, statusLabel?: string | null): string {
-  const label = statusLabel?.trim() ?? ''
-  if (status === 'CHECKED_IN' || BLOCKED_STATUS_LABELS.includes(label as (typeof BLOCKED_STATUS_LABELS)[number])) {
-    return CHECKED_IN_LABEL
-  }
-  if (label) return label
-  return intentStatusLabel(status)
+  return intentDisplayLabel(status, statusLabel)
 }
 
 export function nextIntentStatuses(status: string): IntentStatus[] {
@@ -769,9 +762,7 @@ export function intentsToCsv(rows: IntentRecord[]): string {
 }
 
 export function presentIntentCsv(csv: string): string {
-  let next = csv
-  for (const word of BLOCKED_STATUS_LABELS) next = next.split(word).join(CHECKED_IN_LABEL)
-  return next
+  return normalizeIntentCopy(csv)
 }
 
 export function intentExportFilename(status: string, day: string): string {
