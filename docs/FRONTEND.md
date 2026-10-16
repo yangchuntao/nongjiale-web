@@ -1,6 +1,6 @@
 # 前端工程说明
 
-Vue 3 + TypeScript + Vite + Vue Router + Pinia 的 pnpm monorepo。门户按 BE-4、商家端按 BE-5 接真实接口；运营端仍是路由壳。
+Vue 3 + TypeScript + Vite + Vue Router + Pinia 的 pnpm monorepo。门户按 BE-4、商家端按 BE-5、运营端按 BE-6 接真实接口。
 
 ## 端口
 
@@ -83,7 +83,7 @@ VITE_CONTACT_PHONE=400-000-0000
 
 ## 意向状态
 
-`CHECKED_IN` 的中文是「已入住」。不要写成「已成交」或「已达成」。
+`CHECKED_IN` 的中文是「已入住」。不要写成「已落地」「已成交」「已达成」或「已落实」。运营端若收到旧的 `statusLabel`，展示层仍改成「已入住」。
 
 ## 路由
 
@@ -127,19 +127,23 @@ VITE_CONTACT_PHONE=400-000-0000
 
 ### 运营（43124）
 
+登录是 `POST /api/admin/auth/login`，请求体 `{ phone, password }`。令牌只写入 `nj_admin_token`。`GET /api/admin/auth/me` 返回 `{ adminId, phone, role, displayName }`，角色是 `OPERATOR` 或 `AGENT`。显示名记在 `nj_admin_profile`，这不是令牌。
+
+契约以 [nongjiale-api PR #5](https://cursor.com/codebase/andrew-yang/nongjiale-api/pull/5) 为准。`CHECKED_IN` 在筛选、详情、状态按钮和导出里都显示「已入住」。页面与接口对照见 [FE-4-ADMIN.md](FE-4-ADMIN.md)。
+
 | 路径 | 鉴权 | 说明 |
 |------|------|------|
-| `/login` | 游客；已登录则去 `/applies` 或 `redirect` | 手机号 + 密码登录桩 |
-| `/applies` | 需登录 | 入驻队列 |
-| `/applies/:id` | 需登录 | 入驻详情 |
-| `/merchants` | 需登录 | 商家 |
-| `/listings` | 需登录 | 房源 |
-| `/listings/:id` | 需登录 | 房源编辑 |
-| `/shelf-requests` | 需登录 | 上下架队列 |
-| `/intents` | 需登录 | 意向 |
-| `/intents/:id` | 需登录 | 意向详情 |
-| `/guides/:id?` | 需登录 | 无 id 为攻略列表，有 id 为攻略编辑 |
-| `/site` | 需登录 | 站点配置 |
+| `/login` | 游客；已登录则去 `/applies` 或 `redirect` | 手机号 + 密码 |
+| `/applies` | 需登录 | 入驻队列。默认待审 |
+| `/applies/:id` | 需登录 | 通过或驳回。驳回原因必填 |
+| `/merchants` | 需登录 | 商家主体启停、重置密码 |
+| `/listings` | 需登录 | 房源列表 |
+| `/listings/:id` | 需登录 | 代编资料、首页推荐、代上下架 |
+| `/shelf-requests` | 需登录 | 商家上下架申请 |
+| `/intents` | 需登录 | 意向筛选与导出 CSV |
+| `/intents/:id` | 需登录 | 状态机与备注时间线 |
+| `/guides/:id?` | 需登录 | 无 id 为攻略列表；`new` 为新建；其他 id 为编辑 |
+| `/site` | 需登录 | 站名、主色、客服电话 |
 
 `/` 重定向到 `/applies`。
 
@@ -157,4 +161,4 @@ VITE_CONTACT_PHONE=400-000-0000
 
 运营端和商家端通过 Element Plus，并把 `--el-color-primary` 指到 `--color-brand`。主按钮字色跟随 `--color-on-brand`，避免浅蓝底配白字对比不足。
 
-门户页面用轻量 CSS，不引入 Element Plus。意向相关页展示非锁房说明。意向状态 `CHECKED_IN` 只显示「已入住」。详情没有支付、定金或锁房入口。门户对照见 [FE-2-PORTAL.md](FE-2-PORTAL.md)，商家对照见 [FE-3-MERCHANT.md](FE-3-MERCHANT.md)。
+门户页面用轻量 CSS，不引入 Element Plus。意向相关页展示非锁房说明。意向状态 `CHECKED_IN` 只显示「已入住」。详情没有支付、定金或锁房入口。门户对照见 [FE-2-PORTAL.md](FE-2-PORTAL.md)，商家对照见 [FE-3-MERCHANT.md](FE-3-MERCHANT.md)，运营对照见 [FE-4-ADMIN.md](FE-4-ADMIN.md)。

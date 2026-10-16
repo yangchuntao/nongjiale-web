@@ -9,6 +9,7 @@ import { useSiteStore } from './stores/site'
 import './styles/tokens.css'
 import 'element-plus/dist/index.css'
 import './styles/base.css'
+import './styles/admin.css'
 
 const app = createApp(App)
 const pinia = createPinia()
@@ -17,7 +18,12 @@ app.use(ElementPlus)
 
 const auth = useAuthStore(pinia)
 auth.hydrate()
-useSiteStore(pinia).applyBrand()
+const site = useSiteStore(pinia)
+site.applyBrand()
+if (auth.isAuthenticated) {
+  void auth.refreshMe()
+  void site.loadFromAdmin()
+}
 
 setUnauthorizedHandler(() => {
   auth.logout()
