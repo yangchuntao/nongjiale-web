@@ -59,7 +59,7 @@ onMounted(() => {
           <span class="muted">搜索特色</span>
           <input v-model="featureText" name="tag" type="search" placeholder="输入特色" />
         </label>
-        <button class="btn btn-primary btn-lg" type="submit">搜索</button>
+        <button class="btn btn-primary btn-lg" type="submit">找农家乐</button>
       </form>
     </div>
 
@@ -68,7 +68,10 @@ onMounted(() => {
       <p v-if="regionError">
         <button class="btn btn-secondary" type="button" @click="loadRegions">{{ regionError }}</button>
       </p>
-      <p v-else-if="!destinations.length" class="muted">暂无地区</p>
+      <div v-else-if="!destinations.length" class="empty-inline">
+        <p>目的地即将开通</p>
+        <RouterLink class="btn btn-secondary" to="/listings">找农家乐</RouterLink>
+      </div>
       <div v-else class="chips">
         <RouterLink
           v-for="region in destinations"
@@ -111,6 +114,7 @@ onMounted(() => {
           <div class="body">
             <h3 class="card-title">{{ article.title }}</h3>
             <p class="muted">{{ article.summary }}</p>
+            <span class="text-link">查看攻略</span>
           </div>
         </RouterLink>
       </div>

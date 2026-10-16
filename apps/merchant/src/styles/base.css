@@ -7,6 +7,12 @@
 :root {
   --content-width: 1280px;
   --el-color-primary: var(--color-brand);
+  --el-color-primary-light-3: var(--color-brand-light-3);
+  --el-color-primary-light-5: var(--color-brand-light-5);
+  --el-color-primary-light-7: var(--color-brand-light-7);
+  --el-color-primary-light-8: var(--color-brand-light-8);
+  --el-color-primary-light-9: var(--color-brand-light-9);
+  --el-color-primary-dark-2: var(--color-brand-dark-2);
   --el-border-radius-base: var(--radius-md);
 }
 
@@ -32,9 +38,20 @@ a {
   display: none;
 }
 
-.el-button--primary {
-  --el-button-text-color: var(--color-on-brand);
-  --el-button-hover-text-color: var(--color-on-brand);
-  --el-button-active-text-color: var(--color-on-brand);
-  --el-button-disabled-text-color: var(--color-on-brand);
+button.el-button.el-button--primary:not(.is-plain):not(.is-text):not(.is-link):not(.is-dashed),
+a.el-button.el-button--primary:not(.is-plain):not(.is-text):not(.is-link):not(.is-dashed) {
+  --el-button-text-color: var(--color-on-brand, #1a1a1a);
+  --el-button-hover-text-color: var(--color-on-brand, #1a1a1a);
+  --el-button-active-text-color: var(--color-on-brand, #1a1a1a);
+  --el-button-disabled-text-color: var(--color-on-brand, #1a1a1a);
+  color: var(--color-on-brand, #1a1a1a);
+}
+
+button.el-button.el-button--primary:not(.is-plain):not(.is-text):not(.is-link):not(.is-dashed):hover,
+button.el-button.el-button--primary:not(.is-plain):not(.is-text):not(.is-link):not(.is-dashed):focus,
+button.el-button.el-button--primary:not(.is-plain):not(.is-text):not(.is-link):not(.is-dashed):active,
+a.el-button.el-button--primary:not(.is-plain):not(.is-text):not(.is-link):not(.is-dashed):hover,
+a.el-button.el-button--primary:not(.is-plain):not(.is-text):not(.is-link):not(.is-dashed):focus,
+a.el-button.el-button--primary:not(.is-plain):not(.is-text):not(.is-link):not(.is-dashed):active {
+  color: var(--color-on-brand, #1a1a1a);
 }

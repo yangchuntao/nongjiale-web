@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import type { PageResult } from '@nongjiale/shared'
-import { computed, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
-import { fetchApplies } from '../api/admin'
+import { fetchApplies, fetchIntents, fetchShelfQueue } from '../api/admin'
 import { orgLabel, pageFromQuery, readQueryText, reviewStatusLabel, reviewTagType, type MerchantApply } from '../api/readers'
 import { EMPTY_APPLIES } from '../domain/copy'
 import { useAuthStore } from '../stores/auth'
@@ -14,6 +14,7 @@ const auth = useAuthStore()
 const { loading, error, errorKind, run } = useLoadState()
 const result = ref<PageResult<MerchantApply> | null>(null)
 const status = ref('PENDING')
+const counts = ref({ intents: '—', applies: '—', shelf: '—' })
 
 const page = computed(() => pageFromQuery(route.query.page))
 const appliedStatus = computed(() => readQueryText(route.query.status) || 'PENDING')
@@ -38,6 +39,37 @@ function pushQuery(nextPage: number) {
   void router.push({ path: '/applies', query })
 }
 
+function resetFilters() {
+  status.value = 'PENDING'
+  void router.push({ path: '/applies' })
+}
+
+async function loadCounts() {
+  const [intents, applies, shelf] = await Promise.allSettled([
+    fetchIntents({
+      status: 'PENDING',
+      storeId: '',
+      merchantOrgId: '',
+      checkInFrom: '',
+      checkInTo: '',
+      createdFrom: '',
+      createdTo: '',
+      page: 1,
+    }),
+    fetchApplies('PENDING', 1),
+    fetchShelfQueue('PENDING', 1),
+  ])
+  counts.value = {
+    intents: intents.status === 'fulfilled' ? String(intents.value.total) : '—',
+    applies: applies.status === 'fulfilled' ? String(applies.value.total) : '—',
+    shelf: shelf.status === 'fulfilled' ? String(shelf.value.total) : '—',
+  }
+}
+
+onMounted(() => {
+  void loadCounts()
+})
+
 watch(() => route.query, () => {
   syncForm()
   void load()
@@ -46,6 +78,20 @@ watch(() => route.query, () => {
 
 <template>
   <section class="page">
+    <nav class="summary-grid" aria-label="工作台">
+      <RouterLink class="summary-card" to="/intents">
+        <span class="summary-value">{{ counts.intents }}</span>
+        <span class="summary-label">意向队列 · 待跟进</span>
+      </RouterLink>
+      <RouterLink class="summary-card" to="/applies">
+        <span class="summary-value">{{ counts.applies }}</span>
+        <span class="summary-label">入驻队列 · 待审</span>
+      </RouterLink>
+      <RouterLink class="summary-card" to="/shelf-requests">
+        <span class="summary-value">{{ counts.shelf }}</span>
+        <span class="summary-label">上下架队列 · 待审</span>
+      </RouterLink>
+    </nav>
     <div class="page-head">
       <div>
         <h1>入驻申请</h1>
@@ -61,7 +107,8 @@ watch(() => route.query, () => {
           <el-option label="全部" value="ALL" />
         </el-select>
       </el-form-item>
-      <el-button type="primary" native-type="submit">筛选</el-button>
+      <el-button type="primary" size="small" native-type="submit">查询</el-button>
+      <el-button text type="primary" @click="resetFilters">重置</el-button>
     </el-form>
     <el-skeleton v-if="loading" :rows="6" animated />
     <el-empty v-else-if="error" :description="error">

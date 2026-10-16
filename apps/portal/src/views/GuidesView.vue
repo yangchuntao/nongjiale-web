@@ -48,6 +48,7 @@ watch(page, () => void load(), { immediate: true })
           <div class="body">
             <h2 class="card-title">{{ article.title }}</h2>
             <p class="muted">{{ article.summary }}</p>
+            <span class="text-link">查看攻略</span>
           </div>
         </RouterLink>
       </div>

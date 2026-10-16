@@ -10,6 +10,7 @@ import {
   guestLabel,
   intentDateLabel,
   intentExportFilename,
+  intentTagMuted,
   intentTagType,
   pageFromQuery,
   readQueryText,
@@ -170,7 +171,7 @@ async function onExport() {
           </el-table-column>
           <el-table-column label="状态" width="100">
             <template #default="{ row }">
-              <el-tag :type="intentTagType(row.status)">{{ displayIntentStatus(row.status, row.statusLabel) }}</el-tag>
+              <el-tag :type="intentTagType(row.status)" :class="{ 'tag-muted': intentTagMuted(row.status) }" round>{{ displayIntentStatus(row.status, row.statusLabel) }}</el-tag>
             </template>
           </el-table-column>
           <el-table-column prop="contactName" label="联系人" min-width="100" />

@@ -159,8 +159,8 @@ async function onReject() {
           <el-table-column label="操作" min-width="140" fixed="right">
             <template #default="{ row }">
               <div v-if="row.status === 'PENDING'" class="actions">
-                <el-button text :loading="actingId === row.id" @click="onApprove(row)">通过</el-button>
-                <el-button text type="danger" @click="openReject(row)">驳回</el-button>
+                <el-button type="primary" text :loading="actingId === row.id" @click="onApprove(row)">通过</el-button>
+                <el-button type="danger" text @click="openReject(row)">驳回</el-button>
               </div>
               <span v-else class="muted">—</span>
             </template>

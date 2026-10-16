@@ -39,13 +39,15 @@ const site = useSiteStore()
   flex-wrap: wrap;
   justify-content: space-between;
   gap: var(--space-4);
-  padding: var(--space-4) var(--space-5);
+  margin-top: var(--space-7);
+  padding: var(--space-6) var(--space-5);
   border-top: 1px solid var(--color-border);
-  color: var(--color-text-secondary);
-  font-size: var(--font-caption);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: var(--font-body);
 }
 
 .portal-footer a {
-  color: var(--color-text-secondary);
+  color: var(--color-brand);
 }
 </style>

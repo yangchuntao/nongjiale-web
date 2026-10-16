@@ -11,6 +11,8 @@ import {
   displayContactPhone,
   draftFromDetail,
   intentStatusLabel,
+  intentTagMuted,
+  intentTagType,
   readIntent,
   readMerchantLogin,
   readMerchantPage,
@@ -183,6 +185,10 @@ describe('merchant readers', () => {
     expect(intent?.contactName).toBe('张三')
     expect(intentStatusLabel(intent?.status ?? '')).toBe('已入住')
     expect(intentStatusLabel('CHECKED_IN')).toBe('已入住')
+    expect(intentTagType('CONFIRMED')).toBe('info')
+    expect(intentTagType('CHECKED_IN')).toBe('success')
+    expect(intentTagMuted('CLOSED')).toBe(true)
+    expect(intentTagMuted('CONFIRMED')).toBe(false)
     expect(intentStatusLabel('CHECKED_IN')).not.toContain('已订立')
     expect(intentStatusLabel('CHECKED_IN')).not.toContain('已成交')
   })

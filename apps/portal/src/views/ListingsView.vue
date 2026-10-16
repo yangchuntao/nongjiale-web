@@ -97,53 +97,80 @@ function changePage(next: number) {
       <p class="lede">按地区、特色和价格缩小范围。列表只展示上架房源。</p>
     </div>
 
-    <button class="btn btn-secondary" type="button" @click="filtersOpen = !filtersOpen">
-      {{ filtersOpen ? '收起筛选' : '筛选' }}
-    </button>
-    <form v-show="filtersOpen" class="filters-bar" @submit.prevent="applyTag">
-      <label class="field">
-        <span>地区</span>
-        <select :value="params.regionId ?? ''" @change="push({ regionId: ($event.target as HTMLSelectElement).value || undefined })">
-          <option value="">全部地区</option>
-          <option v-for="region in ordered" :key="region.id" :value="String(region.id)">
-            {{ region.parentId ? `－ ${region.name}` : region.name }}
-          </option>
-        </select>
-      </label>
-      <label class="field">
-        <span>特色</span>
-        <input v-model="tagDraft" type="search" placeholder="输入特色" @change="applyTag" />
-      </label>
-      <label class="field">
-        <span>价格</span>
-        <select :value="band" @change="onBand(($event.target as HTMLSelectElement).value)">
-          <option v-if="band === 'custom'" value="custom">当前价格</option>
-          <option v-for="item in PRICE_BANDS" :key="item.id" :value="item.id">{{ item.label }}</option>
-        </select>
-      </label>
-      <label class="field">
-        <span>排序</span>
-        <select :value="params.sort" @change="push({ sort: ($event.target as HTMLSelectElement).value })">
-          <option v-for="item in SORT_OPTIONS" :key="item.id" :value="item.id">{{ item.label }}</option>
-        </select>
-      </label>
-    </form>
-    <p>
-      <button class="btn btn-secondary" type="button" @click="clearFilters">清空筛选</button>
-    </p>
-
-    <div v-if="loading" class="card-grid" aria-busy="true">
-      <div v-for="item in 4" :key="item" class="skeleton-card"></div>
-    </div>
-    <EmptyState v-else-if="error" :title="error">
-      <button class="btn btn-secondary" type="button" @click="load">列表加载失败，请重试</button>
-    </EmptyState>
-    <EmptyState v-else-if="!result?.items.length" title="没有符合条件的农家乐，试试调整筛选" action="清空筛选" to="/listings" />
-    <template v-else>
-      <div class="card-grid">
-        <StoreCardView v-for="store in result.items" :key="store.id" :store="store" />
+    <div class="list-layout">
+      <aside class="list-filters">
+        <button class="btn btn-text filter-toggle" type="button" @click="filtersOpen = !filtersOpen">
+          {{ filtersOpen ? '收起筛选' : '筛选' }}
+        </button>
+        <form v-show="filtersOpen" class="filter-panel" @submit.prevent="applyTag">
+          <div class="field">
+            <span>地区</span>
+            <div class="chips chips-wrap">
+              <button type="button" class="chip" :class="{ active: !params.regionId }" @click="push({ regionId: undefined })">全部</button>
+              <button
+                v-for="region in ordered"
+                :key="region.id"
+                type="button"
+                class="chip"
+                :class="{ active: params.regionId === String(region.id) }"
+                @click="push({ regionId: String(region.id) })"
+              >
+                {{ region.parentId ? `－ ${region.name}` : region.name }}
+              </button>
+            </div>
+          </div>
+          <label class="field">
+            <span>特色</span>
+            <input v-model="tagDraft" type="search" placeholder="输入特色" @change="applyTag" />
+          </label>
+          <div class="field">
+            <span>价格</span>
+            <div class="chips chips-wrap">
+              <button v-if="band === 'custom'" type="button" class="chip active">当前价格</button>
+              <button
+                v-for="item in PRICE_BANDS"
+                :key="item.id"
+                type="button"
+                class="chip"
+                :class="{ active: band === item.id }"
+                @click="onBand(item.id)"
+              >
+                {{ item.label }}
+              </button>
+            </div>
+          </div>
+          <div class="field">
+            <span>排序</span>
+            <div class="segmented" role="group" aria-label="排序">
+              <button
+                v-for="item in SORT_OPTIONS"
+                :key="item.id"
+                type="button"
+                :class="{ active: params.sort === item.id }"
+                @click="push({ sort: item.id })"
+              >
+                {{ item.label }}
+              </button>
+            </div>
+          </div>
+          <button class="btn btn-text" type="button" @click="clearFilters">清空筛选</button>
+        </form>
+      </aside>
+      <div class="list-results">
+        <div v-if="loading" class="list-stack" aria-busy="true">
+          <div v-for="item in 4" :key="item" class="skeleton-row"></div>
+        </div>
+        <EmptyState v-else-if="error" :title="error">
+          <button class="btn btn-secondary" type="button" @click="load">列表加载失败，请重试</button>
+        </EmptyState>
+        <EmptyState v-else-if="!result?.items.length" title="没有符合条件的农家乐" action="清空筛选" to="/listings" />
+        <template v-else>
+          <div class="list-stack">
+            <StoreCardView v-for="store in result.items" :key="store.id" layout="row" :store="store" />
+          </div>
+          <Pager :page="result.page || page" :page-size="result.pageSize" :total="result.total" @change="changePage" />
+        </template>
       </div>
-      <Pager :page="result.page || page" :page-size="result.pageSize" :total="result.total" @change="changePage" />
-    </template>
+    </div>
   </section>
 </template>
