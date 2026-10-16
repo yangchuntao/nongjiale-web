@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
-import { INTENT_STATUS_LABEL, TOKEN_KEYS } from '@nongjiale/shared'
+import { FORBIDDEN_INTENT_LABELS, INTENT_STATUS_LABEL, TOKEN_KEYS } from '@nongjiale/shared'
 import { ApiError } from '@nongjiale/shared'
 import { ACCOUNT_DISABLED, describeAdminError } from './errors'
 import {
@@ -237,12 +237,15 @@ describe('admin intents', () => {
     expect(nextIntentStatuses('CHECKED_IN')).toEqual([])
     expect(nextIntentStatuses('CLOSED')).toEqual([])
     expect(intentStatusLabel('CHECKED_IN')).toBe('已入住')
-    expect(displayIntentStatus('CHECKED_IN', '已落地')).toBe('已入住')
+    expect(displayIntentStatus('CHECKED_IN', '已订立')).toBe('已入住')
     expect(displayIntentStatus('CHECKED_IN', '已入住')).toBe('已入住')
     expect(displayIntentStatus('CONFIRMED', '已确认')).toBe('已确认')
     expect(INTENT_STATUS_LABEL.CHECKED_IN).toBe('已入住')
-    for (const word of ['已落地', '已成交', '已达成', '已落实']) {
+    expect([...FORBIDDEN_INTENT_LABELS]).toEqual(['已订立', '已落实', '已落地', '已成交', '已达成'])
+    for (const word of FORBIDDEN_INTENT_LABELS) {
       expect(displayIntentStatus('CHECKED_IN', word)).toBe('已入住')
+      expect(displayIntentStatus('PENDING', word)).toBe('已入住')
+      expect(presentIntentCsv(`状态\n${word}`)).toBe('状态\n已入住')
       expect(INTENT_STATUS_LABEL.CHECKED_IN).not.toBe(word)
     }
   })
@@ -308,15 +311,15 @@ describe('admin intents', () => {
         createdAt: '',
         updatedAt: '2026-10-21 09:00',
         version: 1,
-        statusLabel: '已落地',
+        statusLabel: '已订立',
         notes: [],
       },
     ])
     expect(csv).toContain('已入住')
     expect(csv).not.toContain('CHECKED_IN')
-    expect(csv).not.toContain('已落地')
+    expect(csv).not.toContain('已订立')
     expect(csv).not.toContain('佣金')
-    expect(presentIntentCsv('状态\n已落地')).toBe('状态\n已入住')
+    expect(presentIntentCsv('状态\n已订立')).toBe('状态\n已入住')
     expect(readPage({ items: [], total: 0, page: 1, pageSize: 20 }, () => null).items).toEqual([])
     expect(() => readPage({}, () => null)).toThrow('列表响应缺少 items')
   })
