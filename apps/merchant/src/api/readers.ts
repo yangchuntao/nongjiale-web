@@ -329,11 +329,16 @@ export function intentStatusLabel(status: string): string {
   return intentDisplayLabel(status)
 }
 
-export function intentTagType(status: string): 'success' | 'warning' | 'primary' | undefined {
+export function intentTagType(status: string): 'success' | 'warning' | 'info' {
   if (status === 'CHECKED_IN') return 'success'
   if (status === 'PENDING' || status === 'RESCHEDULED') return 'warning'
-  if (status === 'CONFIRMED') return 'primary'
-  return undefined
+  if (status === 'CONFIRMED') return 'info'
+  return 'info'
+}
+
+/** 已关闭等非信息色状态。CONFIRMED 保持 info，不用 primary。 */
+export function intentTagMuted(status: string): boolean {
+  return status !== 'CHECKED_IN' && status !== 'PENDING' && status !== 'RESCHEDULED' && status !== 'CONFIRMED'
 }
 
 export function shelfStatusLabel(status: string): string {

@@ -51,8 +51,9 @@ async function onSubmit() {
 
 <template>
   <section class="login">
+    <p class="login-kicker">{{ site.name }}</p>
     <h1>商家登录</h1>
-    <p class="muted">{{ site.name }} · {{ appLabel }} · 手机号 + 密码</p>
+    <p class="muted">{{ appLabel }} · 手机号 + 密码</p>
     <el-form class="login-form" label-position="top" @submit.prevent="onSubmit">
       <el-form-item label="手机号" :error="phoneError">
         <el-input

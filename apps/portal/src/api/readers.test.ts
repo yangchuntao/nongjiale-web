@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { intentStatusLabel, readAuthToken, readHomeFeed, readIntent, readRegions } from './readers'
+import { intentStatusLabel, intentStatusTone, portalVisitorTags, readAuthToken, readHomeFeed, readIntent, readRegions } from './readers'
 
 describe('portal readers', () => {
   it('reads a home feed without inventing stores', () => {
@@ -27,6 +27,14 @@ describe('portal readers', () => {
     expect(intent?.checkIn).toBe('2026-10-20')
     expect(intent?.createdAt).toBe('2026-10-15 09:30')
     expect(intentStatusLabel('CHECKED_IN')).toBe('已入住')
+  })
+
+  it('keeps visitor tags and hides operator chips on the detail page', () => {
+    expect(portalVisitorTags({ testTag: '采摘', testData: false })).toEqual(['采摘'])
+    expect(portalVisitorTags({ testData: true })).toEqual(['测试'])
+    expect(portalVisitorTags({})).toEqual([])
+    expect(intentStatusTone('CONFIRMED')).toBe('info')
+    expect(intentStatusTone('CHECKED_IN')).toBe('success')
   })
 
   it('reads bearer tokens from common fields', () => {

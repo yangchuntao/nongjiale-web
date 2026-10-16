@@ -8,6 +8,7 @@ import {
   guestLabel,
   intentDateLabel,
   intentStatusLabel,
+  intentTagMuted,
   intentTagType,
   type IntentRecord,
 } from '../api/readers'
@@ -68,7 +69,7 @@ watch(page, () => void load(), { immediate: true })
           </el-table-column>
           <el-table-column label="状态" width="110">
             <template #default="{ row }">
-              <el-tag :type="intentTagType(row.status)">{{ intentStatusLabel(row.status) }}</el-tag>
+              <el-tag :type="intentTagType(row.status)" :class="{ 'tag-muted': intentTagMuted(row.status) }" round>{{ intentStatusLabel(row.status) }}</el-tag>
             </template>
           </el-table-column>
           <el-table-column label="联系人" min-width="120">

@@ -7,6 +7,7 @@ import {
   guestLabel,
   intentDateLabel,
   intentStatusLabel,
+  intentTagMuted,
   intentTagType,
   type IntentRecord,
 } from '../api/readers'
@@ -49,7 +50,16 @@ watch(id, () => void load(), { immediate: true })
         <span class="mono">{{ intent.intentNo || intent.id }}</span>
       </el-descriptions-item>
       <el-descriptions-item label="状态">
-        <el-tag :type="intentTagType(intent.status)">{{ intentStatusLabel(intent.status) }}</el-tag>
+        <span class="status-cell">
+          <el-tag
+            class="intent-status-tag"
+            :type="intentTagType(intent.status)"
+            :class="{ 'tag-muted': intentTagMuted(intent.status) }"
+            effect="light"
+            round
+            disable-transitions
+          >{{ intentStatusLabel(intent.status) }}</el-tag>
+        </span>
       </el-descriptions-item>
       <el-descriptions-item label="门店">{{ intent.storeName || '—' }}</el-descriptions-item>
       <el-descriptions-item label="日期">{{ intentDateLabel(intent) }}</el-descriptions-item>

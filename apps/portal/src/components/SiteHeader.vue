@@ -45,6 +45,11 @@ async function logout() {
       <button class="nav-toggle" type="button" :aria-expanded="open" aria-controls="portal-nav" @click="open = !open">
         菜单
       </button>
+      <nav id="portal-nav" :class="{ open }">
+        <RouterLink v-for="link in links" :key="link.to" :to="link.to" :class="{ active: isActive(link.to) }">
+          {{ link.label }}
+        </RouterLink>
+      </nav>
       <a class="phone" :href="`tel:${site.phone.replace(/\s+/g, '')}`">客服 {{ site.phone }}</a>
       <div class="account">
         <RouterLink :to="mineTo">我的</RouterLink>
@@ -55,11 +60,6 @@ async function logout() {
         </template>
       </div>
     </div>
-    <nav id="portal-nav" :class="{ open }">
-      <RouterLink v-for="link in links" :key="link.to" :to="link.to" :class="{ active: isActive(link.to) }">
-        {{ link.label }}
-      </RouterLink>
-    </nav>
   </header>
 </template>
 
@@ -74,25 +74,25 @@ nav,
 .account {
   display: flex;
   align-items: center;
-  gap: var(--space-3);
+  gap: var(--space-4);
 }
 
 .bar {
-  flex-wrap: wrap;
-  padding: var(--space-4) var(--space-5) var(--space-3);
+  min-height: var(--header-height);
+  padding: 0 var(--space-5);
 }
 
 .brand {
   color: var(--color-brand);
-  font-size: var(--font-h3);
-  font-weight: 600;
+  font-size: var(--font-brand-name);
+  font-weight: var(--font-weight-semibold);
   text-decoration: none;
-  margin-right: auto;
+  white-space: nowrap;
 }
 
 nav {
-  flex-wrap: wrap;
-  padding: 0 var(--space-5) var(--space-4);
+  flex: 1;
+  min-width: 0;
 }
 
 nav a,
@@ -108,10 +108,18 @@ nav a,
   padding: 0;
   cursor: pointer;
   font: inherit;
+  white-space: nowrap;
+}
+
+.phone {
+  color: var(--color-brand);
+  margin-left: auto;
 }
 
 nav a.active,
+nav a:hover,
 .brand:hover,
+.account a:hover,
 .phone:hover {
   color: var(--color-brand);
 }
@@ -121,12 +129,21 @@ nav a.active,
 }
 
 @media (max-width: 767px) {
+  .bar {
+    flex-wrap: wrap;
+    min-height: 56px;
+    padding: var(--space-2) var(--space-4);
+  }
+
   .nav-toggle {
     display: inline-flex;
   }
 
   nav {
     display: none;
+    flex-basis: 100%;
+    order: 5;
+    padding-bottom: var(--space-2);
   }
 
   nav.open {

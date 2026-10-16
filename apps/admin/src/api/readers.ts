@@ -675,11 +675,16 @@ export function nextIntentStatuses(status: string): IntentStatus[] {
   return [...INTENT_STATUS_TRANSITIONS[status as IntentStatus]]
 }
 
-export function intentTagType(status: string): 'success' | 'warning' | 'primary' | 'info' {
+export function intentTagType(status: string): 'success' | 'warning' | 'info' {
   if (status === 'CHECKED_IN') return 'success'
   if (status === 'PENDING' || status === 'RESCHEDULED') return 'warning'
-  if (status === 'CONFIRMED') return 'primary'
+  if (status === 'CONFIRMED') return 'info'
   return 'info'
+}
+
+/** 已关闭等非信息色状态。CONFIRMED 保持 info，不用 primary。 */
+export function intentTagMuted(status: string): boolean {
+  return status !== 'CHECKED_IN' && status !== 'PENDING' && status !== 'RESCHEDULED' && status !== 'CONFIRMED'
 }
 
 export function buildIntentStatusBody(

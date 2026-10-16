@@ -292,6 +292,12 @@ export function storeTestLabel(store: { testData?: boolean; testTag?: string }):
   return ''
 }
 
+/** 门户详情只展示对客标签。排序、上架、首页推荐留给运营端。 */
+export function portalVisitorTags(store: { testData?: boolean; testTag?: string }): string[] {
+  const label = storeTestLabel(store)
+  return label ? [label] : []
+}
+
 export function priceLabel(priceText?: string | null, priceFrom?: number | string | null): string {
   const textValue = priceText?.trim()
   if (textValue) return textValue

@@ -7,6 +7,8 @@ export {
   DEFAULT_CONTACT_PHONE,
   DEFAULT_SITE_NAME,
   DEFAULT_SURFACE_MUTED,
+  elementPrimaryVars,
+  mixWithBlack,
   mixWithWhite,
   normalizeHex,
   onBrandText,

@@ -28,6 +28,8 @@ import {
   buildRejectBody,
   buildSiteConfigBody,
   displayIntentStatus,
+  intentTagMuted,
+  intentTagType,
   intentExportQuery,
   intentListQuery,
   intentStatusLabel,
@@ -237,6 +239,12 @@ describe('admin intents', () => {
     expect(nextIntentStatuses('CHECKED_IN')).toEqual([])
     expect(nextIntentStatuses('CLOSED')).toEqual([])
     expect(intentStatusLabel('CHECKED_IN')).toBe('已入住')
+    expect(intentTagType('CONFIRMED')).toBe('info')
+    expect(intentTagType('CONFIRMED')).not.toBe('primary')
+    expect(intentTagType('PENDING')).toBe('warning')
+    expect(intentTagType('CHECKED_IN')).toBe('success')
+    expect(intentTagMuted('CLOSED')).toBe(true)
+    expect(intentTagMuted('CONFIRMED')).toBe(false)
     expect(displayIntentStatus('CHECKED_IN', '已订立')).toBe('已入住')
     expect(displayIntentStatus('CHECKED_IN', '已入住')).toBe('已入住')
     expect(displayIntentStatus('CONFIRMED', '已确认')).toBe('已确认')

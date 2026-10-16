@@ -110,6 +110,7 @@ async function onSubmit() {
     </el-empty>
     <template v-else-if="store">
       <el-form class="form-narrow" label-position="top" @submit.prevent="onSubmit">
+        <h2 class="form-group-title">基本信息</h2>
         <el-form-item label="门店名称" :error="nameError" required>
           <el-input id="store-name" v-model="draft.name" maxlength="80" />
         </el-form-item>
@@ -122,6 +123,7 @@ async function onSubmit() {
         <el-form-item label="门店电话">
           <el-input id="store-phone" v-model="draft.phone" maxlength="20" />
         </el-form-item>
+        <h2 class="form-group-title">价格与图片</h2>
         <el-form-item label="价格文案">
           <el-input id="store-price" v-model="draft.priceText" maxlength="80" />
         </el-form-item>
@@ -134,6 +136,7 @@ async function onSubmit() {
         <el-form-item label="图集">
           <el-input id="store-gallery" v-model="draft.galleryText" type="textarea" :rows="4" placeholder="每行一个图片地址" />
         </el-form-item>
+        <h2 class="form-group-title">套餐与须知</h2>
         <el-form-item label="套餐文案">
           <el-input id="store-package" v-model="draft.packageText" type="textarea" :rows="5" />
         </el-form-item>

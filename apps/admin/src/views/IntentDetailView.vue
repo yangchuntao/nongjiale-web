@@ -11,6 +11,7 @@ import {
   guestLabel,
   intentDateLabel,
   intentStatusLabel,
+  intentTagMuted,
   intentTagType,
   nextIntentStatuses,
   noteHeading,
@@ -113,7 +114,7 @@ async function onNote() {
           <span class="mono">{{ intent.intentNo || intent.id }}</span>
         </el-descriptions-item>
         <el-descriptions-item label="状态">
-          <el-tag :type="intentTagType(intent.status)">{{ displayIntentStatus(intent.status, intent.statusLabel) }}</el-tag>
+          <el-tag :type="intentTagType(intent.status)" :class="{ 'tag-muted': intentTagMuted(intent.status) }" round>{{ displayIntentStatus(intent.status, intent.statusLabel) }}</el-tag>
         </el-descriptions-item>
         <el-descriptions-item label="房源">{{ intent.storeName || '—' }}</el-descriptions-item>
         <el-descriptions-item label="日期">{{ intentDateLabel(intent) || '—' }}</el-descriptions-item>

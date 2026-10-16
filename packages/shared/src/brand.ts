@@ -64,19 +64,49 @@ export function mixWithWhite(hex: string, whiteWeight = 0.88): string {
   return `#${channel(r)}${channel(g)}${channel(b)}`.toUpperCase()
 }
 
-/** 把主色写到门户 CSS 变量，并同步 Element Plus primary。 */
+export function mixWithBlack(hex: string, blackWeight = 0.2): string {
+  const [r, g, b] = rgb(hex)
+  const weight = Math.min(Math.max(blackWeight, 0), 1)
+  const channel = (value: number) =>
+    Math.round(value * (1 - weight))
+      .toString(16)
+      .padStart(2, '0')
+  return `#${channel(r)}${channel(g)}${channel(b)}`.toUpperCase()
+}
+
+/** Element Plus primary 阶。light-N 为 N×10% 白，dark-2 为 20% 黑。 */
+export function elementPrimaryVars(color: string | null | undefined): Record<string, string> {
+  const hex = normalizeHex(color) ?? DEFAULT_BRAND
+  const [r, g, b] = rgb(hex)
+  const vars: Record<string, string> = {
+    '--color-brand': hex,
+    '--color-on-brand': onBrandText(hex),
+    '--el-color-primary': hex,
+    '--el-color-primary-rgb': `${r}, ${g}, ${b}`,
+    '--el-color-primary-light-3': mixWithWhite(hex, 0.3),
+    '--el-color-primary-light-5': mixWithWhite(hex, 0.5),
+    '--el-color-primary-light-7': mixWithWhite(hex, 0.7),
+    '--el-color-primary-light-8': mixWithWhite(hex, 0.8),
+    '--el-color-primary-light-9': mixWithWhite(hex, 0.9),
+    '--el-color-primary-dark-2': mixWithBlack(hex, 0.2),
+  }
+  if (hex !== DEFAULT_BRAND) {
+    vars['--color-brand-hover'] = darkenHex(hex)
+    vars['--color-brand-soft'] = mixWithWhite(hex)
+  }
+  return vars
+}
+
+/** 把主色写到 CSS 变量，并补齐 Element Plus primary 的 light / dark 阶。 */
 export function applyBrandColor(color: string | null | undefined): void {
   if (typeof document === 'undefined') return
-  const hex = normalizeHex(color) ?? DEFAULT_BRAND
   const root = document.documentElement
-  root.style.setProperty('--color-brand', hex)
-  root.style.setProperty('--el-color-primary', hex)
-  root.style.setProperty('--color-on-brand', onBrandText(hex))
-  if (hex === DEFAULT_BRAND) {
+  const vars = elementPrimaryVars(color)
+  for (const [key, value] of Object.entries(vars)) {
+    root.style.setProperty(key, value)
+  }
+  if (!vars['--color-brand-hover']) {
     root.style.removeProperty('--color-brand-hover')
     root.style.removeProperty('--color-brand-soft')
-    return
   }
-  root.style.setProperty('--color-brand-hover', darkenHex(hex))
-  root.style.setProperty('--color-brand-soft', mixWithWhite(hex))
 }

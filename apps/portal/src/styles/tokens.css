@@ -39,5 +39,23 @@
   --font-h3: 16px;
   --font-body: 14px;
   --font-caption: 12px;
+  --font-brand-name: 18px;
+  --font-weight-regular: 400;
+  --font-weight-semibold: 600;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --line-tight: 1.35;
+  --line-body: 1.6;
+  --header-height: 64px;
+  --sidebar-width: 220px;
+  --color-success-soft: #e6f4ec;
+  --color-warning-soft: #f8edd9;
+  --color-error-soft: #fdecea;
+  --color-info-soft: #e3eef8;
+  --color-brand-light-3: #81bfe4;
+  --color-brand-light-5: #a5d1ec;
+  --color-brand-light-7: #c9e3f4;
+  --color-brand-light-8: #dbedf7;
+  --color-brand-light-9: #edf6fb;
+  --color-brand-dark-2: #3c82ae;
   --content-width: 1200px;
 }

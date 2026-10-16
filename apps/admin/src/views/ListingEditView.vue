@@ -194,14 +194,16 @@ async function onShelf(shelfStatus: 'ON_SHELF' | 'OFF_SHELF') {
         <el-form-item label="交通与周边">
           <el-input v-model="draft.trafficText" type="textarea" :rows="3" />
         </el-form-item>
-        <el-form-item label="首页推荐">
-          <el-checkbox v-model="draft.homeRecommended">在首页推荐楼层展示</el-checkbox>
-          <p class="hint">{{ RECOMMEND_HELP }}</p>
-        </el-form-item>
-        <el-form-item label="排序权重" :error="sortError" required>
-          <el-input id="listing-sort" v-model="draft.homeSortText" inputmode="numeric" />
-          <p class="hint">{{ SORT_HELP }}</p>
-        </el-form-item>
+        <div class="recommend-fields">
+          <el-form-item label="首页推荐">
+            <el-checkbox v-model="draft.homeRecommended">在首页推荐楼层展示</el-checkbox>
+            <p class="hint">{{ RECOMMEND_HELP }}</p>
+          </el-form-item>
+          <el-form-item label="排序权重" :error="sortError" required>
+            <el-input id="listing-sort" v-model="draft.homeSortText" inputmode="numeric" />
+            <p class="hint">{{ SORT_HELP }}</p>
+          </el-form-item>
+        </div>
         <p v-if="versionError" class="hint" role="alert">{{ versionError }}</p>
         <el-alert v-if="saveError" :title="saveError" type="error" :closable="false" show-icon />
         <div class="actions">

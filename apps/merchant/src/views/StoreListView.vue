@@ -70,46 +70,27 @@ watch(page, () => void load(), { immediate: true })
       <a v-if="site.phone" :href="`tel:${site.phone}`">联系客服 {{ site.phone }}</a>
     </el-empty>
     <template v-else>
-      <div class="table-wrap">
-        <el-table :data="result.items" row-key="id">
-          <el-table-column label="封面" width="104">
-            <template #default="{ row }">
-              <img v-if="row.coverUrl" class="thumb" :src="row.coverUrl" :alt="row.name || '门店'" />
-              <div v-else class="thumb-fallback">无图</div>
-            </template>
-          </el-table-column>
-          <el-table-column prop="name" label="门店名" min-width="160">
-            <template #default="{ row }">{{ row.name || '未命名门店' }}</template>
-          </el-table-column>
-          <el-table-column label="地区编号" min-width="120">
-            <template #default="{ row }">{{ row.regionId ?? '—' }}</template>
-          </el-table-column>
-          <el-table-column label="上架状态" min-width="110">
-            <template #default="{ row }">
-              <el-tag :type="row.shelfStatus === 'ON_SHELF' || row.shelfStatus === 'PUBLISHED' ? 'success' : 'info'">
+      <ul class="store-cards">
+        <li v-for="row in result.items" :key="row.id" class="merchant-store-card">
+          <img v-if="row.coverUrl" class="thumb" :src="row.coverUrl" :alt="row.name || '门店'" />
+          <div v-else class="thumb-fallback">暂无图片</div>
+          <div>
+            <h2>{{ row.name || '未命名门店' }}</h2>
+            <div class="meta">
+              <span>地区 {{ row.regionId ?? '—' }}</span>
+              <span>{{ priceLabel(row.priceText, row.priceFrom) || '价格待补充' }}</span>
+              <el-tag :type="row.shelfStatus === 'ON_SHELF' || row.shelfStatus === 'PUBLISHED' ? 'success' : 'info'" round>
                 {{ shelfStatusLabel(row.shelfStatus) }}
               </el-tag>
-            </template>
-          </el-table-column>
-          <el-table-column label="价格" min-width="140">
-            <template #default="{ row }">{{ priceLabel(row.priceText, row.priceFrom) || '—' }}</template>
-          </el-table-column>
-          <el-table-column label="申请" width="100">
-            <template #default="{ row }">
-              <el-tag v-if="pendingIds.has(row.id)" type="warning">待审</el-tag>
-              <span v-else class="muted">—</span>
-            </template>
-          </el-table-column>
-          <el-table-column label="操作" min-width="160" fixed="right">
-            <template #default="{ row }">
-              <div class="actions">
-                <RouterLink :to="`/stores/${row.id}`">编辑</RouterLink>
-                <RouterLink :to="`/stores/${row.id}/shelf`">上下架</RouterLink>
-              </div>
-            </template>
-          </el-table-column>
-        </el-table>
-      </div>
+              <el-tag v-if="pendingIds.has(row.id)" type="warning" round>待审</el-tag>
+            </div>
+          </div>
+          <div class="actions">
+            <RouterLink :to="`/stores/${row.id}`">进入编辑</RouterLink>
+            <RouterLink :to="`/stores/${row.id}/shelf`">上下架</RouterLink>
+          </div>
+        </li>
+      </ul>
       <el-pagination
         v-if="result.total > result.pageSize"
         layout="prev, pager, next"
