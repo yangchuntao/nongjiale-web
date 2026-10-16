@@ -29,6 +29,19 @@ describe('portal readers', () => {
     expect(intentStatusLabel('CHECKED_IN')).toBe('已入住')
   })
 
+  it('formats ISO timestamps for display and keeps calendar dates', () => {
+    const intent = readIntent({
+      id: 5,
+      checkIn: '2026-10-20',
+      checkOut: '2026-10-22T00:00:00',
+      createdAt: '2026-10-16T05:12:00.000Z',
+    })
+    expect(intent?.checkIn).toBe('2026-10-20')
+    expect(intent?.checkOut).toBe('2026-10-22')
+    expect(intent?.createdAt).toMatch(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/)
+    expect(intent?.createdAt).not.toContain('T')
+  })
+
   it('keeps visitor tags and hides operator chips on the detail page', () => {
     expect(portalVisitorTags({ testTag: '采摘', testData: false })).toEqual(['采摘'])
     expect(portalVisitorTags({ testData: true })).toEqual(['测试'])

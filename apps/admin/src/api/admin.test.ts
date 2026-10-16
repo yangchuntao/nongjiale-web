@@ -40,6 +40,7 @@ import {
   readAdminLogin,
   readAdminMe,
   readArticle,
+  readIntent,
   readMerchantApply,
   readMerchantOrg,
   readPage,
@@ -166,6 +167,22 @@ describe('admin review and merchants', () => {
       licenseUrls: ['https://img.example/lic.jpg'],
       status: 'PENDING',
     })
+  })
+
+  it('formats review timestamps and keeps check-in as yyyy-MM-dd', () => {
+    const intent = readIntent({
+      id: 8,
+      checkIn: '2026-10-20',
+      createdAt: '2026-10-15T08:00:00',
+      updatedAt: '2026-10-16T05:12:00.000Z',
+      notes: [{ id: 1, createdAt: '2026-10-15T08:05:00' }],
+    })
+    expect(intent?.checkIn).toBe('2026-10-20')
+    expect(intent?.createdAt).toBe('2026-10-15 08:00')
+    expect(intent?.notes[0]?.createdAt).toBe('2026-10-15 08:05')
+    expect(intent?.updatedAt).toMatch(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/)
+    expect(intent?.updatedAt).not.toContain('T')
+    expect(readMerchantApply({ id: 1, createdAt: '2026-10-16T05:12:00.000Z' })?.createdAt).not.toContain('T')
   })
 
   it('patches org status and reads the one-time password', () => {

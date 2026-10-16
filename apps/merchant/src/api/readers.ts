@@ -1,4 +1,4 @@
-import { intentDisplayLabel, type PageResult } from '@nongjiale/shared'
+import { formatDate, formatDateTime, intentDisplayLabel, type PageResult } from '@nongjiale/shared'
 
 export const MERCHANT_PAGE_SIZE = 20
 
@@ -152,22 +152,11 @@ function flag(value: unknown): boolean {
 }
 
 export function readDate(value: unknown): string {
-  if (typeof value === 'string') return value.slice(0, 10)
-  if (Array.isArray(value) && value.length >= 3 && value.every((part) => typeof part === 'number')) {
-    const [year, month, day] = value as number[]
-    return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`
-  }
-  return ''
+  return formatDate(value)
 }
 
 export function readDateTime(value: unknown): string {
-  if (typeof value === 'string') return value
-  if (Array.isArray(value) && value.length >= 3 && value.every((part) => typeof part === 'number')) {
-    const hour = typeof value[3] === 'number' ? value[3] : 0
-    const minute = typeof value[4] === 'number' ? value[4] : 0
-    return `${readDate(value)} ${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`
-  }
-  return ''
+  return formatDateTime(value)
 }
 
 export function readMerchantPage<T>(data: unknown, mapItem: (item: unknown) => T | null): PageResult<T> {
