@@ -1,6 +1,6 @@
 # 前端工程说明
 
-Vue 3 + TypeScript + Vite + Vue Router + Pinia 的 pnpm monorepo。门户业务页已按 BE-4 接真实接口；运营端和商家端仍是路由壳。
+Vue 3 + TypeScript + Vite + Vue Router + Pinia 的 pnpm monorepo。门户按 BE-4、商家端按 BE-5 接真实接口；运营端仍是路由壳。
 
 ## 端口
 
@@ -108,16 +108,22 @@ VITE_CONTACT_PHONE=400-000-0000
 
 ### 商家（43125）
 
+登录是 `POST /api/merchant/auth/login`，请求体 `{ phone, password }`。令牌只写入 `nj_merchant_token`，不调用门户或运营接口，也没有 `GET /api/merchant/auth/me`。登录响应里的主体和显示名记在 `nj_merchant_profile`，这不是第三套令牌。
+
+停用账号返回 403，`message` 为「商家已停用」或「账号已停用」。页面统一显示「账号已停用，请联系运营」。
+
+没有新建门店。保存门店的 PUT 只提交 BE-5 白名单，不带 `homeRecommended`、`homeSort`、`shelfStatus`。意向只读，手机按接口已脱敏的值展示。`CHECKED_IN` 显示「已入住」。
+
 | 路径 | 鉴权 | 说明 |
 |------|------|------|
-| `/login` | 游客；已登录则去 `/stores` | 手机号 + 密码登录桩 |
-| `/stores` | 需登录 | 门店列表 |
-| `/stores/:id` | 需登录 | 门店编辑 |
-| `/stores/:id/shelf` | 需登录 | 上下架申请 |
-| `/intents` | 需登录 | 本店意向 |
-| `/intents/:id` | 需登录 | 意向详情 |
+| `/login` | 游客；已登录则去 `/stores` | 手机号 + 密码 |
+| `/stores` | 需登录 | 本主体门店，含下架店 |
+| `/stores/:id` | 需登录 | 编辑资料。推荐字段只读，不提交 |
+| `/stores/:id/shelf` | 需登录 | 申请上架或下架，待审时不能重复提交 |
+| `/intents` | 需登录 | 本店意向，只读 |
+| `/intents/:id` | 需登录 | 意向详情，只读 |
 
-`/` 重定向到 `/stores`。
+`/` 重定向到 `/stores`。页面与接口对照见 [FE-3-MERCHANT.md](FE-3-MERCHANT.md)。
 
 ### 运营（43124）
 
@@ -151,4 +157,4 @@ VITE_CONTACT_PHONE=400-000-0000
 
 运营端和商家端通过 Element Plus，并把 `--el-color-primary` 指到 `--color-brand`。主按钮字色跟随 `--color-on-brand`，避免浅蓝底配白字对比不足。
 
-门户页面用轻量 CSS，不引入 Element Plus。意向相关页展示非锁房说明。意向状态 `CHECKED_IN` 只显示「已入住」。详情没有支付、定金或锁房入口。页面与接口对照见 [FE-2-PORTAL.md](FE-2-PORTAL.md)。
+门户页面用轻量 CSS，不引入 Element Plus。意向相关页展示非锁房说明。意向状态 `CHECKED_IN` 只显示「已入住」。详情没有支付、定金或锁房入口。门户对照见 [FE-2-PORTAL.md](FE-2-PORTAL.md)，商家对照见 [FE-3-MERCHANT.md](FE-3-MERCHANT.md)。

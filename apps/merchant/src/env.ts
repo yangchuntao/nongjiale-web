@@ -11,5 +11,5 @@ export const primaryColor = normalizeHex(import.meta.env.VITE_PRIMARY_COLOR) ?? 
 export const contactPhone = import.meta.env.VITE_CONTACT_PHONE?.trim() || DEFAULT_CONTACT_PHONE
 
 if (import.meta.env.VITE_USE_MOCK === 'true' && import.meta.env.DEV) {
-  console.warn('VITE_USE_MOCK 已忽略：本脚手架不注入业务假数据。')
+  console.warn('VITE_USE_MOCK 已忽略：商家端不注入业务假数据。')
 }

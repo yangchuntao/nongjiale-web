@@ -9,6 +9,7 @@ import { useSiteStore } from './stores/site'
 import './styles/tokens.css'
 import 'element-plus/dist/index.css'
 import './styles/base.css'
+import './styles/merchant.css'
 
 const app = createApp(App)
 const pinia = createPinia()

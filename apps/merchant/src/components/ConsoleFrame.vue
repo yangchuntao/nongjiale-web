@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { RouterLink, RouterView, useRoute, useRouter } from 'vue-router'
 import { appLabel } from '../env'
 import { navItems } from '../router/nav'
@@ -10,6 +10,7 @@ const route = useRoute()
 const router = useRouter()
 const auth = useAuthStore()
 const site = useSiteStore()
+const navOpen = ref(false)
 
 const active = computed(() => {
   const match = [...navItems]
@@ -26,12 +27,12 @@ async function logout() {
 
 <template>
   <el-container class="console">
-    <el-aside width="220px" class="aside">
+    <el-aside width="220px" class="aside console-aside">
       <div class="brand">
         <strong>{{ site.name }}</strong>
-        <span>{{ appLabel }} · 「脚手架」</span>
+        <span>{{ appLabel }}</span>
       </div>
-      <el-menu router :default-active="active">
+      <el-menu router :default-active="active" :key="active">
         <el-menu-item v-for="item in navItems" :key="item.path" :index="item.path">
           {{ item.label }}
         </el-menu-item>
@@ -39,14 +40,27 @@ async function logout() {
     </el-aside>
     <el-container>
       <el-header class="topbar" height="56px">
-        <span>客服 {{ site.phone }}</span>
-        <el-button v-if="auth.isAuthenticated" text @click="logout">退出</el-button>
-        <RouterLink v-else to="/login">登录</RouterLink>
+        <div class="topbar-start">
+          <el-button class="nav-toggle" text aria-label="打开导航" @click="navOpen = true">菜单</el-button>
+          <span>客服 {{ site.phone }}</span>
+        </div>
+        <div class="topbar-end">
+          <span v-if="auth.displayName">{{ auth.displayName }}</span>
+          <el-button v-if="auth.isAuthenticated" text @click="logout">退出</el-button>
+          <RouterLink v-else to="/login">登录</RouterLink>
+        </div>
       </el-header>
       <el-main>
         <RouterView />
       </el-main>
     </el-container>
+    <el-drawer v-model="navOpen" direction="ltr" size="220px" title="导航">
+      <el-menu router :default-active="active" @select="navOpen = false">
+        <el-menu-item v-for="item in navItems" :key="item.path" :index="item.path">
+          {{ item.label }}
+        </el-menu-item>
+      </el-menu>
+    </el-drawer>
   </el-container>
 </template>
 
@@ -77,9 +91,15 @@ async function logout() {
   font-size: var(--font-caption);
 }
 
-.topbar {
+.topbar,
+.topbar-start,
+.topbar-end {
   display: flex;
   align-items: center;
+  gap: var(--space-3);
+}
+
+.topbar {
   justify-content: space-between;
   background: var(--color-surface);
   border-bottom: 1px solid var(--color-border);

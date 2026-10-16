@@ -5,5 +5,5 @@ export interface NavItem {
 
 export const navItems: NavItem[] = [
   { path: '/stores', label: '门店' },
-  { path: '/intents', label: '意向' },
+  { path: '/intents', label: '本店意向' },
 ]
