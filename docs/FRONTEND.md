@@ -93,7 +93,7 @@ VITE_CONTACT_PHONE=400-000-0000
 
 | 路径 | 鉴权 | 说明 |
 |------|------|------|
-| `/` | 公开 | 首页。目的地 Chip 用 `GET /api/regions`（接口只含已开通市）；推荐与攻略来自 `GET /api/home/feed` |
+| `/` | 公开 | 首页。目的地 Chip 用 `GET /api/regions`（市级 `level` 为 `CITY`，兼容数字 2；`CLOSED` 市如南通不展示）；推荐与攻略来自 `GET /api/home/feed` |
 | `/listings` | 公开 | 房源列表。页码分页，筛选写入 URL。`destinationStatus=CLOSED` 时只显示「该目的地暂未开通」，不渲染返回的房源 |
 | `/listings/:id` | 公开 | 房源详情。套餐以 `packageText` 为准。410 与下架相同，不提供提交意向 |
 | `/login` | 游客；已登录则离开 | 手机号 + 密码，令牌写入 `nj_portal_token` |

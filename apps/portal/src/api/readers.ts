@@ -53,7 +53,10 @@ export interface RegionItem {
   id: number
   name: string
   parentId: number | null
-  level: number | null
+  /** 接口市级为 `CITY`，区县为 `DISTRICT`，省为 `PROVINCE`。旧数据可能是数字 1/2/3。 */
+  level: number | string | null
+  /** 接口带上开通态时才有。`CLOSED` 不进入首页目的地 Chip。 */
+  openStatus?: string
 }
 
 export type DestinationStatus = 'OPEN' | 'CLOSED' | 'NONE'
@@ -103,6 +106,17 @@ function num(value: unknown): number | null {
   if (typeof value === 'number' && Number.isFinite(value)) return value
   if (typeof value === 'string' && value.trim() && !Number.isNaN(Number(value))) return Number(value)
   return null
+}
+
+function readRegionLevel(value: unknown): number | string | null {
+  const numeric = num(value)
+  if (numeric !== null) return numeric
+  const label = text(value).toUpperCase()
+  return label || null
+}
+
+function readRegionOpenStatus(body: Record<string, unknown>): string {
+  return text(body.openStatus ?? body.destinationStatus).toUpperCase()
 }
 
 function flag(value: unknown): boolean {
@@ -239,7 +253,14 @@ export function readRegions(value: unknown): RegionItem[] {
       const name = text(body?.name)
       if (!body || id === null || !name) continue
       const parentId = body.parentId === undefined ? inheritedParent : num(body.parentId)
-      items.push({ id, name, parentId, level: num(body.level) })
+      const openStatus = readRegionOpenStatus(body)
+      items.push({
+        id,
+        name,
+        parentId,
+        level: readRegionLevel(body.level),
+        ...(openStatus ? { openStatus } : {}),
+      })
       if (Array.isArray(body.children)) visit(body.children, id)
     }
   }

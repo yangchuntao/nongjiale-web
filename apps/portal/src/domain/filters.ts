@@ -50,13 +50,23 @@ export function rootRegions(items: RegionItem[]): RegionItem[] {
   return roots.length ? roots : items
 }
 
+function isCityLevel(level: RegionItem['level']): boolean {
+  if (level === 2) return true
+  return typeof level === 'string' && level.trim().toUpperCase() === 'CITY'
+}
+
+function isClosedDestination(item: RegionItem): boolean {
+  return (item.openStatus ?? '').toUpperCase() === 'CLOSED'
+}
+
 /**
- * 首页目的地 Chip。接口已只返回 OPEN 市及其区县；有 level=2 时只出市，区县留给列表筛选。
- * 没有 level 时沿用旧树：有下级则出最细一级；仅一个省级根节点时返回空。
+ * 首页目的地 Chip。接口市级 `level` 为 `CITY`（兼容旧数字 2）时只出市，区县留给列表筛选。
+ * `openStatus` / `destinationStatus` 为 CLOSED 的市（例如南通）不进 Chip；有市级行时不再退回区县。
+ * 没有任何市级 level 时沿用旧树：有下级则出最细一级；仅一个省级根节点时返回空。
  */
 export function destinationRegions(items: RegionItem[]): RegionItem[] {
-  const cities = items.filter((item) => item.level === 2)
-  if (cities.length) return cities
+  const cities = items.filter((item) => isCityLevel(item.level))
+  if (cities.length) return cities.filter((item) => !isClosedDestination(item))
   const idsWithChildren = new Set<number>()
   for (const item of items) {
     if (item.parentId != null) idsWithChildren.add(item.parentId)
