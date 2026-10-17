@@ -93,17 +93,17 @@ VITE_CONTACT_PHONE=400-000-0000
 
 | 路径 | 鉴权 | 说明 |
 |------|------|------|
-| `/` | 公开 | 首页。推荐与攻略来自 `GET /api/home/feed` |
-| `/listings` | 公开 | 房源列表。页码分页，筛选写入 URL |
-| `/listings/:id` | 公开 | 房源详情。套餐以 `packageText` 为准 |
+| `/` | 公开 | 首页。目的地 Chip 用 `GET /api/regions`（接口只含已开通市）；推荐与攻略来自 `GET /api/home/feed` |
+| `/listings` | 公开 | 房源列表。页码分页，筛选写入 URL。`destinationStatus=CLOSED` 时只显示「该目的地暂未开通」，不渲染返回的房源 |
+| `/listings/:id` | 公开 | 房源详情。套餐以 `packageText` 为准。410 与下架相同，不提供提交意向 |
 | `/login` | 游客；已登录则离开 | 手机号 + 密码，令牌写入 `nj_portal_token` |
 | `/register` | 游客；已登录则离开 | 手机号 + 密码注册 |
 | `/listings/:id/intent` | 需登录 | 提交意向。无支付、无锁房 |
 | `/intents/:id/success` | 需登录 | 意向成功，展示单号与客服电话 |
 | `/my/intents` | 需登录 | 我的意向 |
 | `/my/intents/:id` | 需登录 | 意向详情。他人单据按接口 404 显示无权查看 |
-| `/guides` | 公开 | 已发布攻略列表 |
-| `/guides/:id` | 公开 | 攻略详情 |
+| `/guides` | 公开 | 已发布攻略列表。关联市未开通的攻略不由前端另筛，列表跟随接口 |
+| `/guides/:id` | 公开 | 攻略详情。直链在接口返回 200 时仍可打开 |
 | `/merchant/apply` | 公开 | 入驻申请。可在已登录时预填手机 |
 
 ### 商家（43125）
@@ -143,6 +143,9 @@ VITE_CONTACT_PHONE=400-000-0000
 | `/intents` | 需登录 | 意向筛选与导出 CSV |
 | `/intents/:id` | 需登录 | 状态机与备注时间线 |
 | `/guides/:id?` | 需登录 | 无 id 为攻略列表；`new` 为新建；其他 id 为编辑 |
+| `/cities` | 需登录 | 开城列表。`GET /api/admin/cities` |
+| `/cities/:cityId` | 需登录 | 单市开通/关城。①④⑤手勾，②③按计数只读 |
+| `/seed-metrics` | 需登录 | 种子看板。按市汇总，行不下钻；可导出 CSV |
 | `/site` | 需登录 | 站名、主色、客服电话 |
 
 `/` 重定向到 `/applies`。

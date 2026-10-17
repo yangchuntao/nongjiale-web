@@ -9,16 +9,16 @@ import {
   readIntent,
   readPage,
   readRegions,
-  readStoreCard,
   readStoreDetail,
+  readStoreList,
   readTouristProfile,
   type ArticleDetail,
   type ArticleSummary,
   type HomeFeed,
   type IntentRecord,
   type RegionItem,
-  type StoreCard,
   type StoreDetail,
+  type StoreListResult,
   type TouristProfile,
 } from './readers'
 import type { CreateIntentBody } from '../domain/intent'
@@ -37,7 +37,7 @@ export async function fetchRegions(signal?: AbortSignal): Promise<RegionItem[]> 
 export async function fetchStores(
   params: Record<string, string | undefined>,
   signal?: AbortSignal,
-): Promise<PageResult<StoreCard>> {
+): Promise<StoreListResult> {
   const query = mapListingSearch({
     ...params,
     page: params.page || '1',
@@ -45,7 +45,7 @@ export async function fetchStores(
     sort: params.sort || 'comprehensive',
   })
   const data = await http.request<unknown>('/api/stores', { query, signal })
-  return readPage(data, readStoreCard)
+  return readStoreList(data)
 }
 
 export async function fetchStore(id: string, signal?: AbortSignal): Promise<StoreDetail> {

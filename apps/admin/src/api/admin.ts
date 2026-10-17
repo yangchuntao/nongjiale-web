@@ -6,6 +6,10 @@ import {
   adminApplyPath,
   adminApplyRejectPath,
   adminArticlePath,
+  adminCityChecklistPath,
+  adminCityClosePath,
+  adminCityOpenPath,
+  adminCityPath,
   adminIntentNotesPath,
   adminIntentPath,
   adminIntentStatusPath,
@@ -17,6 +21,7 @@ import {
 } from './paths'
 import {
   buildArticleBody,
+  buildCityVersionBody,
   buildIntentNoteBody,
   buildIntentStatusBody,
   buildListingBody,
@@ -25,12 +30,16 @@ import {
   buildOptionalPassword,
   buildRejectBody,
   buildSiteConfigBody,
+  cityIntentQuery,
   intentExportQuery,
   intentListQuery,
   presentIntentCsv,
   readAdminLogin,
   readAdminMe,
   readArticle,
+  readCityDetail,
+  readCityIntentMetrics,
+  readCityList,
   readIntent,
   readMerchantApply,
   readMerchantOrg,
@@ -44,6 +53,11 @@ import {
   type AdminLoginData,
   type AdminMe,
   type ArticleDraft,
+  type CityChecklistPatch,
+  type CityDetail,
+  type CityIntentMetrics,
+  type CityIntentQuery,
+  type CitySummary,
   type ArticleRecord,
   type IntentFilter,
   type IntentRecord,
@@ -263,6 +277,57 @@ export async function deleteArticle(id: string): Promise<void> {
 export async function fetchSiteConfig(signal?: AbortSignal): Promise<SiteConfigRecord> {
   const data = await http.request<unknown>(ADMIN_API.siteConfig, { signal })
   return readSiteConfig(data)
+}
+
+export async function fetchCities(signal?: AbortSignal): Promise<CitySummary[]> {
+  const data = await http.request<unknown>(ADMIN_API.cities, { signal })
+  return readCityList(data)
+}
+
+export async function fetchCity(id: string, signal?: AbortSignal): Promise<CityDetail> {
+  const data = await http.request<unknown>(adminCityPath(id), { signal })
+  const city = readCityDetail(data)
+  if (!city) throw new Error('目的地不存在')
+  return city
+}
+
+export async function saveCityChecklist(id: string, body: CityChecklistPatch): Promise<CityDetail> {
+  const data = await http.request<unknown>(adminCityChecklistPath(id), { method: 'PATCH', body })
+  const city = readCityDetail(data)
+  if (!city) throw new Error('目的地不存在')
+  return city
+}
+
+export async function openCity(id: string, version: number): Promise<CityDetail> {
+  const data = await http.request<unknown>(adminCityOpenPath(id), {
+    method: 'POST',
+    body: buildCityVersionBody(version),
+  })
+  const city = readCityDetail(data)
+  if (!city) throw new Error('目的地不存在')
+  return city
+}
+
+export async function closeCity(id: string, version: number): Promise<CityDetail> {
+  const data = await http.request<unknown>(adminCityClosePath(id), {
+    method: 'POST',
+    body: buildCityVersionBody(version),
+  })
+  const city = readCityDetail(data)
+  if (!city) throw new Error('目的地不存在')
+  return city
+}
+
+export async function fetchCityIntents(filter: CityIntentQuery, signal?: AbortSignal): Promise<CityIntentMetrics> {
+  const data = await http.request<unknown>(ADMIN_API.cityIntents, {
+    query: cityIntentQuery(filter),
+    signal,
+  })
+  return readCityIntentMetrics(data)
+}
+
+export async function exportCityIntents(filter: CityIntentQuery): Promise<string> {
+  return requestCsv(ADMIN_API.cityIntentExport, cityIntentQuery(filter))
 }
 
 export async function saveSiteConfig(draft: SiteConfigRecord): Promise<SiteConfigRecord> {

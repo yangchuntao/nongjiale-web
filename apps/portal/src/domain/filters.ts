@@ -51,10 +51,12 @@ export function rootRegions(items: RegionItem[]): RegionItem[] {
 }
 
 /**
- * 首页目的地 Chip。有下级时只出最细一级（区/市）；
- * 仅一个省级根节点时返回空，页面改显示开通文案。多个平级根节点仍可点选。
+ * 首页目的地 Chip。接口已只返回 OPEN 市及其区县；有 level=2 时只出市，区县留给列表筛选。
+ * 没有 level 时沿用旧树：有下级则出最细一级；仅一个省级根节点时返回空。
  */
 export function destinationRegions(items: RegionItem[]): RegionItem[] {
+  const cities = items.filter((item) => item.level === 2)
+  if (cities.length) return cities
   const idsWithChildren = new Set<number>()
   for (const item of items) {
     if (item.parentId != null) idsWithChildren.add(item.parentId)

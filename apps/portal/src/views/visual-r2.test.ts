@@ -38,6 +38,9 @@ describe('visual round 2 portal presentation', () => {
     expect(markup).toContain('btn-text')
     expect(markup).toContain('清空筛选')
     expect(markup).toContain('联系客服')
+    expect(markup).toContain("destinationStatus === 'CLOSED'")
+    expect(markup).toContain('CLOSED_DESTINATION_HINT')
+    expect(markup).toContain('查看已开通目的地')
     expect(markup).not.toContain('<select')
   })
 

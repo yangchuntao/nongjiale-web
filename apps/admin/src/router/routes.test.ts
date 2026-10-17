@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import { createMemoryHistory, createRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import { installAuthGuard } from './guard'
+import { navItems } from './nav'
 import { HOME_PATH, routes } from './routes'
 
 function createTestRouter() {
@@ -42,6 +43,21 @@ describe('admin routes', () => {
     await router.push('/guides/12')
     expect(router.currentRoute.value.name).toBe('guides')
     expect(router.currentRoute.value.params.id).toBe('12')
+  })
+
+  it('opens city management and the seed board for an operator', async () => {
+    useAuthStore().setToken('admin-token')
+    const router = createTestRouter()
+    await router.push('/cities')
+    expect(router.currentRoute.value.meta.pageId).toBe('A-CITY')
+    await router.push('/cities/12')
+    expect(router.currentRoute.value.name).toBe('city-detail')
+    expect(router.currentRoute.value.meta.pageId).toBe('A-CITY-DETAIL')
+    await router.push('/seed-metrics')
+    expect(router.currentRoute.value.meta.pageId).toBe('A-SEED')
+    expect(navItems.map((item) => item.label)).toEqual(
+      expect.arrayContaining(['开城/目的地', '种子看板']),
+    )
   })
 
   it('drops an external login redirect', async () => {

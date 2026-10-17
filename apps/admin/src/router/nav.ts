@@ -10,5 +10,7 @@ export const navItems: NavItem[] = [
   { path: '/shelf-requests', label: '上下架队列' },
   { path: '/intents', label: '意向' },
   { path: '/guides', label: '攻略' },
+  { path: '/cities', label: '开城/目的地' },
+  { path: '/seed-metrics', label: '种子看板' },
   { path: '/site', label: '站点配置' },
 ]

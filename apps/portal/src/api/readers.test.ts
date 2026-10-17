@@ -1,5 +1,15 @@
 import { describe, expect, it } from 'vitest'
-import { intentStatusLabel, intentStatusTone, portalVisitorTags, readAuthToken, readHomeFeed, readIntent, readRegions } from './readers'
+import {
+  CLOSED_DESTINATION_HINT,
+  intentStatusLabel,
+  intentStatusTone,
+  portalVisitorTags,
+  readAuthToken,
+  readHomeFeed,
+  readIntent,
+  readRegions,
+  readStoreList,
+} from './readers'
 
 describe('portal readers', () => {
   it('reads a home feed without inventing stores', () => {
@@ -13,10 +23,11 @@ describe('portal readers', () => {
   })
 
   it('flattens region trees and reads Jackson date arrays', () => {
-    expect(readRegions([{ id: 1, name: '扬州', children: [{ id: 2, name: '广陵' }] }])).toEqual([
-      { id: 1, name: '扬州', parentId: null },
-      { id: 2, name: '广陵', parentId: 1 },
+    expect(readRegions([{ id: 1, name: '扬州', level: 2, children: [{ id: 2, name: '广陵', level: 3 }] }])).toEqual([
+      { id: 1, name: '扬州', parentId: null, level: 2 },
+      { id: 2, name: '广陵', parentId: 1, level: 3 },
     ])
+    expect(readRegions([{ id: 8, name: '江苏省' }])).toEqual([{ id: 8, name: '江苏省', parentId: null, level: null }])
     const intent = readIntent({
       id: 4,
       intentNo: 'I4',
@@ -65,6 +76,36 @@ describe('portal readers', () => {
     expect(portalVisitorTags({ homeSort: 4, shelfStatus: 'OFF_SHELF', testTag: '上架' })).toEqual([])
     expect(intentStatusTone('CONFIRMED')).toBe('info')
     expect(intentStatusTone('CHECKED_IN')).toBe('success')
+  })
+
+  it('drops stores when the destination is closed and keeps the empty hint', () => {
+    const closed = readStoreList({
+      items: [{ id: 9, name: '他市店' }],
+      total: 3,
+      page: 1,
+      pageSize: 20,
+      destinationStatus: 'CLOSED',
+      emptyHint: '该目的地暂未开通',
+    })
+    expect(closed.items).toEqual([])
+    expect(closed.total).toBe(0)
+    expect(closed.destinationStatus).toBe('CLOSED')
+    expect(closed.emptyHint).toBe(CLOSED_DESTINATION_HINT)
+    expect(
+      readStoreList({
+        items: [{ id: 2, name: '扬州店' }],
+        total: 1,
+        page: 1,
+        pageSize: 20,
+        destinationStatus: 'OPEN',
+        emptyHint: '忽略',
+      }),
+    ).toMatchObject({
+      destinationStatus: 'OPEN',
+      emptyHint: null,
+      total: 1,
+    })
+    expect(readStoreList([{ id: 3, name: '默认' }]).destinationStatus).toBe('NONE')
   })
 
   it('reads bearer tokens from common fields', () => {
