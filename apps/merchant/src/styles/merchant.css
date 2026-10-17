@@ -78,6 +78,7 @@
   background: var(--color-surface);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);
+  --el-input-focus-border-color: var(--color-brand, #4ba3d9);
 }
 
 .login-kicker {
@@ -87,9 +88,10 @@
 }
 
 .login h1,
+.login h1.login-title,
 .login-title {
   margin: 0;
-  color: var(--color-brand);
+  color: var(--color-brand, #4ba3d9);
   font-size: var(--font-h2);
   font-weight: var(--font-weight-semibold);
 }
@@ -104,8 +106,9 @@
   border-radius: var(--radius-md);
 }
 
-.login .el-input__wrapper.is-focus {
-  box-shadow: 0 0 0 2px var(--color-brand);
+.login .el-input__wrapper.is-focus,
+.login .el-input__wrapper:focus-within {
+  box-shadow: 0 0 0 2px var(--color-brand, #4ba3d9);
 }
 
 .login .el-alert--error {

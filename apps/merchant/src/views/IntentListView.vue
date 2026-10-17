@@ -14,11 +14,13 @@ import {
 } from '../api/readers'
 import { EMPTY_INTENTS, MERCHANT_INTENT_NOTICE } from '../domain/copy'
 import { useAuthStore } from '../stores/auth'
+import { useSiteStore } from '../stores/site'
 import { leaveIfDisabled, useLoadState } from '../utils/load'
 
 const route = useRoute()
 const router = useRouter()
 const auth = useAuthStore()
+const site = useSiteStore()
 const { loading, error, errorKind, run } = useLoadState()
 const result = ref<PageResult<IntentRecord> | null>(null)
 
@@ -52,7 +54,9 @@ watch(page, () => void load(), { immediate: true })
     <el-empty v-else-if="error" :description="error">
       <el-button @click="load">重试</el-button>
     </el-empty>
-    <el-empty v-else-if="!result?.items.length" :description="EMPTY_INTENTS" />
+    <el-empty v-else-if="!result?.items.length" :description="EMPTY_INTENTS">
+      <p class="hint">意向由平台客服跟进。请联系运营<span v-if="site.phone"> {{ site.phone }}</span>。</p>
+    </el-empty>
     <template v-else>
       <div class="table-wrap">
         <el-table :data="result.items" row-key="id">

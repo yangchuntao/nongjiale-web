@@ -5,8 +5,8 @@ import { fetchHomeFeed, fetchRegions } from '../api/portal'
 import type { ArticleSummary, RegionItem, StoreCard } from '../api/readers'
 import StoreCardView from '../components/StoreCard.vue'
 import EmptyState from '../components/EmptyState.vue'
-import { welcomeTitle } from '../domain/copy'
-import { rootRegions } from '../domain/filters'
+import { DESTINATION_PENDING, welcomeTitle } from '../domain/copy'
+import { destinationRegions } from '../domain/filters'
 import { useSiteStore } from '../stores/site'
 import { useLoadState } from '../utils/load'
 
@@ -17,7 +17,7 @@ const stores = ref<StoreCard[]>([])
 const articles = ref<ArticleSummary[]>([])
 const regions = ref<RegionItem[]>([])
 const regionError = ref('')
-const destinations = computed(() => rootRegions(regions.value))
+const destinations = computed(() => destinationRegions(regions.value))
 const { loading, error, run } = useLoadState()
 
 async function loadFeed() {
@@ -69,7 +69,7 @@ onMounted(() => {
         <button class="btn btn-secondary" type="button" @click="loadRegions">{{ regionError }}</button>
       </p>
       <div v-else-if="!destinations.length" class="empty-inline">
-        <p>目的地即将开通</p>
+        <p>{{ DESTINATION_PENDING }}</p>
         <RouterLink class="btn btn-secondary" to="/listings">找农家乐</RouterLink>
       </div>
       <div v-else class="chips">

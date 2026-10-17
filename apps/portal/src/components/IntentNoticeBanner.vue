@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-withDefaults(defineProps<{ text: string; collapsible?: boolean }>(), { collapsible: false })
+const props = withDefaults(defineProps<{ text: string; collapsible?: boolean; startCollapsed?: boolean }>(), {
+  collapsible: false,
+  startCollapsed: false,
+})
 
-const collapsed = ref(false)
+const collapsed = ref(props.collapsible && props.startCollapsed)
 </script>
 
 <template>

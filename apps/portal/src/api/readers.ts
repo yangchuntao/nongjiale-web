@@ -281,10 +281,29 @@ export function storeTestLabel(store: { testData?: boolean; testTag?: string }):
   return ''
 }
 
-/** 门户详情只展示对客标签。排序、上架、首页推荐留给运营端。 */
-export function portalVisitorTags(store: { testData?: boolean; testTag?: string }): string[] {
+const OPERATOR_VISITOR_LABELS = new Set(['上架', '已上架', '未上架', '下架', '已下架', 'ON_SHELF', 'OFF_SHELF'])
+
+function isOperatorVisitorLabel(label: string): boolean {
+  if (OPERATOR_VISITOR_LABELS.has(label)) return true
+  return /^排序\s*\d+$/.test(label)
+}
+
+/**
+ * 门户详情对客标签。可保留「首页推荐」和特色。
+ * homeSort、shelfStatus 即使传入也不展示（排序 N、上架态）。
+ */
+export function portalVisitorTags(store: {
+  testData?: boolean
+  testTag?: string
+  homeRecommended?: boolean
+  homeSort?: number | null
+  shelfStatus?: string
+}): string[] {
+  const tags: string[] = []
+  if (store.homeRecommended) tags.push('首页推荐')
   const label = storeTestLabel(store)
-  return label ? [label] : []
+  if (label && !tags.includes(label) && !isOperatorVisitorLabel(label)) tags.push(label)
+  return tags
 }
 
 export function priceLabel(priceText?: string | null, priceFrom?: number | string | null): string {

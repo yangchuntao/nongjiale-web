@@ -95,23 +95,25 @@ function packageName(item: StoreDetail['packages'][number]): string {
         </div>
       </div>
       <aside class="detail-cta">
-        <RouterLink v-if="bookable && auth.isAuthenticated" class="btn btn-primary btn-lg" :to="intentTo">
-          提交意向
-        </RouterLink>
-        <RouterLink
-          v-else-if="bookable"
-          class="btn btn-primary btn-lg"
-          :to="{ path: '/login', query: { redirect: intentTo } }"
-        >
-          提交意向
-        </RouterLink>
-        <button v-else class="btn btn-primary btn-lg" type="button" disabled>{{ LISTING_UNAVAILABLE }}</button>
-        <a class="btn btn-secondary btn-lg" :href="`tel:${phone.replace(/\s+/g, '')}`">拨打电话</a>
-        <p v-if="bookable" class="caption">提交意向 · 客服将联系确认 · 意向不等于已锁房</p>
+        <div class="detail-cta-actions">
+          <RouterLink v-if="bookable && auth.isAuthenticated" class="btn btn-primary btn-lg" :to="intentTo">
+            提交意向
+          </RouterLink>
+          <RouterLink
+            v-else-if="bookable"
+            class="btn btn-primary btn-lg"
+            :to="{ path: '/login', query: { redirect: intentTo } }"
+          >
+            提交意向
+          </RouterLink>
+          <button v-else class="btn btn-primary btn-lg" type="button" disabled>提交意向</button>
+          <a class="btn btn-ghost btn-lg" :href="`tel:${phone.replace(/\s+/g, '')}`">拨打电话</a>
+        </div>
+        <p v-if="bookable" class="caption">{{ INTENT_NOTICE }}</p>
         <p v-else class="warn-inline">该房源暂不可提交意向</p>
       </aside>
       <div class="detail-body">
-        <IntentNoticeBanner :text="INTENT_NOTICE" collapsible />
+        <IntentNoticeBanner :text="INTENT_NOTICE" collapsible start-collapsed />
         <section v-if="store.packageText" class="detail-section">
           <h3>套餐</h3>
           <p class="body-large">{{ store.packageText }}</p>
@@ -127,7 +129,10 @@ function packageName(item: StoreDetail['packages'][number]): string {
             </li>
           </ul>
         </section>
-        <p v-else-if="!store.packageText" class="muted">暂无套餐文案</p>
+        <section v-else-if="!store.packageText" class="detail-section">
+          <h3>套餐</h3>
+          <p class="muted">暂无套餐文案</p>
+        </section>
         <section v-if="store.features" class="detail-section"><h3>特色</h3><p class="prose">{{ store.features }}</p></section>
         <section v-if="store.facilities" class="detail-section"><h3>设施</h3><p class="prose">{{ store.facilities }}</p></section>
         <section v-if="store.notice" class="detail-section"><h3>须知</h3><p class="prose">{{ store.notice }}</p></section>

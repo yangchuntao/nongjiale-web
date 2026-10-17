@@ -46,6 +46,23 @@ describe('portal readers', () => {
     expect(portalVisitorTags({ testTag: '采摘', testData: false })).toEqual(['采摘'])
     expect(portalVisitorTags({ testData: true })).toEqual(['测试'])
     expect(portalVisitorTags({})).toEqual([])
+    expect(
+      portalVisitorTags({
+        homeRecommended: true,
+        homeSort: 1,
+        shelfStatus: 'ON_SHELF',
+        testTag: '采摘',
+      }),
+    ).toEqual(['首页推荐', '采摘'])
+    expect(
+      portalVisitorTags({
+        homeRecommended: false,
+        homeSort: 1,
+        shelfStatus: 'ON_SHELF',
+        testTag: '排序 1',
+      }),
+    ).toEqual([])
+    expect(portalVisitorTags({ homeSort: 4, shelfStatus: 'OFF_SHELF', testTag: '上架' })).toEqual([])
     expect(intentStatusTone('CONFIRMED')).toBe('info')
     expect(intentStatusTone('CHECKED_IN')).toBe('success')
   })

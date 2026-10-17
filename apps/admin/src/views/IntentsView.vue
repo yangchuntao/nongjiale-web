@@ -66,6 +66,17 @@ async function load() {
   }
 }
 
+function clearFilters() {
+  status.value = ''
+  storeId.value = ''
+  merchantOrgId.value = ''
+  checkInFrom.value = ''
+  checkInTo.value = ''
+  createdFrom.value = ''
+  createdTo.value = ''
+  void router.push('/intents')
+}
+
 function pushQuery(nextPage: number) {
   const query: Record<string, string> = {}
   if (status.value) query.status = status.value
@@ -153,7 +164,9 @@ async function onExport() {
     <el-empty v-else-if="error" :description="error">
       <el-button @click="load">重试</el-button>
     </el-empty>
-    <el-empty v-else-if="!result?.items.length" :description="EMPTY_INTENTS" />
+    <el-empty v-else-if="!result?.items.length" :description="EMPTY_INTENTS">
+      <el-button text @click="clearFilters">清空筛选</el-button>
+    </el-empty>
     <template v-else>
       <div class="table-wrap">
         <el-table :data="result.items" row-key="id">

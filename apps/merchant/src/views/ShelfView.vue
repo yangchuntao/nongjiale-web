@@ -119,7 +119,9 @@ async function onSubmit() {
       </el-form>
 
       <h2>申请记录</h2>
-      <el-empty v-if="!applications?.items.length" :description="EMPTY_SHELF" />
+      <el-empty v-if="!applications?.items.length" :description="EMPTY_SHELF">
+        <p class="hint">在上方提交申请。通过前游客可见性不变。</p>
+      </el-empty>
       <template v-else>
         <div class="table-wrap">
           <el-table :data="applications.items" row-key="id">
