@@ -8,11 +8,14 @@ import type { RegionItem, StoreCard } from '../api/readers'
 import EmptyState from '../components/EmptyState.vue'
 import Pager from '../components/Pager.vue'
 import StoreCardView from '../components/StoreCard.vue'
+import { LISTINGS_LEAD } from '../domain/copy'
 import { PRICE_BANDS, SORT_OPTIONS, normalizeSort, orderRegions, priceBandId } from '../domain/filters'
+import { useSiteStore } from '../stores/site'
 import { useLoadState } from '../utils/load'
 
 const route = useRoute()
 const router = useRouter()
+const site = useSiteStore()
 const { loading, error, run } = useLoadState()
 const regions = ref<RegionItem[]>([])
 const result = ref<PageResult<StoreCard> | null>(null)
@@ -94,7 +97,7 @@ function changePage(next: number) {
   <section>
     <div class="page-head">
       <h1>找农家乐</h1>
-      <p class="lede">按地区、特色和价格缩小范围。列表只展示上架房源。</p>
+      <p class="lede">{{ LISTINGS_LEAD }}</p>
     </div>
 
     <div class="list-layout">
@@ -163,7 +166,9 @@ function changePage(next: number) {
         <EmptyState v-else-if="error" :title="error">
           <button class="btn btn-secondary" type="button" @click="load">列表加载失败，请重试</button>
         </EmptyState>
-        <EmptyState v-else-if="!result?.items.length" title="没有符合条件的农家乐" action="清空筛选" to="/listings" />
+        <EmptyState v-else-if="!result?.items.length" title="没有符合条件的农家乐" action="清空筛选" to="/listings">
+          <a v-if="site.phone" class="text-link" :href="`tel:${site.phone.replace(/\s+/g, '')}`">联系客服 {{ site.phone }}</a>
+        </EmptyState>
         <template v-else>
           <div class="list-stack">
             <StoreCardView v-for="store in result.items" :key="store.id" layout="row" :store="store" />

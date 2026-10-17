@@ -53,6 +53,15 @@ async function load() {
   }
 }
 
+function clearFilters() {
+  name.value = ''
+  regionId.value = ''
+  merchantOrgId.value = ''
+  shelfStatus.value = ''
+  homeRecommended.value = ''
+  void router.push('/listings')
+}
+
 function pushQuery(nextPage: number) {
   const query: Record<string, string> = {}
   if (regionId.value.trim()) query.regionId = regionId.value.trim()
@@ -107,7 +116,9 @@ watch(() => route.query, () => {
     <el-empty v-else-if="error" :description="error">
       <el-button @click="load">重试</el-button>
     </el-empty>
-    <el-empty v-else-if="!result?.items.length" :description="EMPTY_LISTINGS" />
+    <el-empty v-else-if="!result?.items.length" :description="EMPTY_LISTINGS">
+      <el-button text @click="clearFilters">清空筛选</el-button>
+    </el-empty>
     <template v-else>
       <div class="table-wrap">
         <el-table :data="result.items" row-key="id">

@@ -12,7 +12,7 @@
 2. 实心主按钮：门户 `.btn-primary` 与运营/商家 `button.el-button.el-button--primary`（排除 plain/text/link）强制 `color: var(--color-on-brand, #1a1a1a)`。文字按钮和描边按钮仍用 Brand 字。
 3. 门户首页：顶栏单行 64px；Hero 浅渐变；搜索按钮「找农家乐」；目的地 Chip，无数据时「目的地即将开通」并链到列表；推荐卡 16:10，无图占位高 180px、Caption「暂无图片」居中；攻略封面 3:2。
 4. 列表：左筛至少 220px，窄屏收成顶部抽屉。地区和价格用 Chip，选中 Brand 实心反白。排序用 Segmented。收起和清空用文字按钮。结果为横卡。
-5. 详情：不渲染排序、上架、首页推荐。对客标签只来自 `portalVisitorTags`。无图为 4:3、宽不超过 280px 的 soft 占位。标题、价格和「提交意向」紧挨着；桌面右侧 sticky，窄屏跟在标题后。套餐和须知是白卡片。不可订时按钮变灰，旁侧红字。非锁房文案不改。
+5. 详情：对客标签只来自 `portalVisitorTags`（可留「首页推荐」和特色；不渲染排序 N、上架态）。无图为约 4:3、高度不超过 360px 的 soft 占位。主按钮「提交意向」在窄屏为底部固定栏、宽屏为右侧 sticky，旁有幽灵「拨打电话」和与 Banner 同语义的非锁房短句；中部 Banner 默认可收起。登录回跳仍带房源 id。套餐到交通为白卡片，段间距 16。不可订时按钮变灰，旁侧红字。列表对客说明不出现「上架」。首页仅有省时显示「按地区挑选（更多目的地即将开通）」，有区则出区 Chip。
 6. 意向 Tag：`CONFIRMED` 三端为 info（信息蓝底加描边，不用 Element Plus primary）。已关闭为中性灰。门户「我的意向」Tag 为 `fit-content` chip，不拉满整卡。商家详情状态单元格始终渲染 `el-tag`。
 7. 登录：页底 `#F4F8FB`，白卡垂直居中，站名 Caption 在标题上，标题用 Brand。输入 focus 为 2px Brand 环。登录按钮高 44、全宽。
 8. 后台：侧栏当前项 Brand Soft 加左边线。表头用页底色。入驻页三张 SummaryCard。商家门店改为卡片，没有「新建门店」。

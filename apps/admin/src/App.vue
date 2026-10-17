@@ -19,6 +19,6 @@ const route = useRoute()
   align-items: center;
   justify-content: center;
   padding: var(--space-5);
-  background: var(--color-surface-muted);
+  background: var(--color-surface-muted, #f4f8fb);
 }
 </style>

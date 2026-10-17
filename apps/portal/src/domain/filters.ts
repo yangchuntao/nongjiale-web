@@ -49,3 +49,19 @@ export function rootRegions(items: RegionItem[]): RegionItem[] {
   const roots = items.filter((item) => item.parentId == null)
   return roots.length ? roots : items
 }
+
+/**
+ * 首页目的地 Chip。有下级时只出最细一级（区/市）；
+ * 仅一个省级根节点时返回空，页面改显示开通文案。多个平级根节点仍可点选。
+ */
+export function destinationRegions(items: RegionItem[]): RegionItem[] {
+  const idsWithChildren = new Set<number>()
+  for (const item of items) {
+    if (item.parentId != null) idsWithChildren.add(item.parentId)
+  }
+  const leaves = items.filter((item) => item.parentId != null && !idsWithChildren.has(item.id))
+  if (leaves.length) return leaves
+  const roots = items.filter((item) => item.parentId == null)
+  if (roots.length > 1 && roots.length === items.length) return roots
+  return []
+}

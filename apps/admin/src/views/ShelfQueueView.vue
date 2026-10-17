@@ -47,6 +47,11 @@ async function load() {
   }
 }
 
+function resetFilters() {
+  status.value = 'PENDING'
+  void router.push('/shelf-requests')
+}
+
 function pushQuery(nextPage: number) {
   const query: Record<string, string> = {}
   if (status.value && status.value !== 'PENDING') query.status = status.value
@@ -138,7 +143,9 @@ async function onReject() {
     <el-empty v-else-if="error" :description="error">
       <el-button @click="load">重试</el-button>
     </el-empty>
-    <el-empty v-else-if="!result?.items.length" :description="appliedStatus === 'PENDING' ? EMPTY_SHELF : '没有符合条件的申请'" />
+    <el-empty v-else-if="!result?.items.length" :description="appliedStatus === 'PENDING' ? EMPTY_SHELF : '没有符合条件的申请'">
+      <el-button text @click="resetFilters">重置筛选</el-button>
+    </el-empty>
     <template v-else>
       <div class="table-wrap">
         <el-table :data="result.items" row-key="id">

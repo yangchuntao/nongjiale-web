@@ -46,6 +46,11 @@ async function load() {
   }
 }
 
+function clearFilters() {
+  status.value = 'ALL'
+  void router.push('/merchants')
+}
+
 function pushQuery(nextPage: number) {
   const query: Record<string, string> = {}
   if (status.value && status.value !== 'ALL') query.status = status.value
@@ -153,7 +158,9 @@ function userPhones(row: MerchantOrg): string {
     <el-empty v-else-if="error" :description="error">
       <el-button @click="load">重试</el-button>
     </el-empty>
-    <el-empty v-else-if="!result?.items.length" :description="EMPTY_MERCHANTS" />
+    <el-empty v-else-if="!result?.items.length" :description="EMPTY_MERCHANTS">
+      <el-button text @click="clearFilters">查看全部</el-button>
+    </el-empty>
     <template v-else>
       <div class="table-wrap">
         <el-table :data="result.items" row-key="id">
