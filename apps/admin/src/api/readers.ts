@@ -914,3 +914,241 @@ export function todayIso(now = new Date()): string {
   const day = String(now.getDate()).padStart(2, '0')
   return `${year}-${month}-${day}`
 }
+
+export type CityOpenStatus = 'OPEN' | 'CLOSED'
+
+export interface CitySummary {
+  id: string
+  provinceName: string
+  name: string
+  slug: string
+  openStatus: CityOpenStatus
+  storeCount: number
+  articleCount: number
+  updatedAt: string
+}
+
+export interface CityChecklist {
+  destinationReady: boolean
+  supplyReady: boolean
+  articlesReady: boolean
+  supportCovered: boolean
+  dirtyDataCleared: boolean
+}
+
+export interface CityDetail extends CitySummary {
+  enabled: boolean
+  minStores: number
+  minArticles: number
+  checklist: CityChecklist
+  canOpen: boolean
+  canClose: boolean
+  missingReasons: string[]
+  version: number
+  updatedBy: string
+}
+
+export type CityHandKey = 'destinationReady' | 'supportCovered' | 'dirtyDataCleared'
+
+export interface CityChecklistPatch {
+  version: number
+  destinationReady?: boolean
+  supportCovered?: boolean
+  dirtyDataCleared?: boolean
+}
+
+export interface CityListFilter {
+  status: string
+  province: string
+  keyword: string
+}
+
+export type CityIntentWindow = '7' | '30' | 'ALL'
+
+export interface CityIntentQuery {
+  window: CityIntentWindow
+  cityId: string
+}
+
+export interface CityIntentRow {
+  cityId: string | null
+  cityName: string
+  intentCount: number
+  confirmedCount: number
+  checkedInCount: number
+  total: boolean
+}
+
+export interface CityIntentMetrics {
+  window: CityIntentWindow
+  from: string
+  rows: CityIntentRow[]
+}
+
+function countOf(value: unknown): number {
+  const parsed = num(value)
+  if (parsed === null || parsed < 0) return 0
+  return Math.trunc(parsed)
+}
+
+function positiveInt(value: unknown, fallback: number): number {
+  const parsed = num(value)
+  if (parsed === null || !Number.isInteger(parsed) || parsed <= 0) return fallback
+  return parsed
+}
+
+function readOpenStatus(value: unknown): CityOpenStatus {
+  return value === 'OPEN' ? 'OPEN' : 'CLOSED'
+}
+
+export function cityTitle(city: Pick<CitySummary, 'provinceName' | 'name'>): string {
+  if (city.provinceName && city.name) return `${city.provinceName} · ${city.name}`
+  return city.name || city.provinceName || '—'
+}
+
+export function cityUpdatedLabel(value: string): string {
+  return value || '—'
+}
+
+export function openStatusLabel(status: string): string {
+  return status === 'OPEN' ? '已开通' : '未开通'
+}
+
+export function readCitySummary(value: unknown): CitySummary | null {
+  const body = record(value)
+  const id = idOf(body?.id)
+  if (!body || !id) return null
+  return {
+    id,
+    provinceName: text(body.provinceName),
+    name: text(body.name),
+    slug: text(body.slug),
+    openStatus: readOpenStatus(body.openStatus),
+    storeCount: countOf(body.storeCount),
+    articleCount: countOf(body.articleCount),
+    updatedAt: readDateTime(body.updatedAt),
+  }
+}
+
+export function readCityList(data: unknown): CitySummary[] {
+  if (!Array.isArray(data)) return []
+  return data.map(readCitySummary).filter((item): item is CitySummary => item !== null)
+}
+
+export function readCityDetail(value: unknown): CityDetail | null {
+  const summary = readCitySummary(value)
+  const body = record(value)
+  if (!summary || !body) return null
+  const checklistBody = record(body.checklist) ?? {}
+  const minStores = positiveInt(body.minStores, 5)
+  const minArticles = positiveInt(body.minArticles, 1)
+  const destinationReady = checklistBody.destinationReady === true
+  const supportCovered = checklistBody.supportCovered === true
+  const dirtyDataCleared = checklistBody.dirtyDataCleared === true
+  const supplyReady = typeof checklistBody.supplyReady === 'boolean' ? checklistBody.supplyReady : summary.storeCount >= minStores
+  const articlesReady = typeof checklistBody.articlesReady === 'boolean' ? checklistBody.articlesReady : summary.articleCount >= minArticles
+  const derivedOpen =
+    summary.openStatus !== 'OPEN' && destinationReady && supportCovered && dirtyDataCleared && supplyReady && articlesReady
+  const missingReasons = Array.isArray(body.missingReasons) ? body.missingReasons.map(text).filter(Boolean) : []
+  return {
+    ...summary,
+    enabled: body.enabled !== false,
+    minStores,
+    minArticles,
+    checklist: {
+      destinationReady,
+      supplyReady,
+      articlesReady,
+      supportCovered,
+      dirtyDataCleared,
+    },
+    canOpen: typeof body.canOpen === 'boolean' ? body.canOpen : derivedOpen,
+    canClose: typeof body.canClose === 'boolean' ? body.canClose : summary.openStatus === 'OPEN',
+    missingReasons,
+    version: Math.max(0, Math.trunc(num(body.version) ?? 0)),
+    updatedBy: idOf(body.updatedBy),
+  }
+}
+
+export function filterCities(cities: CitySummary[], filter: CityListFilter): CitySummary[] {
+  const keyword = filter.keyword.trim()
+  return cities.filter((city) => {
+    if ((filter.status === 'OPEN' || filter.status === 'CLOSED') && city.openStatus !== filter.status) return false
+    if (filter.province && city.provinceName !== filter.province) return false
+    if (keyword && !`${city.provinceName}${city.name}${city.slug}`.includes(keyword)) return false
+    return true
+  })
+}
+
+export function buildChecklistPatch(
+  version: number,
+  patch: Partial<Record<CityHandKey, boolean>>,
+): CityChecklistPatch {
+  if (!Number.isInteger(version) || version < 0) throw new Error('缺少版本号，无法保存')
+  const body: CityChecklistPatch = { version }
+  let changed = 0
+  for (const key of ['destinationReady', 'supportCovered', 'dirtyDataCleared'] as const) {
+    if (typeof patch[key] === 'boolean') {
+      body[key] = patch[key]
+      changed += 1
+    }
+  }
+  if (!changed) throw new Error('请指定要更新的项')
+  return body
+}
+
+export function buildCityVersionBody(version: number): { version: number } {
+  if (!Number.isInteger(version) || version < 0) throw new Error('缺少版本号，无法保存')
+  return { version }
+}
+
+export function cityIntentQuery(filter: CityIntentQuery): Record<string, string> {
+  const window: CityIntentWindow = filter.window === '30' || filter.window === 'ALL' ? filter.window : '7'
+  const query: Record<string, string> = { window }
+  if (/^[1-9]\d*$/.test(filter.cityId.trim())) query.cityId = filter.cityId.trim()
+  return query
+}
+
+function readCityIntentRow(value: unknown): CityIntentRow | null {
+  const body = record(value)
+  if (!body) return null
+  const total = body.total === true
+  const cityId = total ? null : idOf(body.cityId) || null
+  return {
+    cityId,
+    cityName: text(body.cityName) || (total ? '合计' : '—'),
+    intentCount: countOf(body.intentCount),
+    confirmedCount: countOf(body.confirmedCount),
+    checkedInCount: countOf(body.checkedInCount),
+    total,
+  }
+}
+
+export function readCityIntentMetrics(value: unknown): CityIntentMetrics {
+  const body = record(value)
+  if (!body || !Array.isArray(body.rows)) throw new Error('指标响应缺少 rows')
+  const windowRaw = text(body.window)
+  const window: CityIntentWindow = windowRaw === '30' || windowRaw === 'ALL' ? windowRaw : '7'
+  return {
+    window,
+    from: readDateTime(body.from),
+    rows: body.rows.map(readCityIntentRow).filter((row): row is CityIntentRow => row !== null),
+  }
+}
+
+export function cityIntentTotal(metrics: CityIntentMetrics): CityIntentRow {
+  return (
+    metrics.rows.find((row) => row.total) ?? {
+      cityId: null,
+      cityName: '合计',
+      intentCount: 0,
+      confirmedCount: 0,
+      checkedInCount: 0,
+      total: true,
+    }
+  )
+}
+
+export function cityIntentCities(metrics: CityIntentMetrics): CityIntentRow[] {
+  return metrics.rows.filter((row) => !row.total)
+}

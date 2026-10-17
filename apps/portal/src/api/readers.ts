@@ -53,7 +53,18 @@ export interface RegionItem {
   id: number
   name: string
   parentId: number | null
+  level: number | null
 }
+
+export type DestinationStatus = 'OPEN' | 'CLOSED' | 'NONE'
+
+export interface StoreListResult extends PageResult<StoreCard> {
+  destinationStatus: DestinationStatus
+  emptyHint: string | null
+}
+
+/** CLOSED 市列表的对客空态。与接口 `emptyHint` 一致。 */
+export const CLOSED_DESTINATION_HINT = '该目的地暂未开通'
 
 export interface IntentRecord {
   id: number
@@ -104,6 +115,24 @@ export function readDate(value: unknown): string {
 
 export function readDateTime(value: unknown): string {
   return formatDateTime(value)
+}
+
+export function readStoreList(data: unknown): StoreListResult {
+  const page = readPage(data, readStoreCard)
+  const body = record(data)
+  const raw = text(body?.destinationStatus)
+  const destinationStatus: DestinationStatus = raw === 'OPEN' || raw === 'CLOSED' || raw === 'NONE' ? raw : 'NONE'
+  if (destinationStatus === 'CLOSED') {
+    return {
+      items: [],
+      total: 0,
+      page: page.page,
+      pageSize: page.pageSize,
+      destinationStatus,
+      emptyHint: text(body?.emptyHint) || CLOSED_DESTINATION_HINT,
+    }
+  }
+  return { ...page, destinationStatus, emptyHint: null }
 }
 
 export function readPage<T>(data: unknown, mapItem: (item: unknown) => T | null): PageResult<T> {
@@ -210,7 +239,7 @@ export function readRegions(value: unknown): RegionItem[] {
       const name = text(body?.name)
       if (!body || id === null || !name) continue
       const parentId = body.parentId === undefined ? inheritedParent : num(body.parentId)
-      items.push({ id, name, parentId })
+      items.push({ id, name, parentId, level: num(body.level) })
       if (Array.isArray(body.children)) visit(body.children, id)
     }
   }

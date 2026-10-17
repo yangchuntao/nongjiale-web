@@ -10,6 +10,9 @@ export const ADMIN_API = {
   intentExport: '/api/admin/intents/export',
   articles: '/api/admin/articles',
   siteConfig: '/api/admin/site-config',
+  cities: '/api/admin/cities',
+  cityIntents: '/api/admin/metrics/city-intents',
+  cityIntentExport: '/api/admin/metrics/city-intents/export',
 } as const
 
 export function adminApplyPath(id: string): string {
@@ -62,4 +65,20 @@ export function adminIntentNotesPath(id: string): string {
 
 export function adminArticlePath(id: string): string {
   return `/api/admin/articles/${encodeURIComponent(id)}`
+}
+
+export function adminCityPath(id: string): string {
+  return `/api/admin/cities/${encodeURIComponent(id)}`
+}
+
+export function adminCityChecklistPath(id: string): string {
+  return `${adminCityPath(id)}/checklist`
+}
+
+export function adminCityOpenPath(id: string): string {
+  return `${adminCityPath(id)}/open`
+}
+
+export function adminCityClosePath(id: string): string {
+  return `${adminCityPath(id)}/close`
 }

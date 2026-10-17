@@ -1,7 +1,10 @@
 import type { RouteRecordRaw } from 'vue-router'
 import ApplyDetailView from '../views/ApplyDetailView.vue'
 import AppliesView from '../views/AppliesView.vue'
+import CitiesView from '../views/CitiesView.vue'
+import CityDetailView from '../views/CityDetailView.vue'
 import GuidesView from '../views/GuidesView.vue'
+import SeedMetricsView from '../views/SeedMetricsView.vue'
 import IntentDetailView from '../views/IntentDetailView.vue'
 import IntentsView from '../views/IntentsView.vue'
 import ListingEditView from '../views/ListingEditView.vue'
@@ -75,6 +78,24 @@ export const routes: RouteRecordRaw[] = [
     name: 'guides',
     component: GuidesView,
     meta: { title: '攻略', pageId: 'A-GUIDE-LIST', requiresAuth: true },
+  },
+  {
+    path: '/cities',
+    name: 'cities',
+    component: CitiesView,
+    meta: { title: '开城/目的地', pageId: 'A-CITY', requiresAuth: true },
+  },
+  {
+    path: '/cities/:cityId',
+    name: 'city-detail',
+    component: CityDetailView,
+    meta: { title: '单市开城', pageId: 'A-CITY-DETAIL', requiresAuth: true },
+  },
+  {
+    path: '/seed-metrics',
+    name: 'seed-metrics',
+    component: SeedMetricsView,
+    meta: { title: '种子看板', pageId: 'A-SEED', requiresAuth: true },
   },
   {
     path: '/site',
