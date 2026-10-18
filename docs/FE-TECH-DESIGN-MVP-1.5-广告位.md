@@ -9,16 +9,16 @@
 | 范围 | 只覆盖门户首页 Banner 与运营配置。商家无新页 |
 | 本稿边界 | **业务代码等本技术设计的产品门禁和老板终验后再写。** 本文件不改 `apps/`、`packages/`，也不在本仓复制产品/设计/页面/门禁原文 |
 
-对齐权威在 **nongjiale-api** 的 `docs/`（本仓不另存副本）：
+对齐权威在 **nongjiale-api** 仓，本仓不另存副本。设计与页面规格以 [nongjiale-api#21](https://cursor.com/codebase/andrew-yang/nongjiale-api/pull/21) 为准（#20 已作为重复关闭，不再引用）。产品 UI 门禁仍是 [nongjiale-api#19](https://cursor.com/codebase/andrew-yang/nongjiale-api/pull/19)。
 
-| 文件 | 本设计怎么用 |
-|------|----------------|
-| `PRODUCT-MVP-1.5-广告位-范围.md` | 老板 A★：仅运营、仅首页 Banner、可配、可按市、无支付无统计。验收 C-Ad1～C-Ad5 |
-| `DESIGN-MVP-1.5-广告位.md` | 交互与硬锁。排序越小越前；0 隐藏 / 1 静帧 / ≥2 轮播 |
-| `UI-PAGES-MVP-1.5-广告位.md` | A-BANNER、A-BANNER-EDIT、P-HOME 增量的信息结构、六态、文案 |
-| `GATE-UI-MVP-1.5-广告位-产品.md` | 产品 UI 门禁 **PASS**（nongjiale-api#19）。老板设计终验按项目经理口径已通过 |
+| api 仓路径 | 出处 | 本设计怎么用 |
+|------------|------|----------------|
+| `docs/PRODUCT-MVP-1.5-广告位-范围.md` | 产品范围 | 老板 A★：仅运营、仅首页 Banner、可配、可按市、无支付无统计。验收 C-Ad1～C-Ad5 |
+| `docs/DESIGN-MVP-1.5-广告位.md` | [#21](https://cursor.com/codebase/andrew-yang/nongjiale-api/pull/21) | 交互与硬锁。排序越小越前；0 隐藏 / 1 静帧 / ≥2 轮播 |
+| `docs/UI-PAGES-MVP-1.5-广告位.md` | [#21](https://cursor.com/codebase/andrew-yang/nongjiale-api/pull/21) | A-BANNER、A-BANNER-EDIT、P-HOME 增量的信息结构、六态、文案 |
+| `docs/GATE-UI-MVP-1.5-广告位-产品.md` | [#19](https://cursor.com/codebase/andrew-yang/nongjiale-api/pull/19) | 产品 UI 门禁 **PASS**。老板设计终验按项目经理口径已通过 |
 
-页面规格以上述文件为准。下面只写前端怎么接现有工程，不重复贴全文。
+页面规格以 api 仓上述路径和 #21 为准。下面只写前端怎么接现有工程，不重复贴全文。
 
 ---
 
@@ -289,7 +289,7 @@ Banner 列表不进 Pinia。和攻略一样放在页面里。不放进 `site` st
 |---|------|
 | 1 | 新增本文件 `docs/FE-TECH-DESIGN-MVP-1.5-广告位.md` |
 | 2 | `README.md` 增加一行，指向上述设计 |
-| 3 | 不把 `PRODUCT` / `DESIGN` / `UI-PAGES` / `GATE-UI` 拷进本仓。权威文本留在 nongjiale-api `docs/` |
+| 3 | 不把 `PRODUCT` / `DESIGN` / `UI-PAGES` / `GATE-UI` 拷进本仓。权威文本留在 nongjiale-api：`docs/DESIGN-MVP-1.5-广告位.md` 与 `docs/UI-PAGES-MVP-1.5-广告位.md` 见 #21；`docs/GATE-UI-MVP-1.5-广告位-产品.md` 见 #19 |
 
 无 `apps/` 与 `packages/` diff。
 
@@ -322,7 +322,7 @@ Banner 列表不进 Pinia。和攻略一样放在页面里。不放进 `site` st
 | 运营 | 多一个导航和两个路径。守卫、令牌、错误文案、开城数据复用 |
 | 商家 | 无页面、无接口、无导航。C-Ad5 巡检要看到这一点 |
 | 测试 | C-Ad1～C-Ad5；另加「Banner 失败不挡住搜索」和「CLOSED 市不能保存为指定市」。不改已有「已入住」断言的期望 |
-| 产品 / 设计 | UI 门禁已 PASS。交互以 api 仓 DESIGN / UI-PAGES 为准。本仓实现时不再改轮播规则、排序方向和 Banner 位置 |
+| 产品 / 设计 | UI 门禁已 PASS（api#19，`docs/GATE-UI-MVP-1.5-广告位-产品.md`）。交互以 api#21 的 `docs/DESIGN-MVP-1.5-广告位.md`、`docs/UI-PAGES-MVP-1.5-广告位.md` 为准。本仓实现时不再改轮播规则、排序方向和 Banner 位置 |
 | 项目经理 | 排在开城之后、小程序之前。**业务代码等本技术设计的产品门禁和老板终验后再写** |
 | 风险 | ① 公开接口按当前市过滤，会把全站 Banner 滤掉（违反 Q3）。② 0 条仍占位，会把搜索顶下去。③ 外链不用新标签页，访客离开门户。④ 只在前端禁用 CLOSED、后端仍接受，则 C-Ad4 可被直接请求绕过。⑤ 公开接口 401 会清掉门户令牌。⑥ 把 `blob:` 或相对图片地址存库后，其他访客看不到图 |
 
@@ -348,4 +348,5 @@ Banner 列表不进 Pinia。和攻略一样放在页面里。不放进 `site` st
 
 | 版本 | 日期 | 说明 |
 |------|------|------|
-| MVP-1.5 | 2026-10-18 | 首版前端技术设计。对齐 api 仓产品/设计/页面/UI 门禁。本仓不复制那些文件。不含业务实现 |
+| MVP-1.5 | 2026-10-18 | 首版前端技术设计。对齐 api 仓产品范围、设计、页面规格与 UI 门禁。本仓不复制那些文件。不含业务实现 |
+| MVP-1.5a | 2026-10-18 | 设计与页面规格改引 nongjiale-api#21（`docs/DESIGN-MVP-1.5-广告位.md`、`docs/UI-PAGES-MVP-1.5-广告位.md`）。#20 已关闭，不再引用。UI 门禁仍为 api#19 |
