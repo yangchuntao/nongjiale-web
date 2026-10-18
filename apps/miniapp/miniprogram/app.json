@@ -1,0 +1,50 @@
+{
+  "pages": [
+    "pages/home/index",
+    "pages/list/index",
+    "pages/my/intents",
+    "pages/detail/index",
+    "pages/intent/form",
+    "pages/intent/success",
+    "pages/my/intent-detail",
+    "pages/login/index",
+    "pages/guides/index",
+    "pages/guides/detail",
+    "pages/webview/index"
+  ],
+  "window": {
+    "navigationBarTitleText": "站点名称",
+    "navigationBarBackgroundColor": "#4BA3D9",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#F4F8FB",
+    "backgroundTextStyle": "dark"
+  },
+  "tabBar": {
+    "color": "#5C6B7A",
+    "selectedColor": "#4BA3D9",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/home/index",
+        "text": "首页",
+        "iconPath": "assets/tab-home.png",
+        "selectedIconPath": "assets/tab-home-on.png"
+      },
+      {
+        "pagePath": "pages/list/index",
+        "text": "找店",
+        "iconPath": "assets/tab-list.png",
+        "selectedIconPath": "assets/tab-list-on.png"
+      },
+      {
+        "pagePath": "pages/my/intents",
+        "text": "我的",
+        "iconPath": "assets/tab-my.png",
+        "selectedIconPath": "assets/tab-my-on.png"
+      }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

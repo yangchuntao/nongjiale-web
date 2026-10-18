@@ -1,0 +1,29 @@
+.gallery,
+.gallery-image {
+  width: 100%;
+  height: 420rpx;
+  border-radius: 24rpx;
+  margin-bottom: 24rpx;
+  background: #e7eef4;
+}
+
+.name {
+  font-size: 40rpx;
+  font-weight: 600;
+}
+
+.package {
+  margin-top: 12rpx;
+}
+
+.center {
+  text-align: center;
+}
+
+.half {
+  flex: 1;
+}
+
+.retry {
+  margin-top: 24rpx;
+}

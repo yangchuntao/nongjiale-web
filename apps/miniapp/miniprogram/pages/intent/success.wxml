@@ -1,0 +1,26 @@
+<view class="page" style="--color-brand: {{brandColor}}; --color-on-brand: {{onBrand}};">
+  <view wx:if="{{loading}}" class="skeleton"></view>
+  <block wx:else>
+    <view class="card center">
+      <view class="mark">✓</view>
+      <view class="title">意向已提交</view>
+      <view wx:if="{{intentNo}}" class="no">意向单号：{{intentNo}}</view>
+      <button wx:if="{{intentNo}}" class="btn-ghost copy" bindtap="onCopy">复制单号</button>
+    </view>
+    <view class="notice">{{notice}}</view>
+    <view wx:if="{{contactPhone}}" class="card" bindtap="onCall">
+      <view class="muted">客服电话</view>
+      <view class="link">{{contactPhone}}</view>
+    </view>
+    <view wx:if="{{storeName || checkIn}}" class="card">
+      <view wx:if="{{storeName}}">{{storeName}}</view>
+      <view class="muted">{{checkIn}} {{guests ? guests + ' 人' : ''}}</view>
+    </view>
+    <view wx:if="{{hint}}" class="muted">{{hint}}</view>
+    <view class="stack">
+      <button class="btn" bindtap="onMine">查看我的意向</button>
+      <button class="btn-ghost" bindtap="onHome">返回首页</button>
+      <button wx:if="{{contactPhone}}" class="btn-ghost" bindtap="onCall">拨打客服</button>
+    </view>
+  </block>
+</view>

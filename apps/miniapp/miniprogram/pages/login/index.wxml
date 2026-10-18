@@ -1,0 +1,46 @@
+<view class="page login" style="--color-brand: {{brandColor}}; --color-on-brand: {{onBrand}};">
+  <view class="card">
+    <view class="brand">{{siteName}}</view>
+    <view class="muted">登录后提交意向，客服将联系您</view>
+  </view>
+
+  <block wx:if="{{step === 'wechat'}}">
+    <view class="stack">
+      <button class="btn" loading="{{submitting}}" disabled="{{submitting}}" bindtap="onWechatLogin">微信一键登录</button>
+      <button class="btn-ghost" bindtap="onSkip">暂不登录</button>
+    </view>
+  </block>
+
+  <block wx:else>
+    <view class="notice">网页版意向同步即将开通，当前仅显示本端提交的意向</view>
+    <view class="card">
+      <view>为与网页版账号打通、便于客服联系，请补全手机号</view>
+      <view class="muted gap">新号码请先填写网页版登录密码（6～64 位），再使用微信手机号。号码和网页版不一致时，改用网页版手机号和密码。</view>
+      <view class="field">
+        <view class="field-label">网页版登录密码（新号码必填）</view>
+        <input class="input" password value="{{password}}" bindinput="onPassword" />
+      </view>
+      <button
+        class="btn"
+        open-type="getPhoneNumber"
+        loading="{{submitting}}"
+        disabled="{{submitting}}"
+        bindgetphonenumber="onGetPhone"
+      >微信手机号快速验证</button>
+    </view>
+    <view class="card">
+      <view class="field">
+        <view class="field-label">网页版手机号</view>
+        <input class="input" type="number" maxlength="11" value="{{phone}}" bindinput="onPhone" />
+      </view>
+      <view class="field">
+        <view class="field-label">密码</view>
+        <input class="input" password value="{{password}}" bindinput="onPassword" />
+      </view>
+      <view wx:if="{{error}}" class="danger">{{error}}</view>
+      <button class="btn" loading="{{submitting}}" disabled="{{submitting}}" bindtap="onPasswordBind">确认</button>
+    </view>
+    <button class="btn-ghost" bindtap="onSkip">稍后再说</button>
+  </block>
+  <view wx:if="{{step === 'wechat' && error}}" class="danger gap">{{error}}</view>
+</view>

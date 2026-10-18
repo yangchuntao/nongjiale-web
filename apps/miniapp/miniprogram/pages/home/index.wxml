@@ -1,0 +1,72 @@
+<view class="page" style="--color-brand: {{brandColor}}; --color-on-brand: {{onBrand}};">
+  <view wx:if="{{loading}}" class="skeleton"></view>
+
+  <block wx:if="{{bannerFrame === 'still'}}">
+    <image
+      class="banner"
+      src="{{banners[0].imageUrl}}"
+      mode="aspectFill"
+      data-index="0"
+      bindtap="onBannerTap"
+    />
+  </block>
+  <swiper
+    wx:elif="{{bannerFrame === 'carousel'}}"
+    class="banner"
+    autoplay
+    interval="5000"
+    circular
+    indicator-dots
+    indicator-active-color="#4BA3D9"
+  >
+    <swiper-item wx:for="{{banners}}" wx:key="id">
+      <image class="banner-image" src="{{item.imageUrl}}" mode="aspectFill" data-index="{{index}}" bindtap="onBannerTap" />
+    </swiper-item>
+  </swiper>
+
+  <view class="card entry" bindtap="onFind">
+    <view class="entry-title">找苏中农家乐</view>
+    <view class="muted">按城市和店名看看已经开通的农家乐</view>
+  </view>
+  <view class="card entry" bindtap="onGuides">
+    <view class="entry-title">出行攻略</view>
+    <view class="muted">看看已经发布的游玩建议</view>
+  </view>
+  <view wx:if="{{contactPhone}}" class="card" bindtap="onCall">
+    <view class="muted">客服电话</view>
+    <view class="link">{{contactPhone}}</view>
+  </view>
+
+  <view wx:if="{{cities.length}}">
+    <view class="section-title">目的地</view>
+    <scroll-view class="chip-scroll" scroll-x enable-flex>
+      <view class="chip" wx:for="{{cities}}" wx:key="id" data-id="{{item.id}}" bindtap="onCity">{{item.name}}</view>
+    </scroll-view>
+  </view>
+
+  <view wx:if="{{stores.length}}">
+    <view class="section-title">推荐门店</view>
+    <view class="card store" wx:for="{{stores}}" wx:key="id" data-id="{{item.id}}" bindtap="onStore">
+      <image wx:if="{{item.coverUrl}}" class="thumb" src="{{item.coverUrl}}" mode="aspectFill" />
+      <view class="name">{{item.name}}</view>
+      <view class="muted">{{item.regionName}}</view>
+      <view wx:if="{{item.price}}">{{item.price}}</view>
+      <view>
+        <text class="tag" wx:for="{{item.tags}}" wx:for-item="tag" wx:key="*this">{{tag}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{articles.length}}">
+    <view class="section-title">攻略摘要</view>
+    <view class="card" wx:for="{{articles}}" wx:key="id" data-id="{{item.id}}" bindtap="onArticle">
+      <view class="name">{{item.title}}</view>
+      <view class="muted">{{item.summary}}</view>
+    </view>
+  </view>
+
+  <view wx:if="{{pageError}}" class="empty">
+    <view>加载异常</view>
+    <button class="btn retry" bindtap="onRetry">重试</button>
+  </view>
+</view>

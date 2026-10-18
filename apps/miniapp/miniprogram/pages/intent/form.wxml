@@ -1,0 +1,57 @@
+<view class="page docked" style="--color-brand: {{brandColor}}; --color-on-brand: {{onBrand}};">
+  <view class="notice">提交意向后，客服会联系您确认。意向不等于已锁房。</view>
+  <view wx:if="{{loading}}" class="skeleton"></view>
+  <view wx:elif="{{pageError}}" class="empty">{{pageError}}</view>
+  <block wx:else>
+    <view class="card">
+      <view class="name">{{storeName}}</view>
+      <view wx:if="{{price}}" class="muted">{{price}}</view>
+      <view wx:if="{{packageText}}" class="muted">{{packageText}}</view>
+    </view>
+    <view class="card">
+      <view class="field">
+        <view class="field-label">到店日</view>
+        <picker mode="date" value="{{checkIn}}" start="{{today}}" bindchange="onCheckIn">
+          <view class="picker">{{checkIn || '请选择到店日期'}}</view>
+        </picker>
+        <view wx:if="{{errors.checkIn}}" class="danger">{{errors.checkIn}}</view>
+      </view>
+      <view class="field">
+        <view class="field-label">离店日</view>
+        <picker mode="date" value="{{checkOut}}" start="{{today}}" bindchange="onCheckOut">
+          <view class="picker">{{checkOut || '可选，或改填晚数'}}</view>
+        </picker>
+        <view wx:if="{{errors.checkOut}}" class="danger">{{errors.checkOut}}</view>
+      </view>
+      <view class="field">
+        <view class="field-label">晚数</view>
+        <input class="input" type="number" value="{{nights}}" bindinput="onNights" />
+        <view wx:if="{{errors.nights}}" class="danger">{{errors.nights}}</view>
+      </view>
+      <view class="field">
+        <view class="field-label">人数</view>
+        <input class="input" type="number" value="{{guests}}" bindinput="onGuests" />
+        <view wx:if="{{errors.guests}}" class="danger">{{errors.guests}}</view>
+      </view>
+      <view class="field">
+        <view class="field-label">联系人</view>
+        <input class="input" value="{{contactName}}" bindinput="onName" />
+        <view wx:if="{{errors.contactName}}" class="danger">{{errors.contactName}}</view>
+      </view>
+      <view class="field">
+        <view class="field-label">手机</view>
+        <input class="input" type="number" maxlength="11" value="{{contactPhone}}" bindinput="onContactPhone" />
+        <view wx:if="{{errors.contactPhone}}" class="danger">{{errors.contactPhone}}</view>
+      </view>
+      <view class="field">
+        <view class="field-label">备注（可选）</view>
+        <textarea class="textarea" maxlength="500" value="{{userRemark}}" bindinput="onRemark" />
+        <view wx:if="{{errors.userRemark}}" class="danger">{{errors.userRemark}}</view>
+      </view>
+      <view class="muted">提交后客服会电话联系您确认档期与接待安排。提交意向不等于已锁房。</view>
+    </view>
+  </block>
+  <view class="dock">
+    <button class="btn" loading="{{submitting}}" disabled="{{submitting || !canSubmit}}" bindtap="onSubmit">提交意向</button>
+  </view>
+</view>

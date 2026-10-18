@@ -43,6 +43,21 @@ pnpm test
 | `nj_admin_token` | 运营 |
 | `nj_merchant_token` | 商家 |
 
+游客小程序不使用上面三枚浏览器 token。已打通的微信登录令牌只写入微信存储 `nj_mp_token`。`accountLinked=false` 时不写这枚键。
+
+## 微信小程序
+
+`apps/miniapp` 是原生小程序，用微信开发者工具导入该目录。`project.config.json` 的 `appid` 留空。测试号写在本地 `project.private.config.json`（已 gitignore）。不要把 AppSecret、上传密钥写进仓库。
+
+接口基址默认 `http://localhost:8080`。体验版真机把本地存储 `nj_mp_api_base` 设成已配置的 https 源。业务域名未配置时，Banner 外链只复制，不打开 web-view；配好后把本地存储 `nj_mp_webview_ready` 设为 `1`。
+
+根脚本 `pnpm build`、`pnpm test`、`pnpm typecheck` 不包含小程序。单独检查：
+
+```bash
+pnpm typecheck:miniapp
+pnpm test:miniapp
+```
+
 常量在 `@nongjiale/shared` 的 `TOKEN_KEYS`。
 
 ## 环境变量

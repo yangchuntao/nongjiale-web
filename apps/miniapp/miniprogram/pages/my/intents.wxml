@@ -1,0 +1,48 @@
+<view class="page" style="--color-brand: {{brandColor}}; --color-on-brand: {{onBrand}};">
+  <view wx:if="{{phase === 'wall'}}" class="card">
+    <view class="title">我的意向</view>
+    <view class="muted">登录后查看我的意向，客服将联系您</view>
+    <button class="btn gap" bindtap="onLogin">微信登录</button>
+  </view>
+
+  <block wx:elif="{{phase === 'unlinked'}}">
+    <view class="notice">网页版意向同步即将开通，当前仅显示本端提交的意向</view>
+    <button class="btn" bindtap="onLogin">去补全手机号</button>
+  </block>
+
+  <block wx:elif="{{phase === 'loading'}}">
+    <view class="skeleton"></view>
+  </block>
+
+  <block wx:elif="{{phase === 'error'}}">
+    <view class="empty">
+      <view>加载失败，请重试</view>
+      <button class="btn retry" bindtap="onRetry">重试</button>
+    </view>
+  </block>
+
+  <block wx:else>
+    <view class="notice">以下为咨询意向，未锁房，以客服确认为准。</view>
+    <view wx:if="{{phone}}" class="muted phone">账号手机 {{phone}}</view>
+    <view wx:if="{{items.length === 0}}" class="empty">
+      <view>还没有意向。去发现农家乐</view>
+      <button class="btn retry" bindtap="onFind">去找店</button>
+    </view>
+    <view wx:for="{{items}}" wx:key="id" class="card" data-id="{{item.id}}" bindtap="onOpen">
+      <view class="row">
+        <view class="no">{{item.intentNo}}</view>
+        <text class="tag">{{item.statusText}}</text>
+      </view>
+      <view>{{item.storeName}}</view>
+      <view class="muted">{{item.checkIn}} {{item.guests ? item.guests + ' 人' : ''}}</view>
+    </view>
+    <view wx:if="{{contactPhone}}" class="card" bindtap="onCall">
+      <view class="muted">客服电话</view>
+      <view class="link">{{contactPhone}}</view>
+    </view>
+    <view class="stack">
+      <button class="btn-ghost" bindtap="onLogout">退出登录</button>
+      <button class="btn-ghost" bindtap="onUnbind">解除微信绑定</button>
+    </view>
+  </block>
+</view>

@@ -1,0 +1,56 @@
+<view class="page docked" style="--color-brand: {{brandColor}}; --color-on-brand: {{onBrand}};">
+  <view wx:if="{{loading}}" class="skeleton"></view>
+  <view wx:elif="{{error}}" class="empty">
+    <view>{{error}}</view>
+    <button wx:if="{{canRetry}}" class="btn retry" bindtap="onRetry">重试</button>
+  </view>
+  <block wx:else>
+    <swiper wx:if="{{gallery.length}}" class="gallery" circular indicator-dots indicator-active-color="#4BA3D9">
+      <swiper-item wx:for="{{gallery}}" wx:key="*this">
+        <image class="gallery-image" src="{{item}}" mode="aspectFill" />
+      </swiper-item>
+    </swiper>
+    <view class="card">
+      <view class="name">{{name}}</view>
+      <view class="muted">{{regionName}}</view>
+      <view wx:if="{{address}}">{{address}}</view>
+      <view wx:if="{{price}}">{{price}}</view>
+      <view>
+        <text class="tag" wx:for="{{tags}}" wx:key="*this">{{item}}</text>
+      </view>
+    </view>
+    <view wx:if="{{packageText || packages.length}}" class="card">
+      <view class="section-title">套餐</view>
+      <view wx:if="{{packageText}}">{{packageText}}</view>
+      <view wx:for="{{packages}}" wx:key="name" class="package">
+        <view>{{item.name}}</view>
+        <view class="muted">{{item.description}}</view>
+      </view>
+    </view>
+    <view wx:if="{{notice}}" class="card">
+      <view class="section-title">须知</view>
+      <view>{{notice}}</view>
+    </view>
+    <view wx:if="{{facilities || features || trafficText}}" class="card">
+      <view wx:if="{{features}}">{{features}}</view>
+      <view wx:if="{{facilities}}" class="muted">{{facilities}}</view>
+      <view wx:if="{{trafficText}}" class="muted">{{trafficText}}</view>
+    </view>
+    <view class="notice">意向不等于已锁房</view>
+    <view wx:if="{{phone}}" class="card" bindtap="onCallStore">
+      <view class="muted">门店电话</view>
+      <view class="link">{{phone}}</view>
+    </view>
+  </block>
+
+  <view wx:if="{{!loading && !missing}}" class="dock stack">
+    <button class="btn" disabled="{{!canSubmit}}" bindtap="onIntent">
+      {{canSubmit ? '提交意向' : '该房源暂不可提交意向'}}
+    </button>
+    <view class="muted center">客服确认后安排，非即时订成</view>
+    <view class="row">
+      <button class="btn-ghost half" open-type="share">分享</button>
+      <button wx:if="{{phone}}" class="btn-ghost half" bindtap="onCallStore">拨打电话</button>
+    </view>
+  </view>
+</view>

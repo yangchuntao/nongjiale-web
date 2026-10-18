@@ -1,0 +1,13 @@
+<view class="page">
+  <view wx:if="{{loading}}" class="skeleton"></view>
+  <view wx:elif="{{error}}" class="empty">
+    <view>{{error}}</view>
+    <button class="btn retry" bindtap="onRetry">重试</button>
+  </view>
+  <block wx:else>
+    <image wx:if="{{coverUrl}}" class="cover" src="{{coverUrl}}" mode="aspectFill" />
+    <view class="title">{{title}}</view>
+    <view wx:if="{{summary}}" class="muted summary">{{summary}}</view>
+    <text class="content" selectable>{{content}}</text>
+  </block>
+</view>
