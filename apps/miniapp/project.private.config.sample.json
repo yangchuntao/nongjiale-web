@@ -1,0 +1,8 @@
+{
+  "description": "复制为 project.private.config.json 后填写测试号 AppID。该文件已 gitignore，不要提交。",
+  "projectname": "nongjiale-miniapp-local",
+  "appid": "",
+  "setting": {
+    "urlCheck": false
+  }
+}

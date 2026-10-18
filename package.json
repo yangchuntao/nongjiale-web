@@ -16,6 +16,8 @@
     "build:admin": "pnpm --filter @nongjiale/admin build",
     "build:merchant": "pnpm --filter @nongjiale/merchant build",
     "typecheck": "pnpm --filter @nongjiale/shared --filter @nongjiale/portal --filter @nongjiale/admin --filter @nongjiale/merchant typecheck",
-    "test": "pnpm --filter @nongjiale/shared --filter @nongjiale/portal --filter @nongjiale/admin --filter @nongjiale/merchant test"
+    "test": "pnpm --filter @nongjiale/shared --filter @nongjiale/portal --filter @nongjiale/admin --filter @nongjiale/merchant test",
+    "typecheck:miniapp": "pnpm --filter @nongjiale/miniapp typecheck",
+    "test:miniapp": "pnpm --filter @nongjiale/miniapp test"
   }
 }

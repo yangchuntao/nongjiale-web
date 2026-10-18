@@ -1,0 +1,15 @@
+<view class="page">
+  <view wx:if="{{loading}}" class="skeleton"></view>
+  <view wx:elif="{{error}}" class="empty">
+    <view>加载失败，请重试</view>
+    <button class="btn retry" bindtap="onRetry">重试</button>
+  </view>
+  <view wx:elif="{{items.length === 0}}" class="empty">暂无攻略</view>
+  <block wx:else>
+    <view class="card" wx:for="{{items}}" wx:key="id" data-id="{{item.id}}" bindtap="onOpen">
+      <image wx:if="{{item.coverUrl}}" class="thumb" src="{{item.coverUrl}}" mode="aspectFill" />
+      <view class="name">{{item.title}}</view>
+      <view class="muted">{{item.summary}}</view>
+    </view>
+  </block>
+</view>

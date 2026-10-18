@@ -1,0 +1,26 @@
+.banner,
+.banner-image {
+  width: 100%;
+  height: 320rpx;
+  border-radius: 24rpx;
+  margin-bottom: 24rpx;
+  background: #e7eef4;
+}
+
+.entry-title,
+.name {
+  font-size: 34rpx;
+  font-weight: 600;
+}
+
+.thumb {
+  width: 100%;
+  height: 220rpx;
+  border-radius: 16rpx;
+  margin-bottom: 12rpx;
+  background: #e7eef4;
+}
+
+.retry {
+  margin-top: 24rpx;
+}

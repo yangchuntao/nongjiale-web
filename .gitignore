@@ -30,3 +30,7 @@ dist-ssr
 .env
 .env.*
 !.env.example
+
+# WeChat miniapp: local test AppID only. Never commit AppID, AppSecret, or upload keys.
+apps/miniapp/project.private.config.json
+apps/miniapp/miniprogram_npm/
