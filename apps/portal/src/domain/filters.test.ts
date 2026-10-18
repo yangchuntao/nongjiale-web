@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { readRegions } from '../api/readers'
 import { DESTINATION_PENDING, LISTINGS_LEAD } from './copy'
 import { destinationRegions } from './filters'
 
@@ -37,6 +38,25 @@ describe('destinationRegions', () => {
         { id: 4, name: '广陵区', parentId: 2, level: 3 },
       ]).map((item) => item.name),
     ).toEqual(['扬州市', '泰州市'])
+  })
+
+  it('recognizes API CITY rows and keeps CLOSED cities such as 南通 off the chips', () => {
+    const items = readRegions([
+      { id: 1, parentId: null, name: '江苏省', level: 'PROVINCE' },
+      { id: 2, parentId: 1, name: '扬州市', level: 'CITY' },
+      { id: 5, parentId: 2, name: '广陵区', level: 'DISTRICT' },
+      { id: 3, parentId: 1, name: '泰州市', level: 'CITY' },
+      { id: 6, parentId: 3, name: '海陵区', level: 'DISTRICT' },
+      { id: 9, parentId: 1, name: '南通市', level: 'CITY', openStatus: 'CLOSED' },
+      { id: 10, parentId: 9, name: '崇川区', level: 'DISTRICT' },
+    ])
+    expect(items.find((item) => item.name === '扬州市')?.level).toBe('CITY')
+    expect(destinationRegions(items).map((item) => item.name)).toEqual(['扬州市', '泰州市'])
+    expect(
+      destinationRegions(items.filter((item) => item.name === '南通市' || item.name === '崇川区' || item.name === '江苏省')).map(
+        (item) => item.name,
+      ),
+    ).toEqual([])
   })
 
   it('keeps several sibling roots selectable', () => {
