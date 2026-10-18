@@ -2,22 +2,22 @@
 
 | 项 | 内容 |
 |----|------|
-| 状态 | 技设待产品门禁，再交老板 TECH 终验。终验通过前不写业务码 |
+| 状态 | 微信登录与 C-MP2b 契约已按 api#32 锁死。产品门禁与老板 TECH 终验通过前不写业务码 |
 | 日期 | 2026-10-18 |
 | 角色 | 前端 |
 | 读者 | 项目经理 / 产品 / 后端 / 测试 |
 | 范围 | 游客微信小程序（W-B）。商家与运营仍用现有 Web |
 | 本稿边界 | **本文件只写技术设计，不改 `apps/`、`packages/`。** 不在本仓复制产品/设计/页面/门禁/用例/测试原文 |
 
-对齐权威在 **nongjiale-api** 仓 main，本仓不另存副本。产品范围是 [nongjiale-api#28](https://cursor.com/codebase/andrew-yang/nongjiale-api/pull/28) 的 `docs/PRODUCT-MVP-2-微信小程序-范围.md`（W-B，验收 C-MP1～C-MP8 与 C-MP2b）。用例是 [nongjiale-api#29](https://cursor.com/codebase/andrew-yang/nongjiale-api/pull/29)。交互、页面规格与产品 UI 门禁是 [nongjiale-api#30](https://cursor.com/codebase/andrew-yang/nongjiale-api/pull/30)（已合 main，设计终验通过）：`docs/DESIGN-MVP-2-微信小程序.md`、`docs/UI-PAGES-MVP-2-微信小程序.md`、`docs/GATE-UI-MVP-2-微信小程序-产品.md`。验收步骤以 api 仓 `docs/TEST-MVP-2-微信小程序.md` 为准。
+对齐权威在 **nongjiale-api** 仓，本仓不另存副本。产品范围是 [nongjiale-api#28](https://cursor.com/codebase/andrew-yang/nongjiale-api/pull/28) 的 `docs/PRODUCT-MVP-2-微信小程序-范围.md`（W-B，验收 C-MP1～C-MP8 与 C-MP2b）。用例是 [nongjiale-api#29](https://cursor.com/codebase/andrew-yang/nongjiale-api/pull/29)。交互、页面规格与产品 UI 门禁是 [nongjiale-api#30](https://cursor.com/codebase/andrew-yang/nongjiale-api/pull/30)（已合 main，设计终验通过）：`docs/DESIGN-MVP-2-微信小程序.md`、`docs/UI-PAGES-MVP-2-微信小程序.md`、`docs/GATE-UI-MVP-2-微信小程序-产品.md`。验收步骤以 api 仓 `docs/TEST-MVP-2-微信小程序.md` 为准。
 
-已落地的门户契约继续沿用，不另写第二套字段：
+**契约源 = [nongjiale-api#32](https://cursor.com/codebase/andrew-yang/nongjiale-api/pull/32) 的 `docs/TECH-DESIGN-MVP-2-微信小程序.md`。** 该 PR 仍是设计稿，尚未合入 main；本仓按已给出的正文锁死，不另写第二套路径或字段。合入 main 后若正文有修订，再像 MVP-1.5 对齐 api#22 那样只改本节引用的契约，不在前端先改字段名。
 
 | 能力 | 契约出处 | 本设计怎么用 |
 |------|----------|----------------|
-| 首页 Banner | [nongjiale-api#22](https://cursor.com/codebase/andrew-yang/nongjiale-api/pull/22) `docs/TECH-DESIGN-MVP-1.5-广告位.md`，本仓 [FE-TECH-DESIGN-MVP-1.5-广告位.md](FE-TECH-DESIGN-MVP-1.5-广告位.md) §2.4 | `GET /api/home/banners`，公开 `data` 为数组 |
-| 门店、攻略、意向、登录信封、公开配置 | 门户已接的 BE-4 路径，见 [FE-2-PORTAL.md](FE-2-PORTAL.md) | 小程序只读/写同一组路径和字段 |
-| 微信登录、C-MP2b 打通 | **后端 TECH 尚未作为本仓契约源** | 见 §2.6。路径与未打通字段名以 **后端 TECH 合入后** 为准 |
+| 首页 Banner | [nongjiale-api#22](https://cursor.com/codebase/andrew-yang/nongjiale-api/pull/22) `docs/TECH-DESIGN-MVP-1.5-广告位.md`，本仓 [FE-TECH-DESIGN-MVP-1.5-广告位.md](FE-TECH-DESIGN-MVP-1.5-广告位.md) §2.4；链接解释以 api#32 为准 | `GET /api/home/banners`，公开 `data` 为数组。不增加 `miniPath` |
+| 门店、攻略、意向、网页登录信封、公开配置 | 门户已接路径；找店 `keyword` 与无手机号 403 以 api#32 为准 | 小程序只读/写同一组路径和字段 |
+| 微信登录、绑定、解绑、打通状态 | **api#32** `docs/TECH-DESIGN-MVP-2-微信小程序.md` | 见 §2.4、§2.6。路径为 `/api/auth/wechat/login`、`/bind`、`/unbind`、`GET /api/auth/wechat/link` |
 
 页面文案、信息结构和六态以 api#30 的 UI-PAGES 为准。下面只写前端怎么接到现有工程。
 
@@ -43,18 +43,19 @@
 
 | 页面 ID | 拟页面路径 | 鉴权 | 数据 |
 |---------|------------|------|------|
-| MP-HOME | `pages/home/index` | 公开 | 公开配置、Banner、地区、首页 feed |
-| MP-LIST | `pages/listings/index` | 公开 | `GET /api/stores` |
-| MP-DETAIL | `pages/listings/detail` | 公开 | `GET /api/stores/{id}`；可分享 |
+| MP-HOME | `pages/home/index` | 公开 | 公开配置、Banner、地区。推荐 feed 可选 |
+| MP-LIST | 找店 Tab，路径以 UI-PAGES 为准 | 公开 | `GET /api/stores`，搜索只用可选 `keyword` |
+| MP-DETAIL | `pages/detail/index` | 公开 | `GET /api/stores/{id}`；分享 path 带 `id` |
 | MP-INTENT-FORM | `pages/intent/form` | 已打通的游客令牌 | 门店详情 + `POST /api/booking-intents` |
 | MP-MY-INTENTS | `pages/my/intents` | 已打通的游客令牌 | `GET /api/me/intents` |
-| MP-LOGIN | `pages/login/index` | 游客 | 微信登录；未打通时用手机号+密码完成绑定 |
+| MP-LOGIN | `pages/login/index` | 游客 | `POST /api/auth/wechat/login`；未打通再 `bind` |
 | MP-GUIDE-LIST | `pages/guides/index` | 公开 | `GET /api/articles` |
 | MP-GUIDE-DETAIL | `pages/guides/detail` | 公开 | `GET /api/articles/{id}` |
+| MP-WEBVIEW | `pages/webview/index` | 公开 | 仅业务域名已配置时打开 Banner 的 http(s) |
 
 门户另有意向成功页和意向详情（`P-INTENT-SUCCESS`、`P-MY-INTENT-DETAIL`）。UI-PAGES 若给出对应小程序 ID，实现时采用那个 ID。未单列时：提交成功进入 MP-MY-INTENTS，并展示返回的 `intentNo`；从列表进入一条只读详情，仍读 `GET /api/me/intents/{id}`。
 
-底部 tab 以 UI-PAGES 为准。页面规格未单列 tab 时，建议只放「首页」「攻略」「我的」。列表从首页进入，不把商家、运营、入驻申请放进 tab。
+底部是 DESIGN 已写的三 Tab。api#32 点名的路径是首页 `/pages/home/index`、详情 `/pages/detail/index`、外链 `/pages/webview/index`。其余页面路径以 UI-PAGES 为准。不把商家、运营、入驻申请放进 tab。
 
 ### 1.3 技术栈（按仓库现状选定）
 
@@ -96,12 +97,12 @@ apps/miniapp/
 | 能力 | 现成位置 | 小程序怎么用 |
 |------|----------|----------------|
 | 响应信封 | `{ code, message, data }`，`code === 0` 成功 | `wx.request` 用同一规则。失败读 `message` |
-| 游客令牌 | 门户 `nj_portal_token`，头 `Authorization: Bearer` | 打通成功后，小程序把**同一枚门户访问令牌**放在本地键 `nj_mp_token`。这是微信存储，不是浏览器 localStorage，两边不会自动拷贝 |
-| 游客资料 | `GET /api/auth/me` | 打通后预填意向手机。字段仍按门户读取：`id` 或 `userId`、`phone`、`role` |
+| 游客令牌 | 门户 Bearer，头 `Authorization: Bearer` | 微信登录成功体的 `token` 与网页版相同（64 字符十六进制，不含 `Bearer ` 前缀）。只有 `accountLinked=true` 才写入本地键 `nj_mp_token`。这是微信存储，不是浏览器 localStorage |
+| 游客资料 | `GET /api/auth/me` | 字段为 `userId`、`phone`、`displayName`、`role`。壳用户 `phone` 为 null。打通后用它预填意向手机 |
 | Banner | `GET /api/home/banners` | 无城市 query。`data` 是数组。0 隐藏 / 1 静帧 / ≥2 用原生 `swiper`，间隔 5000ms，指示点 `#4BA3D9` |
 | 首页 feed | `GET /api/home/feed` | `stores`、`articles`。推荐店按 `homeSort` |
 | 地区 | `GET /api/regions` | 目的地 Chip：市级 `level` 为 `CITY`（兼容数字 2）；`openStatus === CLOSED` 的市不进 Chip |
-| 门店列表 | `GET /api/stores` | query 只保留门户已有项，见 §2.5 |
+| 门店列表 | `GET /api/stores` | 已有 query 保持。**唯一增量**是可省略的 `keyword`。不传与今天相同 |
 | 门店详情 | `GET /api/stores/{id}` | 套餐以 `packageText` 为准 |
 | 攻略 | `GET /api/articles`、`GET /api/articles/{id}` | 标题、封面、摘要、正文。正文用文本，不用富文本 HTML |
 | 意向 | `POST /api/booking-intents`、`GET /api/me/intents`、`GET /api/me/intents/{id}` | 请求体与门户 `CreateIntentBody` 相同，不带金额 |
@@ -110,7 +111,7 @@ apps/miniapp/
 | 意向文案 | `INTENT_STATUS_LABEL.CHECKED_IN` | 只显示「已入住」。见 §1.5 |
 | 接口基址 | 门户默认 `http://localhost:8080` | 小程序配置 `apiBase`，默认同一地址。体验版真机改用已配置的 https 域名 |
 
-Banner、门店、攻略、意向的 JSON 字段名以本节和 §2.5 为准。微信身份字段见 §2.6，未锁死前不写进业务类型。
+Banner、门店、攻略、意向的 JSON 字段名以本节和 §2.5 为准。微信登录字段以 §2.6 为准，契约源是 api#32。
 
 ### 1.5 硬锁
 
@@ -119,7 +120,7 @@ Banner、门店、攻略、意向的 JSON 字段名以本节和 §2.5 为准。�
 - `CHECKED_IN` 对客只显示「已入住」（入 U+5165，住 U+4F4F）。不用「已定着」「已订立」「已落实」「已落地」「已成交」「已达成」
 - 品牌色用 `#4BA3D9`。不用田园绿 `#2F6B4F` 当作品牌色
 - AppSecret、上传密钥、正式或测试号的 Secret 不出现在仓库、小程序包、`project.config.json` 或前端环境示例的真实值里
-- 未打通时不请求「我的意向」，不在本地编造与 Web 相同的用户
+- `accountLinked=false` 时不把登录令牌写入 `nj_mp_token`，不请求「我的意向」，不宣称已与网页版同步。无手机号不提交意向（接口 403）
 - 公开接口失败不把游客送进登录页。Banner 失败只隐藏 Banner 区
 
 ### 1.6 本稿明确不做
@@ -137,11 +138,14 @@ Banner、门店、攻略、意向的 JSON 字段名以本节和 §2.5 为准。�
 | 客户端 | 何时带令牌 | 401 |
 |--------|------------|-----|
 | 公开 | 不带 `Authorization` | 不当成登出。页面按空态或错误文案处理；Banner 直接不渲染 |
-| 游客 | 仅当本地已有打通后的 `nj_mp_token` | 清掉 `nj_mp_token`，打开 MP-LOGIN，并带上来源页以便完成后返回 |
+| 游客 | 仅当本地已有 `accountLinked=true` 的 `nj_mp_token` | 清掉 `nj_mp_token`，打开 MP-LOGIN，并带上来源页以便完成后返回 |
+| 登录页内存 | 仅 `accountLinked=false` 时，登录响应的 `token` 留在当页，不落存储 | 绑定或查询打通状态若 401，丢掉这枚内存令牌，不写 `nj_mp_token` |
 
-公开读：`/api/config/public`、`/api/home/banners`、`/api/home/feed`、`/api/regions`、`/api/stores`、`/api/stores/{id}`、`/api/articles`、`/api/articles/{id}`。
+公开：`POST /api/auth/wechat/login`，以及 `/api/config/public`、`/api/home/banners`、`/api/home/feed`、`/api/regions`、`/api/stores`、`/api/stores/{id}`、`/api/articles`、`/api/articles/{id}`。
 
-要令牌的写和读：`/api/auth/me`、`/api/booking-intents`、`/api/me/intents`、`/api/me/intents/{id}`，以及 §2.6 里打通之后才存在的会话。
+要已打通令牌：`GET /api/auth/me`、`POST /api/booking-intents`、`GET /api/me/intents`、`GET /api/me/intents/{id}`。
+
+要微信渠道令牌（已打通用 `nj_mp_token`，未打通用登录页内存令牌）：`POST /api/auth/wechat/bind`、`POST /api/auth/wechat/unbind`、`GET /api/auth/wechat/link`。网页版密码登录的令牌没有 openid，不能绑定或解绑。
 
 基址来自小程序本地配置 `apiBase`，缺省 `http://localhost:8080`。开发者工具可关「校验合法域名」以便连本地。体验版真机不走 localhost，使用后端已部署且已填进微信 request 合法域名的 https 源。正式 AppID 上线前再核对这张域名表，本设计不填写生产域名。
 
@@ -151,8 +155,8 @@ Banner、门店、攻略、意向的 JSON 字段名以本节和 §2.5 为准。�
 |------|------|----------|------|
 | 小程序 AppID | 开发者本机 `apps/miniapp/project.private.config.json` 的 `appid`（gitignore） | 微信公开标识，仍然不写进 git | 先填**测试号**。正式 AppID 替换这一处，页面代码不因换号而改 |
 | 仓库内 `project.config.json` | 实现阶段的 `appid` 留空字符串 | 可提交 | 避免把某一套测试号写死在主分支 |
-| AppSecret | **只在后端环境**，建议变量名 `WX_MINIAPP_SECRET` | 仅服务端 | 小程序用 `wx.login` 拿到 `code`，由后端用 AppID + Secret 换会话。前端没有 Secret 配置项 |
-| 后端 AppID | 建议变量名 `WX_MINIAPP_APPID`，与小程序里的测试号成对 | 仅服务端 | 换正式号时与 Secret 一起换，前端不发版改 Secret |
+| AppSecret | **只在后端环境** `WECHAT_MINIAPP_SECRET` | 仅服务端 | 小程序用 `wx.login` 拿到 `code`，由后端换会话。前端没有 Secret 配置项，不用 `WX_MINIAPP_SECRET` |
+| 后端 AppID | `WECHAT_MINIAPP_APP_ID`，与小程序里的测试号成对 | 仅服务端 | 换正式号时与 Secret 一起换。未配置时登录、绑定、解绑为 503「微信登录未配置」 |
 
 本仓 `.env.example` 不增加 Secret。不提交 `project.private.config.json`。CI 若以后要上传体验版，上传密钥另走运维注入，不进 git。
 
@@ -172,29 +176,23 @@ Banner、门店、攻略、意向的 JSON 字段名以本节和 §2.5 为准。�
 
 Banner 不读取当前目的地，请求不带 `regionId`。`scope === ALL` 的 `cityId` / `citySlug` / `cityName` 为 null。公开元素 `enabled === false` 时丢掉该条。排序 `sortOrder` 升序，同序按 `id` 升序。前端不再按 CLOSED 市滤一遍。
 
-链接分类与门户 `classifyBannerLink` 同一口径，落点改成小程序页：
+Banner 的 `linkUrl` 仍是运营在网页后台填的字符串。接口不增加 `miniPath`。小程序按 api#32 解释：
 
-| 形态 | 行为 |
-|------|------|
-| `/` 或空路径 | MP-HOME |
-| `/listings` 及其 query | MP-LIST。保留 `regionId`、`tag`、`priceMin`、`priceMax`、`sort`、`page` |
-| `/listings/{id}` | MP-DETAIL |
-| `/listings/{id}/intent` | 已打通则 MP-INTENT-FORM，否则先 MP-LOGIN |
-| `/guides` | MP-GUIDE-LIST |
-| `/guides/{id}` | MP-GUIDE-DETAIL |
-| `/my/intents` 及详情路径 | 已打通则对应「我的」页，否则先 MP-LOGIN |
-| `/login`、`/register` | MP-LOGIN。小程序不单独做一套只在微信里生效的注册用户 |
-| `/merchant/apply` 以及其他站内路径 | 不打开页面。提示「请使用网页端」，可复制门户地址 |
-| `http://` 或 `https://` | 不内嵌 `web-view`（体验版未把门户整站配成业务域名，也不把运营站套进小程序）。提示「请在浏览器打开」，可复制链接 |
-| 其他（`javascript:`、`data:`、缺协议） | 图可以留着，不做成可点链接 |
+| `linkUrl` | 行为 |
+|-----------|------|
+| `/` | 切到首页 Tab `/pages/home/index` |
+| `/?city={slug}` | 切到找店 Tab。slug 用 `GET /api/regions` 换成 `regionId`。slug 不在 OPEN 市：提示「该目的地暂未开通」，不请求 CLOSED 列表 |
+| `http://` 或 `https://` | 业务域名已配置则打开 `/pages/webview/index`；否则弹层复制链接。不把运营站套进小程序 |
+| 其他以单个 `/` 开头的路径 | Toast「暂无法在小程序内打开」。不白屏，不挡首页其他入口 |
+| `javascript:`、`data:`、缺协议 | 图可以留着，不做成可点链接 |
 
-**MP-LIST。** query 与门户相同，不新增 `keyword`。URL 上的搜索词在没有 `tag` 时写入 `tag`。`sort` 只接受 `comprehensive`、`price_asc`、`price_desc`。`destinationStatus === CLOSED` 时只显示「该目的地暂未开通」，不渲染门店。分页参数仍是 `page`、`pageSize`（默认 20）。界面可以用触底请求下一页，把结果接在后面；这不改变契约，也不改成游标。
+**MP-LIST。** 搜索只使用可省略的 `keyword`（店名包含）。不传，或 trim 后为空，过滤与今天相同。超过 64 字不提交（接口 400「参数不正确」）。标签、价格、排序仍是网页参数，小程序本包可以不传。`destinationStatus === CLOSED` 时只显示「该目的地暂未开通」，不渲染门店；关键词不能把 CLOSED 市的店带出来。分页参数仍是 `page`、`pageSize`（默认 20）。界面可以用触底请求下一页。
 
-**MP-DETAIL。** 展示 `name`、`coverUrl`、`gallery`、`regionName`、`address`、`phone`、`priceText`（无则用 `priceFrom`）、`packageText`。`packages` 只在有数据时作辅助。对客标签保留「首页推荐」和接口给出的 `testTag`；不展示 `homeSort`、上架态运营词。410 时禁用「提交意向」，文案「房源已下架或不可用」。详情提供分享，见 §2.3 分享。
+**MP-DETAIL。** 展示 `name`、`coverUrl`、`gallery`、`regionName`、`address`、`phone`、`priceText`（无则用 `priceFrom`）、`packageText`。`packages` 只在有数据时作辅助。对客标签保留「首页推荐」和接口给出的 `testTag`；不展示 `homeSort`、上架态运营词。404 文案「房源不存在」。410 时禁用「提交意向」，文案「已下架或不可用」。详情提供分享，见 §2.3 分享。
 
-**MP-INTENT-FORM。** 字段与门户草稿相同：`checkIn`、可选 `checkOut`、可选 `nights`、`guests`、`contactName`、`contactPhone`、可选 `userRemark`。提交 JSON 为 `storeId`、`checkIn`、`guests`、`contactName`、`contactPhone`，有离店或晚数、有备注时再带上对应字段。不附金额。校验规则与门户 `validateIntent` 相同：到店不早于今天、离店晚于到店、晚数与离店一致、11 位手机、联系人必填。已登录时用 `GET /api/auth/me` 的手机预填，允许改。成功后用返回的 `id`、`intentNo`。页上保留「意向不等于已锁房」这类说明（原文以 UI-PAGES 为准）。
+**MP-INTENT-FORM。** 字段与门户草稿相同：`checkIn`、可选 `checkOut`、可选 `nights`、`guests`、`contactName`、`contactPhone`、可选 `userRemark`。提交 JSON 为 `storeId`、`checkIn`、`guests`、`contactName`、`contactPhone`，有离店或晚数、有备注时再带上对应字段。不附金额。校验规则与门户 `validateIntent` 相同：到店不早于今天、离店晚于到店、晚数与离店一致、11 位手机、联系人必填。已打通时用 `GET /api/auth/me` 的手机预填，允许改。`phone` 为空或 `accountLinked=false` 时不发 POST。若仍打到接口，403「请先绑定手机号，完成与网页版账号打通后再提交意向」，不产生意向。成功后用返回的 `id`、`intentNo`。页上保留「意向不等于已锁房」这类说明（原文以 UI-PAGES 为准）。不传金额；未知字段会被接口 400「请求体格式不正确」。
 
-**MP-MY-INTENTS。** 只在已打通时请求。状态展示：
+**MP-MY-INTENTS。** 只在 `accountLinked=true` 且已写入 `nj_mp_token` 时请求。未打通不发这个请求，也不把空列表说成已经和网页版同步。状态展示：
 
 | 码 | 文案 |
 |----|------|
@@ -204,30 +202,39 @@ Banner 不读取当前目的地，请求不带 `regionId`。`scope === ALL` 的 
 | `CHECKED_IN` | 已入住 |
 | `CLOSED` | 已关闭 |
 
-列表和详情没有取消、改状态或支付。他人单据按 404 显示「不存在或无权查看」。
+列表和详情没有取消、改状态或支付。他人单据按 404「意向不存在」。接口不另发一套中文状态名；`CHECKED_IN` 的码仍是 `CHECKED_IN`，对客只显示「已入住」。
 
 **MP-GUIDE-LIST / MP-GUIDE-DETAIL。** 只展示接口返回的已发布内容。正文按文本渲染。关联市是否开通由接口决定，前端不另做一道城市过滤。
 
-**分享到门店。** MP-DETAIL 实现 `onShareAppMessage`。`path` 为详情页并带门店 `id`（与 `GET /api/stores/{id}` 的 id 相同）。标题用门店 `name`。`imageUrl` 只用 https 封面；没有 https 封面时用默认分享图，不把 http 本地封面传给微信。被分享者打开的是公开详情，不继承分享者的令牌。无支付参数，无分销参数。
+**分享到门店。** MP-DETAIL 实现 `onShareAppMessage`。`path` 为 `/pages/detail/index?id={storeId}`。`storeId` 等于 `GET /api/stores/{id}` 的 `id`（UI 稿里的 `listingId` 就是这个字段）。打开后再请求该详情。410 展示「已下架或不可用」并隐藏提交。无后端分享接口，无计数，无支付参数。朋友圈分享不挡验收。标题用门店 `name`。`imageUrl` 只用 https 封面。被分享者不继承分享者的令牌。
 
 **MP-LOGIN。** 见 §2.4。没有「微信里注册一个和 Web 无关的新用户然后假装已同步」。
 
 ### 2.4 微信登录与 C-MP2b
 
-C-MP2b 的产品要求：小程序与 Web **同用户**；未打通时不假装同步。身份锚点沿用门户已有的游客（手机号 + 密码注册登录的那一个用户）。小程序不维护第二份用户表，也不用 openid 代替 `GET /api/auth/me` 的用户 id。
+用户主体是 `portal_user.id`（响应字段 `userId`）。打通凭证是手机号。微信侧的 openid 只在服务端，请求体不传 openid、unionid、AppSecret。小程序不维护第二份用户表。不接短信，不用验证码登录。
 
-体验版流程：
+`code` 来自 `wx.login`，只用一次，交给 `POST /api/auth/wechat/login`。成功 `data` 与网页版登录同一套游客 Bearer，并带打通布尔，见 §2.6。`token` 是原文，请求时加上 `Bearer ` 前缀。
 
-1. 游客在 MP-LOGIN 点微信登录。客户端 `wx.login` 取得 `code`。
-2. 客户端把 `code` 交给 §2.6 的登录接口。请求里没有 AppSecret。
-3. **已打通：** 响应里的令牌用门户同一读取顺序（字符串本身、`token`、`accessToken`、`access_token`）。写入 `nj_mp_token`，再 `GET /api/auth/me`。之后意向接口与门户 Web 打到同一用户。前端不做两份列表的本地合并。
-4. **未打通：** 响应里没有上述令牌。不写 `nj_mp_token`。页面进入绑定：游客输入门户手机号和密码，与本次微信登录一起提交到 §2.6 的绑定接口。绑定成功才写入令牌并拉取 `/api/auth/me`。绑定失败保持未打通。
-5. 未打通期间，首页、列表、详情、攻略仍可看。点「提交意向」或「我的意向」回到 MP-LOGIN，说明需要先与网页账号打通。不展示空意向冒充「已经同步且没有订单」。
-6. 退出登录只删除本地 `nj_mp_token`。这不是服务端解绑。解绑接口若后端未提供，前端不做。
+| `accountLinked` | 前端 |
+|-----------------|------|
+| `true` | 把 `token` 写入 `nj_mp_token`。此后「我的意向」和提交意向都用这枚令牌。两边读的是同一个 `userId`，前端不把两份列表在本地合并 |
+| `false` | **不写** `nj_mp_token`。**不请求** `GET /api/me/intents`。不展示「已与网页版同步」或「已经同步且没有订单」。登录页只用内存中的这枚令牌调用绑定或 `GET /api/auth/wechat/link`。提示用 DESIGN 已写的句子：「网页版意向同步即将开通，当前仅显示本端提交的意向」 |
 
-门户 Web 的 `POST /api/auth/login` 与 `POST /api/auth/register` 保持原样，本包不改 `apps/portal`。在 Web 注册并登录过的游客，到小程序完成第 4 步之后，两边看到同一组 `/api/me/intents`。只在一边登录、另一边从未绑定，则另一边没有会话，也看不到这一边的令牌。
+未打通时首页、列表、详情、攻略仍可看。点「提交意向」或「我的意向」进入 MP-LOGIN。无手机号（`phone` 为 null）不调用 `POST /api/booking-intents`。接口对这种壳用户返回 **403**「请先绑定手机号，完成与网页版账号打通后再提交意向」，且不产生单。
 
-正式 AppID 更换后，已打通关系是否仍然有效由后端按 openid / unionid 决定。前端只认「有没有门户令牌」。
+绑定用 `POST /api/auth/wechat/bind`，Authorization 带上当前这枚微信登录令牌。两种正文互斥：
+
+| 模式 | 正文 | 何时 |
+|------|------|------|
+| 微信手机号 | `phoneCode` 必填，`password` 可空 | 按钮 `getPhoneNumber` 的 code |
+| 网页版手机号 | `phone` 必填（`^1\d{10}$`），`password` 必填 | 号码和网页版注册号不一致，或新号要开通网页登录。密码 6～64 位 |
+
+绑定成功体与登录相同。`userId` 可能变成网页版那个用户，客户端必须改存响应里的新 `token`，并只在 `accountLinked=true` 时写入 `nj_mp_token`。此后小程序与网页版的「我的意向」是同一次 `GET /api/me/intents` 的结果。
+
+解绑是 `POST /api/auth/wechat/unbind`，无请求体。成功后丢掉本地令牌（响应里没有 `token`）。重新 `wx.login` 得到的是新壳，列表里没有解绑前那个手机号用户的单，直到再次绑定。退出登录若只清本地、不调用解绑，服务端绑定还在；下次微信登录仍按 openid 回到已绑定用户。
+
+门户 Web 的 `POST /api/auth/login` 与 `POST /api/auth/register` 保持原样，本包不改 `apps/portal`。正式 AppID 只换后端的 `WECHAT_MINIAPP_APP_ID` 与 `WECHAT_MINIAPP_SECRET`。体验版 openid 不会自动变成正式版；用户重新登录后再用手机号和密码绑回。前端不迁移本地用户。
 
 ### 2.5 复用字段（已在门户落地）
 
@@ -239,7 +246,7 @@ C-MP2b 的产品要求：小程序与 Web **同用户**；未打通时不假装�
 
 **门店详情在卡片之外：** `address`、`phone`、`gallery`、`packageText`、`packages`、`facilities`、`features`、`notice`、`trafficText`、`version`。列表在 `destinationStatus === CLOSED` 时还有 `emptyHint`，对客文案「该目的地暂未开通」。
 
-**门店列表 query：** `regionId`、`tag`、`priceMin`、`priceMax`、`sort`、`page`、`pageSize`。
+**门店列表 query：** 原有 `regionId`、`tag`、`priceMin`、`priceMax`、`sort`、`page`、`pageSize` 保留。api#32 的唯一增量是可选 `keyword`：省略或 trim 后空串等于不传；超过 64 字为 400「参数不正确」；合法值在 OPEN 市且上架的店名上做包含匹配。不新增 `/api/mini/stores`。
 
 **攻略摘要：** `id`、`title`、`coverUrl`、`summary`。详情另有 `content`。
 
@@ -251,28 +258,54 @@ C-MP2b 的产品要求：小程序与 Web **同用户**；未打通时不假装�
 
 | HTTP | 含义 | 小程序 |
 |------|------|--------|
-| 401 | 游客接口未登录或令牌失效 | 清 `nj_mp_token`，去 MP-LOGIN |
-| 404 | 内容不存在，或意向不属于本人 | 「不存在或无权查看」 |
-| 409 | 非法日期一类冲突，不是下架 | 留在意向表，展示 `message` |
-| 410 | 下架或不可订。详情与提交意向同一码 | 禁用提交，「房源已下架或不可用」 |
-| 400 | 参数 | 展示 `message` |
+| 401 | 未登录、令牌过期，或解绑后继续用这枚微信令牌。文案「未登录」 | 清掉本地或内存中的该令牌，去 MP-LOGIN |
+| 401 | 微信 code 失效。文案「微信登录已失效，请重试」 | 留在登录页，可再次 `wx.login` |
+| 401 | 手填密码不对。文案「手机号或密码错误」 | 留在绑定表，不改本地已打通令牌 |
+| 403 | 无手机号提交意向 | 不产生单。文案「请先绑定手机号，完成与网页版账号打通后再提交意向」 |
+| 403 | 商家或运营令牌。文案「无权限」 | 小程序不发放这两类令牌 |
+| 404 | 房源不存在「房源不存在」；他人意向「意向不存在」 | 按接口 `message` 展示 |
+| 409 | 绑定冲突（已绑其他手机号、该手机号已绑其他微信、壳上已有意向不能合并）或非法日期 | 展示接口 `message`，不把 409 当成下架 |
+| 410 | 下架或市未开通。文案「已下架或不可用」 | 禁用提交 |
+| 400 | 参数或绑定正文不对 | 展示 `message` |
+| 503 | AppID 或 Secret 为空。文案「微信登录未配置」 | 不写成登录成功 |
 
 公开 Banner 保持匿名 200。被做成 401 时，小程序仍不清除已打通的令牌，只隐藏 Banner。
 
-### 2.6 待后端 TECH 锁死（微信登录 / C-MP2b）
+### 2.6 契约（已锁死，源 nongjiale-api#32）
 
-本节是**拟议约束**，不是第二套门店或意向字段。后端 TECH 合入后，像 MVP-1.5 对齐 api#22 那样，只修订本节的路径和未打通态字段名。在此之前不写调用代码。
+本节取代原先的「待 BE TECH 锁死」草案。不再使用 `POST /api/auth/wechat/miniprogram`、`WX_MINIAPP_APPID`、`WX_MINIAPP_SECRET`。实现只调用下面的路径和字段。api#32 尚未合入 main，正文仍是契约源。
 
-| # | 拟议 | 前端已经定死的行为 |
-|---|------|--------------------|
-| 1 | 用 `code` 换会话的路径，建议 `POST /api/auth/wechat/miniprogram`，body 只有 `{ code }` | 不传 Secret、openid、unionid |
-| 2 | 绑定路径，建议 `POST /api/auth/wechat/miniprogram/bind` | body 至少含门户已有的 `{ phone, password }`，外加后端规定的一次性票据。成功后的令牌形状与 `POST /api/auth/login` 相同 |
-| 3 | 未打通时的字段名（票据叫什么、是否有 `linked`） | **没有门户令牌 = 未打通。** 不写本地会话，不调用 `/api/me/*` |
-| 4 | openid / unionid 只存在于服务端 | 前端用户主键只用 `/api/auth/me` 的 id |
-| 5 | AppID / Secret 用 `WX_MINIAPP_APPID`、`WX_MINIAPP_SECRET` | 前端仓库不提供 Secret |
-| 6 | 换正式 AppID 后旧 openid 是否失效 | 前端不迁移本地用户；无令牌就重新登录或绑定 |
+信封与现网一致：`{ code, message, data }`，成功 `code === 0`。基址默认 `http://localhost:8080`。
 
-不在前端假设：静默注册一个没有手机号的游客、把 openid 填进 `userId`、或在未绑定时返回一个只能看空意向的「半令牌」。
+**POST `/api/auth/wechat/login`**（公开）
+
+请求体只有 `code`（`wx.login` 的 code，必填，最长 128）。不传 Secret。
+
+成功 `data`：`token`、`expiresAt`、`userId`、`role`（`TOURIST`）、`displayName`、`phone`（未绑定为 null）、`phoneBound`、`wechatBound`、`accountLinked`。
+
+`accountLinked=true` 的定义（服务端计算，前端不重算）：该用户 `phone` 非空、密码已设置，且当前 AppID 下有这条 openid。前端只读布尔值。
+
+**POST `/api/auth/wechat/bind`**（游客 Bearer，且令牌来自微信登录）
+
+`phoneCode` 与 `phone`+`password` 两种正文互斥，见 §2.4。成功 `data` 与登录相同。必须改存新 `token`。
+
+**POST `/api/auth/wechat/unbind`**（游客 Bearer，且令牌来自微信登录）
+
+无请求体。成功 `data` 与下面的 link 相同：`wechatBound=false`，`accountLinked=false`，没有 `token`。客户端丢掉本地令牌。
+
+**GET `/api/auth/wechat/link`**（游客 Bearer）
+
+`data`：`userId`、`phone`、`phoneBound`、`wechatBound`、`accountLinked`。未打通提示看这个布尔，不改「我的意向」的字段。`accountLinked=false` 时前端仍不把令牌写入 `nj_mp_token`，也不请求我的意向。
+
+**POST `/api/booking-intents`**
+
+请求体与成功体不变。`phone` 为空时 **403**，message 为「请先绑定手机号，完成与网页版账号打通后再提交意向」，不插入意向。
+
+**环境变量（仅后端）**
+
+`WECHAT_MINIAPP_APP_ID`、`WECHAT_MINIAPP_SECRET`。任一 trim 后为空则微信四个接口 503「微信登录未配置」。前端仓库不提供这两个值。
+
+不在前端假设：用 openid 充当 `userId`、未打通时把壳用户的空意向列表说成网页版已同步、或再做一套令牌字段名。
 
 ### 2.7 验收在前端怎么测
 
@@ -281,7 +314,7 @@ C-MP2b 的产品要求：小程序与 Web **同用户**；未打通时不假装�
 | ID | 前端可观察结果 |
 |----|----------------|
 | C-MP1～C-MP8 | 按测试文档逐条对照首页、列表、详情、攻略、分享、意向和登录。接口路径用 §2.5，不另造字段 |
-| C-MP2b | 绑定成功后，小程序与 Web 的「我的意向」来自同一 `GET /api/me/intents`。未绑定：本地无令牌，不发该请求，文案不声称已同步 |
+| C-MP2b | 绑定成功后新 `token` 的 `userId` 与网页版相同，两边的 `intentNo` 来自同一 `GET /api/me/intents`。`accountLinked=false`：不写 `nj_mp_token`，不发该请求，不声称已同步。无手机号提交为 403 |
 | 文案 | `CHECKED_IN` 为「已入住」。全包搜不到支付、定金、锁房入口，也搜不到「已定着」及已落实 / 已落地 / 已订立 / 已成交 / 已达成 |
 | 品牌 | 默认主色 `#4BA3D9` |
 | 范围 | 商家端、运营端导航与本包无关，无小程序入口 |
@@ -290,7 +323,7 @@ C-MP2b 的产品要求：小程序与 Web **同用户**；未打通时不假装�
 
 ### 2.8 实现顺序（老板 TECH 终验通过之后）
 
-1. 后端 TECH 合入后，把 §2.6 收成锁死路径和字段，再写登录
+1. §2.6 已等于 api#32。老板 TECH 终验通过前仍不写登录代码；若该 PR 合入时改了字段，先改本节再写调用
 2. 新增 `apps/miniapp` 工程壳、gitignore、AppID 私有配置说明。仍不提交 Secret
 3. `wx.request` 客户端与公开页：首页、列表、详情、攻略
 4. 绑定成功后的意向提交和我的意向
@@ -307,7 +340,17 @@ C-MP2b 的产品要求：小程序与 Web **同用户**；未打通时不假装�
 |---|------|
 | 1 | 新增本文件 `docs/FE-TECH-DESIGN-MVP-2-微信小程序.md` |
 | 2 | `README.md` 增加一行，指向上述设计 |
-| 3 | 不把 `PRODUCT` / `DESIGN` / `UI-PAGES` / `GATE-UI` / `TEST` / 后端 TECH 拷进本仓。权威文本留在 nongjiale-api：范围 #28，用例 #29，设计、页面与 UI 门禁 #30 |
+| 3 | 不把 `PRODUCT` / `DESIGN` / `UI-PAGES` / `GATE-UI` / `TEST` / 后端 TECH 拷进本仓。范围 #28，用例 #29，设计、页面与 UI 门禁 #30。微信契约源是 api#32 的 `docs/TECH-DESIGN-MVP-2-微信小程序.md`（PR 未合 main） |
+
+### 3.1a 本修订（只锁契约）
+
+| # | 改动 |
+|---|------|
+| 1 | 权威表写明契约源 = api#32 |
+| 2 | 删除「待 BE TECH」。登录路径改为 `/api/auth/wechat/login`、`/bind`、`/unbind` 与 `GET /api/auth/wechat/link` |
+| 3 | 未打通以 `accountLinked=false` 为准：不写 `nj_mp_token`，不请求我的意向，不假装同步。无手机号提交意向为 403 |
+| 4 | `GET /api/stores` 增加可选 `keyword`。环境变量改为 `WECHAT_MINIAPP_APP_ID`、`WECHAT_MINIAPP_SECRET` |
+| 5 | `CHECKED_IN` 对客仍只显示「已入住」 |
 
 无 `apps/` 与 `packages/` diff。无依赖变更。无 AppID、无 Secret。
 
@@ -318,7 +361,7 @@ C-MP2b 的产品要求：小程序与 Web **同用户**；未打通时不假装�
 | 1 | 原生小程序工程与页面路径 | `apps/miniapp` |
 | 2 | 公开读与游客令牌两套 `wx.request` | `apps/miniapp` 的 api |
 | 3 | Banner、列表 query、意向校验、状态文案的纯函数 | `apps/miniapp` 的 domain，或复用 `packages/shared` 里无 DOM 的 `INTENT_STATUS_LABEL` |
-| 4 | 微信登录与绑定 | 仅调用 §2.6 锁死后的路径 |
+| 4 | 微信登录、绑定、解绑、打通状态 | 只调用 §2.6 的四个路径 |
 | 5 | 测试号 AppID 的私有配置与 gitignore | `project.private.config.json` |
 | 6 | 「已定着」纳入展示禁用词 | 实现阶段再改 `FORBIDDEN_INTENT_LABELS`。本 PR 不改 `packages/shared` |
 | 7 | 体验版手测记录 | 不在本设计 PR |
@@ -331,14 +374,14 @@ C-MP2b 的产品要求：小程序与 Web **同用户**；未打通时不假装�
 
 | 对象 | 影响 |
 |------|------|
-| 后端 | 门店、攻略、意向、Banner、公开配置继续用现有门户路径。需要新增的只有微信 `code` 换会话和 C-MP2b 绑定，且必须签发**现有游客令牌**。AppSecret 只放服务端 `WX_MINIAPP_SECRET`。无支付字段 |
-| 小程序 | 新应用。公开浏览不要求登录。意向和「我的」只在打通后可用 |
+| 后端 | 契约源 api#32。微信四个路径签发与网页版相同的游客 Bearer。未打通看 `accountLinked`。无手机号提交意向 403。找店仅多可选 `keyword`。AppID / Secret 为 `WECHAT_MINIAPP_APP_ID`、`WECHAT_MINIAPP_SECRET`。无支付字段 |
+| 小程序 | 新应用。公开浏览不要求登录。`accountLinked=false` 不落本地会话、不请求我的意向。意向提交只在已打通且有手机号之后 |
 | 门户 Web | 本包不改代码。打通之后，Web 与小程序读同一用户的意向。未打通时 Web 会话不受 `wx.login` 影响 |
 | 商家 / 运营 | 无小程序，无新页面，无新导航 |
 | 测试 | C-MP1～C-MP8、C-MP2b，另加「未打通不请求我的意向」「Banner 失败不登出」「410 不能提交」「无支付文案」。体验版用测试号 |
 | 产品 / 设计 | UI 门禁以 api#30 的 `docs/GATE-UI-MVP-2-微信小程序-产品.md` 为准（设计终验已通过）。交互与页面以同 PR 的 DESIGN、UI-PAGES 为准。本仓实现时不改页面 ID |
 | 项目经理 | 本 PR 只交付技设，状态是 Ready 供产品门禁。通过后才交老板 TECH 终验。终验通过前禁止业务码。正式 AppID 后补，不挡体验版技设 |
-| 风险 | ① 把 Secret 打进小程序包。② 未返回门户令牌时仍写入本地会话，看起来像已同步。③ 用 openid 当用户 id，和 Web 意向对不上。④ Banner 外链用 `web-view` 打开整站。⑤ 公开接口 401 清掉已打通令牌。⑥ 体验版真机仍填 localhost。⑦ 换正式 AppID 后前端自己迁移用户。⑧ 列表另造 `keyword` 或游标参数 |
+| 风险 | ① 把 Secret 打进小程序包。② `accountLinked=false` 仍写入 `nj_mp_token` 并请求我的意向，看起来像已同步。③ 用 openid 当 `userId`。④ 绑定成功后不换新 `token`，还在看壳用户。⑤ Banner 外链在未配业务域名时强开 web-view。⑥ 公开接口 401 清掉已打通令牌。⑦ 体验版真机仍填 localhost。⑧ 把 `keyword` 当成必填，或用它去拉 CLOSED 市 |
 
 ---
 
@@ -346,14 +389,15 @@ C-MP2b 的产品要求：小程序与 Web **同用户**；未打通时不假装�
 
 | # | 项 | 决定 |
 |---|----|------|
-| 1 | 门店 / 攻略 / 意向 / Banner / 配置 | 复用 §2.5 路径和字段。契约源是已合入的门户接口与 api#22；后端若修订，以合入后的 TECH 为准 |
-| 2 | 微信登录与绑定 | 待 BE TECH 锁死，见 §2.6。不在前端先写死第二套字段 |
-| 3 | 令牌 | 打通成功后与 `POST /api/auth/login` 同一形状。本地键 `nj_mp_token` |
-| 4 | 未打通 | 无令牌、无「我的意向」请求、不宣称已同步 |
-| 5 | AppID | 测试号写在 gitignore 的私有配置。正式号以后替换 |
-| 6 | Secret | 仅后端 `WX_MINIAPP_SECRET`。本仓不提交 |
-| 7 | 支付 | 没有 |
-| 8 | 商家 / 运营 | 仍是 Web |
+| 1 | 契约源 | api#32 的 `docs/TECH-DESIGN-MVP-2-微信小程序.md`。PR 未合 main，仍按该正文 |
+| 2 | 微信路径 | `POST /api/auth/wechat/login`、`/bind`、`/unbind`，`GET /api/auth/wechat/link` |
+| 3 | 令牌 | `data.token` 与网页版相同的游客 Bearer。仅 `accountLinked=true` 写入 `nj_mp_token` |
+| 4 | 未打通 | `accountLinked=false`。不写本地会话，不请求我的意向，不假装同步 |
+| 5 | 无手机号意向 | `POST /api/booking-intents` 为 403 |
+| 6 | 找店 | `GET /api/stores` 的 `keyword` 仅可选 |
+| 7 | 文案 | `CHECKED_IN` 只显示「已入住」 |
+| 8 | 环境变量 | 后端 `WECHAT_MINIAPP_APP_ID`、`WECHAT_MINIAPP_SECRET`。本仓不提交 |
+| 9 | 支付 / 商家 / 运营 | 没有小程序。商家与运营仍是 Web |
 
 ---
 
@@ -361,4 +405,5 @@ C-MP2b 的产品要求：小程序与 Web **同用户**；未打通时不假装�
 
 | 版本 | 日期 | 说明 |
 |------|------|------|
-| MVP-2 | 2026-10-18 | 首版前端技术设计。对齐 api#28 范围、api#29 用例、api#30 设计/页面/UI 门禁。栈为 `apps/miniapp` 原生小程序。微信登录与 C-MP2b 待后端 TECH 锁死。不含业务实现 |
+| MVP-2 | 2026-10-18 | 首版前端技术设计。对齐 api#28 范围、api#29 用例、api#30 设计/页面/UI 门禁。栈为 `apps/miniapp` 原生小程序。不含业务实现 |
+| MVP-2a | 2026-10-18 | 登录与 C-MP2b 锁死为 api#32（PR 未合 main）。路径 `/api/auth/wechat/login\|bind\|unbind` 与 `GET /api/auth/wechat/link`。未打通 `accountLinked=false` 不写本地会话。无手机号意向 403。`GET /api/stores` 仅可选 `keyword`。环境变量 `WECHAT_MINIAPP_APP_ID` / `WECHAT_MINIAPP_SECRET`。不含业务代码 |
