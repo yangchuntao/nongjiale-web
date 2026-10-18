@@ -1,10 +1,11 @@
 import type { PageResult, PhonePasswordCredentials } from '@nongjiale/shared'
-import { http } from './client'
+import { http, publicHttp } from './client'
 import { LISTING_PAGE_SIZE, mapListingSearch } from './query'
 import {
   readArticleDetail,
   readArticleSummary,
   readAuthToken,
+  readHomeBanners,
   readHomeFeed,
   readIntent,
   readPage,
@@ -21,8 +22,17 @@ import {
   type StoreListResult,
   type TouristProfile,
 } from './readers'
+import type { HomeBanner } from '../domain/banners'
 import type { CreateIntentBody } from '../domain/intent'
 import type { MerchantApplyBody } from '../domain/apply'
+
+export const HOME_BANNERS_PATH = '/api/home/banners'
+
+/** 无城市 query。失败由首页吞掉，不进入推荐区的错误态。 */
+export async function fetchHomeBanners(signal?: AbortSignal): Promise<HomeBanner[]> {
+  const data = await publicHttp.request<unknown>(HOME_BANNERS_PATH, { signal })
+  return readHomeBanners(data)
+}
 
 export async function fetchHomeFeed(signal?: AbortSignal): Promise<HomeFeed> {
   const data = await http.request<unknown>('/api/home/feed', { signal })

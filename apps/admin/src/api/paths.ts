@@ -10,6 +10,7 @@ export const ADMIN_API = {
   intentExport: '/api/admin/intents/export',
   articles: '/api/admin/articles',
   siteConfig: '/api/admin/site-config',
+  banners: '/api/admin/banners',
   cities: '/api/admin/cities',
   cityIntents: '/api/admin/metrics/city-intents',
   cityIntentExport: '/api/admin/metrics/city-intents/export',
@@ -65,6 +66,18 @@ export function adminIntentNotesPath(id: string): string {
 
 export function adminArticlePath(id: string): string {
   return `/api/admin/articles/${encodeURIComponent(id)}`
+}
+
+export function adminBannerPath(id: string): string {
+  return `/api/admin/banners/${encodeURIComponent(id)}`
+}
+
+export function adminBannerEnablePath(id: string): string {
+  return `${adminBannerPath(id)}/enable`
+}
+
+export function adminBannerDisablePath(id: string): string {
+  return `${adminBannerPath(id)}/disable`
 }
 
 export function adminCityPath(id: string): string {

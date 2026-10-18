@@ -19,3 +19,8 @@ export const http: HttpClient = createHttpClient({
     unauthorizedHandler()
   },
 })
+
+/** 首页 Banner 公开且匿名。不附带门户令牌，失败时也不清 `nj_portal_token`。 */
+export const publicHttp: HttpClient = createHttpClient({
+  baseUrl: apiBase,
+})

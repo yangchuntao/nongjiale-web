@@ -6,6 +6,9 @@ import {
   adminApplyPath,
   adminApplyRejectPath,
   adminArticlePath,
+  adminBannerDisablePath,
+  adminBannerEnablePath,
+  adminBannerPath,
   adminCityChecklistPath,
   adminCityClosePath,
   adminCityOpenPath,
@@ -20,7 +23,9 @@ import {
   adminStorePath,
 } from './paths'
 import {
+  bannerListQuery,
   buildArticleBody,
+  buildBannerBody,
   buildCityVersionBody,
   buildIntentNoteBody,
   buildIntentStatusBody,
@@ -37,6 +42,7 @@ import {
   readAdminLogin,
   readAdminMe,
   readArticle,
+  readBanner,
   readCityDetail,
   readCityIntentMetrics,
   readCityList,
@@ -53,6 +59,9 @@ import {
   type AdminLoginData,
   type AdminMe,
   type ArticleDraft,
+  type BannerDraft,
+  type BannerListFilter,
+  type BannerRecord,
   type CityChecklistPatch,
   type CityDetail,
   type CityIntentMetrics,
@@ -272,6 +281,55 @@ export async function updateArticle(id: string, draft: ArticleDraft): Promise<Ar
 
 export async function deleteArticle(id: string): Promise<void> {
   await http.request<unknown>(adminArticlePath(id), { method: 'DELETE' })
+}
+
+export async function fetchBanners(
+  filter: BannerListFilter,
+  signal?: AbortSignal,
+): Promise<PageResult<BannerRecord>> {
+  const data = await http.request<unknown>(ADMIN_API.banners, {
+    query: bannerListQuery(filter),
+    signal,
+  })
+  return readPage(data, readBanner)
+}
+
+export async function fetchBanner(id: string, signal?: AbortSignal): Promise<BannerRecord> {
+  const data = await http.request<unknown>(adminBannerPath(id), { signal })
+  const banner = readBanner(data)
+  if (!banner) throw new Error('Banner 缺少编号')
+  return banner
+}
+
+export async function createBanner(draft: BannerDraft): Promise<BannerRecord> {
+  const data = await http.request<unknown>(ADMIN_API.banners, {
+    method: 'POST',
+    body: buildBannerBody(draft),
+  })
+  const banner = readBanner(data)
+  if (!banner) throw new Error('Banner 响应缺少编号')
+  return banner
+}
+
+export async function updateBanner(id: string, draft: BannerDraft): Promise<BannerRecord | null> {
+  const data = await http.request<unknown>(adminBannerPath(id), {
+    method: 'PUT',
+    body: buildBannerBody(draft),
+  })
+  if (data === null || data === undefined) return null
+  return readBanner(data)
+}
+
+export async function enableBanner(id: string): Promise<void> {
+  await http.request<unknown>(adminBannerEnablePath(id), { method: 'POST' })
+}
+
+export async function disableBanner(id: string): Promise<void> {
+  await http.request<unknown>(adminBannerDisablePath(id), { method: 'POST' })
+}
+
+export async function deleteBanner(id: string): Promise<void> {
+  await http.request<unknown>(adminBannerPath(id), { method: 'DELETE' })
 }
 
 export async function fetchSiteConfig(signal?: AbortSignal): Promise<SiteConfigRecord> {

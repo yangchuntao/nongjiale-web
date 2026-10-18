@@ -52,6 +52,28 @@ export const SEED_EMPTY = '该时间窗暂无意向数据'
 
 export const SEED_ERROR = '指标加载失败，请重试'
 
+export const BANNER_LIST_HINT = '仅影响门户首页 Banner；数字越小越靠前。全站投放与游客所选目的地无关。'
+
+export const BANNER_LIST_EMPTY = '暂无 Banner，点击新建投放'
+
+export const BANNER_LIST_ERROR = '列表加载失败，请重试'
+
+export const BANNER_DELETE_CONFIRM = '删除后不可恢复，确认删除该 Banner？'
+
+export const BANNER_CITY_CLOSED = '投放市未开通，请改选全站或其他已开通市'
+
+export const BANNER_CLOSED_NOTE = '市已关闭·不对客'
+
+export const BANNER_LOAD_ERROR = '加载失败，请重试'
+
+export const BANNER_SCOPE_HELP = '全站：所有游客首页可见，与目的地选择无关。指定市：仅该市为开通状态时展示。'
+
+export const BANNER_LINK_HELP = '外链将在新标签页打开'
+
+export const BANNER_SORT_HELP = '数字越小越靠前'
+
+export const BANNER_CITY_BLOCKED = '该市未开通，不能作为投放目标'
+
 export function cityOpenConfirm(name: string): string {
   return `确认开通「${name}」？开通后游客可在首页与列表选择该目的地。`
 }

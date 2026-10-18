@@ -9,6 +9,9 @@ import {
   type IntentStatus,
   type PageResult,
 } from '@nongjiale/shared'
+import { BANNER_CITY_CLOSED } from '../domain/copy'
+
+export { BANNER_CITY_CLOSED }
 
 export const ADMIN_PAGE_SIZE = 20
 
@@ -1151,4 +1154,167 @@ export function cityIntentTotal(metrics: CityIntentMetrics): CityIntentRow {
 
 export function cityIntentCities(metrics: CityIntentMetrics): CityIntentRow[] {
   return metrics.rows.filter((row) => !row.total)
+}
+
+export type BannerScope = 'ALL' | 'CITY'
+
+export interface BannerRecord {
+  id: string
+  title: string | null
+  imageUrl: string
+  linkUrl: string
+  scope: BannerScope
+  cityId: string | null
+  citySlug: string | null
+  cityName: string | null
+  cityOpen: boolean | null
+  sortOrder: number
+  enabled: boolean
+  createdAt: string
+  updatedAt: string
+}
+
+export interface BannerDraft {
+  title: string
+  imageUrl: string
+  linkUrl: string
+  scope: BannerScope
+  cityId: string
+  sortOrderText: string
+  enabled: boolean
+}
+
+export interface BannerWriteBody {
+  imageUrl: string
+  linkUrl: string
+  scope: BannerScope
+  title: string | null
+  sortOrder: number
+  enabled: boolean
+  cityId: number | string | null
+}
+
+export interface BannerListFilter {
+  page: number
+  pageSize?: number
+  enabled: '' | 'true' | 'false'
+  scope: '' | BannerScope
+  keyword: string
+}
+
+export interface BannerFieldErrors {
+  imageUrl: string
+  linkUrl: string
+  cityId: string
+  sortOrder: string
+}
+
+function bannerScopeOf(value: unknown): BannerScope | null {
+  const scope = text(value).toUpperCase()
+  if (scope === 'ALL' || scope === 'CITY') return scope
+  return null
+}
+
+function isHttpUrl(value: string): boolean {
+  return /^https?:\/\//i.test(value.trim())
+}
+
+function isSitePath(value: string): boolean {
+  return value.startsWith('/') && !value.startsWith('//') && !value.includes('\\')
+}
+
+function cityIdValue(cityId: string): number | string | null {
+  const trimmed = cityId.trim()
+  if (!trimmed) return null
+  if (/^\d+$/.test(trimmed)) {
+    const value = Number(trimmed)
+    if (Number.isSafeInteger(value)) return value
+  }
+  return trimmed
+}
+
+export function readBanner(value: unknown): BannerRecord | null {
+  const body = record(value)
+  if (!body) return null
+  const id = idOf(body.id)
+  const imageUrl = text(body.imageUrl)
+  const linkUrl = text(body.linkUrl)
+  const scope = bannerScopeOf(body.scope)
+  const sortOrder = num(body.sortOrder)
+  if (!id || !imageUrl || !linkUrl || !scope || sortOrder === null) return null
+  const title = text(body.title)
+  const all = scope === 'ALL'
+  return {
+    id,
+    title: title || null,
+    imageUrl,
+    linkUrl,
+    scope,
+    cityId: all ? null : idOf(body.cityId) || null,
+    citySlug: all ? null : text(body.citySlug) || null,
+    cityName: all ? null : text(body.cityName) || null,
+    cityOpen: all ? null : typeof body.cityOpen === 'boolean' ? body.cityOpen : null,
+    sortOrder,
+    enabled: readEnabled(body),
+    createdAt: readDateTime(body.createdAt),
+    updatedAt: readDateTime(body.updatedAt),
+  }
+}
+
+export function draftFromBanner(banner: BannerRecord): BannerDraft {
+  return {
+    title: banner.title ?? '',
+    imageUrl: banner.imageUrl,
+    linkUrl: banner.linkUrl,
+    scope: banner.scope,
+    cityId: banner.cityId ?? '',
+    sortOrderText: String(banner.sortOrder),
+    enabled: banner.enabled,
+  }
+}
+
+export function bannerListQuery(filter: BannerListFilter): Record<string, string | number> {
+  const query: Record<string, string | number> = {
+    page: filter.page,
+    pageSize: filter.pageSize ?? ADMIN_PAGE_SIZE,
+  }
+  if (filter.enabled === 'true' || filter.enabled === 'false') query.enabled = filter.enabled
+  if (filter.scope === 'ALL' || filter.scope === 'CITY') query.scope = filter.scope
+  const keyword = filter.keyword.trim()
+  if (keyword) query.keyword = keyword
+  return query
+}
+
+export function openBannerCities(cities: readonly CitySummary[]): CitySummary[] {
+  return cities.filter((city) => city.openStatus === 'OPEN')
+}
+
+export function bannerFieldErrors(draft: BannerDraft, openCityIds: ReadonlySet<string>): BannerFieldErrors {
+  const imageUrl = draft.imageUrl.trim()
+  const linkUrl = draft.linkUrl.trim()
+  const sortText = draft.sortOrderText.trim()
+  const sortOrder = Number(sortText)
+  const sortValid = sortText !== '' && Number.isInteger(sortOrder) && sortOrder >= 0
+  let linkError = ''
+  if (!linkUrl) linkError = '请填写跳转链接'
+  else if (!isSitePath(linkUrl) && !isHttpUrl(linkUrl)) linkError = '请填写站内路径或 http(s) 链接'
+  return {
+    imageUrl: isHttpUrl(imageUrl) ? '' : '请填写图片地址',
+    linkUrl: linkError,
+    cityId: draft.scope === 'CITY' && !openCityIds.has(draft.cityId) ? '请选择已开通的市' : '',
+    sortOrder: sortValid ? '' : '请输入整数排序值',
+  }
+}
+
+export function buildBannerBody(draft: BannerDraft): BannerWriteBody {
+  const sortOrder = Number(draft.sortOrderText.trim())
+  return {
+    imageUrl: draft.imageUrl.trim(),
+    linkUrl: draft.linkUrl.trim(),
+    scope: draft.scope,
+    title: draft.title.trim() || null,
+    sortOrder,
+    enabled: draft.enabled,
+    cityId: draft.scope === 'CITY' ? cityIdValue(draft.cityId) : null,
+  }
 }

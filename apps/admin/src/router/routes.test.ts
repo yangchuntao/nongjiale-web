@@ -60,6 +60,31 @@ describe('admin routes', () => {
     )
   })
 
+  it('opens banner list and a dedicated new route for an operator', async () => {
+    useAuthStore().setToken('admin-token')
+    const router = createTestRouter()
+    await router.push('/banners')
+    expect(router.currentRoute.value.meta.pageId).toBe('A-BANNER')
+    expect(router.currentRoute.value.meta.title).toBe('Banner 管理')
+    await router.push('/banners/new')
+    expect(router.currentRoute.value.name).toBe('banner-new')
+    expect(router.currentRoute.value.params.id).toBeUndefined()
+    await router.push('/banners/12')
+    expect(router.currentRoute.value.name).toBe('banner-edit')
+    expect(router.currentRoute.value.params.id).toBe('12')
+    const labels = navItems.map((item) => item.label)
+    const adIndex = labels.indexOf('广告位')
+    expect(labels[adIndex - 1]).toBe('攻略')
+    expect(labels[adIndex + 1]).toBe('开城/目的地')
+  })
+
+  it('sends an anonymous operator away from banner editor', async () => {
+    const router = createTestRouter()
+    await router.push('/banners/new')
+    expect(router.currentRoute.value.path).toBe('/login')
+    expect(router.currentRoute.value.query.redirect).toBe('/banners/new')
+  })
+
   it('drops an external login redirect', async () => {
     useAuthStore().setToken('admin-token')
     const router = createTestRouter()

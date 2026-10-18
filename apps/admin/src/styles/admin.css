@@ -181,6 +181,39 @@
   border-color: var(--color-info);
 }
 
+.el-tag.tag-brand {
+  --el-tag-bg-color: var(--color-brand-soft);
+  --el-tag-border-color: var(--color-brand);
+  --el-tag-text-color: var(--color-brand);
+  color: var(--color-brand);
+  background-color: var(--color-brand-soft);
+  border-color: var(--color-brand);
+}
+
+.banner-thumb {
+  width: 120px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-muted);
+  display: block;
+}
+
+.banner-preview {
+  width: min(100%, 25rem);
+  aspect-ratio: 2.5 / 1;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  background: var(--color-surface-muted);
+}
+
+.banner-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
 .el-tag.tag-muted {
   --el-tag-bg-color: var(--color-surface-muted);
   --el-tag-border-color: var(--color-border);
