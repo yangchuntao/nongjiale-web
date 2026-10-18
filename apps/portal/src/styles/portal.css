@@ -32,6 +32,10 @@ a.btn {
   line-height: 1.6;
 }
 
+.home-banner + .hero {
+  margin-top: var(--space-5);
+}
+
 .hero {
   width: 100vw;
   margin-left: calc(50% - 50vw);

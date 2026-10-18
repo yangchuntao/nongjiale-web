@@ -1,6 +1,8 @@
 import type { RouteRecordRaw } from 'vue-router'
 import ApplyDetailView from '../views/ApplyDetailView.vue'
 import AppliesView from '../views/AppliesView.vue'
+import BannerEditView from '../views/BannerEditView.vue'
+import BannerListView from '../views/BannerListView.vue'
 import CitiesView from '../views/CitiesView.vue'
 import CityDetailView from '../views/CityDetailView.vue'
 import GuidesView from '../views/GuidesView.vue'
@@ -78,6 +80,24 @@ export const routes: RouteRecordRaw[] = [
     name: 'guides',
     component: GuidesView,
     meta: { title: '攻略', pageId: 'A-GUIDE-LIST', requiresAuth: true },
+  },
+  {
+    path: '/banners',
+    name: 'banners',
+    component: BannerListView,
+    meta: { title: 'Banner 管理', pageId: 'A-BANNER', requiresAuth: true },
+  },
+  {
+    path: '/banners/new',
+    name: 'banner-new',
+    component: BannerEditView,
+    meta: { title: '新建 Banner', pageId: 'A-BANNER-EDIT', requiresAuth: true },
+  },
+  {
+    path: '/banners/:id',
+    name: 'banner-edit',
+    component: BannerEditView,
+    meta: { title: '编辑 Banner', pageId: 'A-BANNER-EDIT', requiresAuth: true },
   },
   {
     path: '/cities',

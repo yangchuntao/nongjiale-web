@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
-import { fetchHomeFeed, fetchRegions } from '../api/portal'
+import { fetchHomeBanners, fetchHomeFeed, fetchRegions } from '../api/portal'
 import type { ArticleSummary, RegionItem, StoreCard } from '../api/readers'
+import HomeBanner from '../components/HomeBanner.vue'
 import StoreCardView from '../components/StoreCard.vue'
+import { visibleHomeBanners, type HomeBanner as HomeBannerItem } from '../domain/banners'
 import EmptyState from '../components/EmptyState.vue'
 import { DESTINATION_PENDING, welcomeTitle } from '../domain/copy'
 import { destinationRegions } from '../domain/filters'
@@ -16,6 +18,7 @@ const featureText = ref('')
 const stores = ref<StoreCard[]>([])
 const articles = ref<ArticleSummary[]>([])
 const regions = ref<RegionItem[]>([])
+const banners = ref<HomeBannerItem[]>([])
 const regionError = ref('')
 const destinations = computed(() => destinationRegions(regions.value))
 const { loading, error, run } = useLoadState()
@@ -25,6 +28,14 @@ async function loadFeed() {
   if (outcome.status === 'ok') {
     stores.value = outcome.data.stores
     articles.value = outcome.data.articles.slice(0, 4)
+  }
+}
+
+async function loadBanners() {
+  try {
+    banners.value = visibleHomeBanners(await fetchHomeBanners())
+  } catch {
+    banners.value = []
   }
 }
 
@@ -46,11 +57,13 @@ function search() {
 onMounted(() => {
   void loadFeed()
   void loadRegions()
+  void loadBanners()
 })
 </script>
 
 <template>
   <section>
+    <HomeBanner v-if="banners.length" :banners="banners" />
     <div class="hero">
       <h1>{{ welcomeTitle(site.name) }}</h1>
       <p class="lede">挑选苏中农家乐，提交意向后由客服联系确认档期。</p>

@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import { createMemoryHistory, createRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import { installAuthGuard } from './guard'
+import { navItems } from './nav'
 import { HOME_PATH, routes } from './routes'
 
 function createTestRouter() {
@@ -33,6 +34,11 @@ describe('merchant routes', () => {
     expect(router.currentRoute.value.name).toBe('store-shelf')
     await router.push('/stores/4')
     expect(router.currentRoute.value.name).toBe('store-edit')
+  })
+
+  it('keeps merchant navigation on stores and intents only', () => {
+    expect(navItems.map((item) => item.label)).toEqual(['门店', '本店意向'])
+    expect(navItems.map((item) => item.path).join(' ')).not.toMatch(/banner|广告/)
   })
 
   it('bounces an authenticated merchant off login to the store list', async () => {

@@ -1,4 +1,5 @@
 import { formatDate, formatDateTime, intentDisplayLabel, type PageResult } from '@nongjiale/shared'
+import type { BannerScope, HomeBanner } from '../domain/banners'
 
 export interface StoreCard {
   id: number
@@ -370,6 +371,52 @@ export function canSubmitIntent(shelfStatus: string | null | undefined): boolean
 export interface HomeFeed {
   stores: StoreCard[]
   articles: ArticleSummary[]
+}
+
+function idText(value: unknown): string {
+  if (typeof value === 'string' && value.trim()) return value.trim()
+  if (typeof value === 'number' && Number.isFinite(value)) return String(value)
+  return ''
+}
+
+function readBannerScope(value: unknown): BannerScope | null {
+  const scope = text(value).toUpperCase()
+  if (scope === 'ALL' || scope === 'CITY') return scope
+  return null
+}
+
+function readHomeEnabled(value: unknown): boolean {
+  return !(value === false || value === 'false' || value === 0 || value === '0')
+}
+
+export function readHomeBanner(value: unknown): HomeBanner | null {
+  const body = record(value)
+  if (!body) return null
+  const id = idText(body.id)
+  const imageUrl = text(body.imageUrl)
+  const linkUrl = text(body.linkUrl)
+  const scope = readBannerScope(body.scope)
+  const sortOrder = num(body.sortOrder)
+  if (!id || !imageUrl || !linkUrl || !scope || sortOrder === null) return null
+  const title = text(body.title)
+  return {
+    id,
+    title: title || null,
+    imageUrl,
+    linkUrl,
+    scope,
+    cityId: idText(body.cityId) || null,
+    citySlug: text(body.citySlug) || null,
+    cityName: text(body.cityName) || null,
+    sortOrder,
+    enabled: readHomeEnabled(body.enabled),
+  }
+}
+
+/** 公开 `data` 是数组。`{ items }` 是已废弃草案，不认。 */
+export function readHomeBanners(data: unknown): HomeBanner[] {
+  if (!Array.isArray(data)) return []
+  return data.map(readHomeBanner).filter((item): item is HomeBanner => item !== null)
 }
 
 export function readHomeFeed(value: unknown): HomeFeed {
