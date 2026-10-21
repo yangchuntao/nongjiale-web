@@ -30,7 +30,14 @@ export const PHONE_PATTERN = /^1\d{10}$/
 
 export const CITY_UNIT_HINT = '开通单位为地级市；区县仅作门户筛选，不在此开城。'
 
-export const CITY_LIST_EMPTY = '暂无目的地配置，请联系工程导入行政区划'
+export const CITY_LIST_EMPTY = '暂无目的地配置，点上方「同步全国区划」导入省市区数据'
+
+export const CITY_SYNC_HINT = '同步全国省市区数据后，所有地级市都会出现在本列表；同步不会改变已开通状态。'
+
+/** 同步全国区划前的二次确认文案。 */
+export function citySyncConfirm(): string {
+  return '将导入全国省市区数据（约 3200 条）。已存在的地区只补名称与排序，不会改动开通状态和启停。确认同步？'
+}
 
 export const CITY_LIST_ERROR = '列表加载失败，请重试'
 

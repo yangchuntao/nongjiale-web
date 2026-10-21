@@ -342,6 +342,26 @@ export async function fetchCities(signal?: AbortSignal): Promise<CitySummary[]> 
   return readCityList(data)
 }
 
+export interface RegionSyncResult {
+  total: number
+  inserted: number
+  updated: number
+  skipped: number
+  message: string
+}
+
+/** 把内置的全国省市区数据同步进库。幂等，不覆盖开城状态。 */
+export async function syncRegions(): Promise<RegionSyncResult> {
+  const data = await http.request<Record<string, unknown>>(ADMIN_API.regionSync, { method: 'POST' })
+  return {
+    total: Number(data?.total ?? 0),
+    inserted: Number(data?.inserted ?? 0),
+    updated: Number(data?.updated ?? 0),
+    skipped: Number(data?.skipped ?? 0),
+    message: String(data?.message ?? ''),
+  }
+}
+
 export async function fetchCity(id: string, signal?: AbortSignal): Promise<CityDetail> {
   const data = await http.request<unknown>(adminCityPath(id), { signal })
   const city = readCityDetail(data)

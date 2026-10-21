@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import { RouterLink, useRouter } from 'vue-router'
-import { fetchCities } from '../api/admin'
+import { fetchCities, syncRegions } from '../api/admin'
+import { describeAdminError } from '../api/errors'
 import {
   cityTitle,
   cityUpdatedLabel,
@@ -9,7 +11,7 @@ import {
   openStatusLabel,
   type CitySummary,
 } from '../api/readers'
-import { CITY_LIST_EMPTY, CITY_LIST_ERROR, CITY_UNIT_HINT } from '../domain/copy'
+import { CITY_LIST_EMPTY, CITY_LIST_ERROR, CITY_SYNC_HINT, CITY_UNIT_HINT, citySyncConfirm } from '../domain/copy'
 import { useAuthStore } from '../stores/auth'
 import { leaveIfDisabled, useLoadState } from '../utils/load'
 
@@ -20,6 +22,7 @@ const cities = ref<CitySummary[]>([])
 const status = ref('')
 const province = ref('')
 const keyword = ref('')
+const syncing = ref(false)
 
 const provinces = computed(() => {
   const names = new Set<string>()
@@ -52,6 +55,34 @@ function resetFilters() {
   keyword.value = ''
 }
 
+/** 同步全国区划：把内置省市区数据导入，新增的城市会出现在本列表里。 */
+async function onSync() {
+  if (syncing.value) return
+  try {
+    await ElMessageBox.confirm(citySyncConfirm(), '同步全国区划', {
+      confirmButtonText: '开始同步',
+      cancelButtonText: '取消',
+      type: 'info',
+    })
+  } catch {
+    return
+  }
+  syncing.value = true
+  try {
+    const result = await syncRegions()
+    ElMessage.success(
+      `同步完成：共 ${result.total} 条，新增 ${result.inserted}，更新 ${result.updated}，未变 ${result.skipped}`,
+    )
+    await load()
+  } catch (cause) {
+    const view = describeAdminError(cause)
+    if (await leaveIfDisabled(view.kind, auth, router)) return
+    ElMessage.error(view.message)
+  } finally {
+    syncing.value = false
+  }
+}
+
 watch(provinces, (names) => {
   if (province.value && !names.includes(province.value)) province.value = ''
 })
@@ -66,8 +97,10 @@ void load()
         <h1>开城/目的地</h1>
         <p class="hint">{{ CITY_UNIT_HINT }}</p>
       </div>
+      <el-button :loading="syncing" @click="onSync">同步全国区划</el-button>
       <el-button @click="load">刷新</el-button>
     </div>
+    <p class="hint">{{ CITY_SYNC_HINT }}</p>
     <el-form class="filters" @submit.prevent>
       <el-form-item label="状态">
         <el-select v-model="status" clearable placeholder="全部" style="width: 8rem">
