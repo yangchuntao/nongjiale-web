@@ -5,7 +5,6 @@ import { useRoute, useRouter } from 'vue-router'
 import { ACCOUNT_DISABLED, describeMerchantError } from '../api/errors'
 import { loginMerchant } from '../api/merchant'
 import { PHONE_PATTERN, validatePassword } from '../domain/copy'
-import { appLabel } from '../env'
 import { safeInternalPath } from '../router/guard'
 import { useAuthStore } from '../stores/auth'
 import { useSiteStore } from '../stores/site'
@@ -54,9 +53,9 @@ async function onSubmit() {
     <section class="login">
       <div class="login-brand">
         <span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
-        <div>
+        <div class="brand-text">
           <b>{{ site.name }}</b>
-          <div>{{ appLabel }}</div>
+          <div class="brand-sub">水乡农家</div>
         </div>
       </div>
       <p class="login-kicker">商家后台 · PARTNER CONSOLE</p>

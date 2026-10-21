@@ -6,7 +6,6 @@ import { fetchAdminMe, loginAdmin } from '../api/admin'
 import { ACCOUNT_DISABLED, describeAdminError } from '../api/errors'
 import { passwordError as passwordMessage } from '../api/readers'
 import { PHONE_PATTERN } from '../domain/copy'
-import { appLabel } from '../env'
 import { safeInternalPath } from '../router/guard'
 import { HOME_PATH } from '../router/routes'
 import { useAuthStore } from '../stores/auth'
@@ -62,9 +61,9 @@ async function onSubmit() {
     <section class="login">
       <div class="login-brand">
         <span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
-        <div>
+        <div class="brand-text">
           <b>{{ site.name }}</b>
-          <div>{{ appLabel }}</div>
+          <div class="brand-sub">水乡农家</div>
         </div>
       </div>
       <p class="login-kicker">运营后台 · OPS CONSOLE</p>
