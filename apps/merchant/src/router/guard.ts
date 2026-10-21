@@ -1,7 +1,12 @@
 import type { Router } from 'vue-router'
-import { watch } from 'vue'
 import { useAuthStore } from '../stores/auth'
 import { useSiteStore } from '../stores/site'
+
+/** 当前页面标题（不含站名后缀），供 main.ts 在站名异步到达后重写 document.title */
+let pageTitle = ''
+export function currentPageTitle(): string {
+  return pageTitle
+}
 
 export function safeInternalPath(value: unknown, fallback: string): string {
   const raw = Array.isArray(value) ? value[0] : value
@@ -27,16 +32,11 @@ export function installAuthGuard(router: Router, homePath: string) {
     return true
   })
 
-  // 站名来自异步的公开配置，首次路由时可能还是占位——跟随变化补写标题
-  let pageTitle = ''
-  const applyTitle = () => {
-    if (typeof document !== 'undefined' && pageTitle) {
-      document.title = `${pageTitle} · ${useSiteStore().name}`
-    }
-  }
+  // 站名来自异步公开配置；标题跟随站名的重写由 main.ts 的 watch 完成（pinia 就绪后注册）
   router.afterEach((to) => {
     pageTitle = String(to.meta.title || '商家端')
-    applyTitle()
+    if (typeof document !== 'undefined') {
+      document.title = `${pageTitle} · ${useSiteStore().name}`
+    }
   })
-  watch(() => useSiteStore().name, applyTitle)
 }
