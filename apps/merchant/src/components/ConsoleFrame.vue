@@ -32,7 +32,13 @@ async function logout() {
   <el-container class="console shell">
     <el-aside width="236px" class="aside console-aside side">
       <div class="side__brand">
-        <div class="name">{{ site.name }}</div>
+        <div class="brand-row">
+          <span class="side-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+          <div class="brand-text">
+            <div class="name">{{ site.name }}</div>
+            <div class="sub">水乡农家</div>
+          </div>
+        </div>
         <div class="role">PARTNER CONSOLE · {{ appLabel }}</div>
       </div>
       <el-menu router :default-active="active" :key="active" class="side__nav">
@@ -115,16 +121,62 @@ async function logout() {
   border-bottom: 1px solid var(--line);
 }
 
+/* 垛田方标：四块田，呼应「垛」字 */
+.brand-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.side-mark {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 3px;
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+}
+
+.side-mark i {
+  border-radius: 2px;
+  background: var(--brand-600);
+}
+
+.side-mark i:nth-child(2) {
+  background: var(--brand-400);
+}
+
+.side-mark i:nth-child(3) {
+  background: var(--brand-500);
+}
+
+.side-mark i:nth-child(4) {
+  background: var(--gold-500);
+}
+
+.brand-text {
+  min-width: 0;
+  line-height: 1.15;
+}
+
 .side__brand .name {
   font-family: var(--font-serif);
-  font-size: 19px;
+  font-size: 21px;
   font-weight: var(--font-weight-semibold);
   letter-spacing: -0.01em;
   color: var(--ink-900);
 }
 
-.side__brand .role {
+.side__brand .sub {
   margin-top: 3px;
+  font-size: 10px;
+  letter-spacing: 0.28em;
+  color: var(--ink-400);
+}
+
+.side__brand .role {
+  margin-top: var(--space-3);
   font-size: 11px;
   letter-spacing: 0.08em;
   color: var(--ink-400);

@@ -21,6 +21,7 @@ const auth = useAuthStore(pinia)
 auth.hydrate()
 const site = useSiteStore(pinia)
 site.applyBrand()
+void site.loadPublic()
 if (auth.isAuthenticated) {
   void auth.refreshMe()
   void site.loadFromAdmin()

@@ -19,7 +19,9 @@ app.use(ElementPlus, { locale: zhCn })
 
 const auth = useAuthStore(pinia)
 auth.hydrate()
-useSiteStore(pinia).applyBrand()
+const site = useSiteStore(pinia)
+site.applyBrand()
+void site.loadPublic()
 
 setUnauthorizedHandler(() => {
   auth.logout()

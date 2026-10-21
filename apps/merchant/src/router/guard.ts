@@ -1,4 +1,5 @@
 import type { Router } from 'vue-router'
+import { watch } from 'vue'
 import { useAuthStore } from '../stores/auth'
 import { useSiteStore } from '../stores/site'
 
@@ -26,9 +27,16 @@ export function installAuthGuard(router: Router, homePath: string) {
     return true
   })
 
+  // 站名来自异步的公开配置，首次路由时可能还是占位——跟随变化补写标题
+  let pageTitle = ''
+  const applyTitle = () => {
+    if (typeof document !== 'undefined' && pageTitle) {
+      document.title = `${pageTitle} · ${useSiteStore().name}`
+    }
+  }
   router.afterEach((to) => {
-    if (typeof document === 'undefined') return
-    const title = to.meta.title || '商家端'
-    document.title = `${title} · ${useSiteStore().name}`
+    pageTitle = String(to.meta.title || '商家端')
+    applyTitle()
   })
+  watch(() => useSiteStore().name, applyTitle)
 }
