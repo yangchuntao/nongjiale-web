@@ -49,7 +49,14 @@ function packageName(item: StoreDetail['packages'][number]): string {
 </script>
 
 <template>
-  <section class="detail-layout">
+  <div class="detail">
+    <nav class="crumbs" aria-label="位置">
+      <RouterLink to="/">首页</RouterLink>
+      <span aria-hidden="true">/</span>
+      <RouterLink to="/listings">找农家乐</RouterLink>
+      <span aria-hidden="true">/</span>
+      <span class="now">{{ store?.name || '详情' }}</span>
+    </nav>
     <div v-if="loading" class="skeleton-card" aria-busy="true"></div>
     <div v-else-if="errorKind === 'gone'" class="empty-state">
       <p>{{ LISTING_UNAVAILABLE }}</p>
@@ -65,7 +72,7 @@ function packageName(item: StoreDetail['packages'][number]): string {
       <p>{{ error }}</p>
       <button class="btn btn-secondary" type="button" @click="load">加载失败，点击重试</button>
     </div>
-    <template v-else-if="store">
+    <section v-else-if="store" class="detail-layout">
       <div class="detail-intro">
         <div v-if="images.length" class="gallery-block">
           <img class="gallery-main" :src="images[activeImage]" :alt="store.name" />
@@ -82,19 +89,22 @@ function packageName(item: StoreDetail['packages'][number]): string {
           </div>
         </div>
         <div v-else class="detail-fallback">暂无图片</div>
-        <div class="page-head">
-          <h1>{{ store.name }}</h1>
-          <p class="lede">
+        <div class="detail-title-block">
+          <h1 class="detail-title">{{ store.name }}</h1>
+          <p class="detail__sub">
             <span>{{ store.regionName }} {{ store.address }}</span>
             <a v-if="store.phone" class="tel" :href="`tel:${store.phone.replace(/\s+/g, '')}`">{{ store.phone }}</a>
           </p>
-          <p v-if="shownPrice" class="price">{{ shownPrice }}</p>
-          <div v-if="visitorTags.length" class="tag-row">
-            <span v-for="tag in visitorTags" :key="tag" class="tag">{{ tag }}</span>
+          <div v-if="visitorTags.length" class="detail__tags">
+            <span v-for="tag in visitorTags" :key="tag" class="tag tag-brand">{{ tag }}</span>
           </div>
         </div>
       </div>
       <aside class="detail-cta">
+        <div class="detail-cta-price">
+          <p v-if="shownPrice" class="price">{{ shownPrice }}</p>
+          <span v-else class="stay__hint">价格联系客服确认</span>
+        </div>
         <div class="detail-cta-actions">
           <RouterLink v-if="bookable && auth.isAuthenticated" class="btn btn-primary btn-lg" :to="intentTo">
             提交意向
@@ -138,6 +148,6 @@ function packageName(item: StoreDetail['packages'][number]): string {
         <section v-if="store.notice" class="detail-section"><h3>须知</h3><p class="prose">{{ store.notice }}</p></section>
         <section v-if="store.trafficText" class="detail-section"><h3>交通与周边</h3><p class="prose">{{ store.trafficText }}</p></section>
       </div>
-    </template>
-  </section>
+    </section>
+  </div>
 </template>

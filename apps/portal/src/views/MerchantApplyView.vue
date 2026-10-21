@@ -82,6 +82,7 @@ onMounted(async () => {
         <h1>商家入驻申请</h1>
         <p class="lede">提交后将由运营审核。通过后开通商家账号，您将使用登记手机登录商家端。</p>
       </div>
+      <div class="form-grid">
       <label class="field">
         <span>主体名称 *</span>
         <input id="apply-subjectName" v-model="form.subjectName" type="text" maxlength="64" />
@@ -123,6 +124,7 @@ onMounted(async () => {
         <input type="file" accept="image/*" @change="onLicense" />
         <small class="muted">人工审核用。入驻接口当前按 JSON 提交文字，选择文件不会当作已上传。</small>
       </label>
+      </div>
       <p v-if="formError" class="form-error" role="alert">{{ formError }}</p>
       <button class="btn btn-primary btn-lg" type="submit" :disabled="submitting">
         {{ submitting ? '提交中…' : '提交申请' }}

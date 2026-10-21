@@ -47,10 +47,10 @@ watch(id, () => void load(), { immediate: true })
         <dt>日期</dt>
         <dd>{{ intent.checkIn || '—' }}<template v-if="intent.checkOut"> 至 {{ intent.checkOut }}</template></dd>
       </dl>
-      <div class="detail-cta">
+      <div class="detail-cta-actions">
         <RouterLink class="btn btn-primary" to="/my/intents">查看我的意向</RouterLink>
         <RouterLink class="btn btn-secondary" to="/">返回首页</RouterLink>
-        <a class="btn btn-secondary" :href="`tel:${site.phone.replace(/\s+/g, '')}`">拨打客服</a>
+        <a class="btn btn-ghost" :href="`tel:${site.phone.replace(/\s+/g, '')}`">拨打客服</a>
       </div>
     </div>
   </section>

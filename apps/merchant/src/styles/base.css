@@ -1,3 +1,7 @@
+/* ============================================================
+   B 端基础样式 · 水乡绿（v2）
+   依赖 tokens.css；运营端与商家端共用同一份内容
+   ============================================================ */
 *,
 *::before,
 *::after {
@@ -14,6 +18,15 @@
   --el-color-primary-light-9: var(--color-brand-light-9);
   --el-color-primary-dark-2: var(--color-brand-dark-2);
   --el-border-radius-base: var(--radius-md);
+  --el-text-color-primary: var(--ink-900);
+  --el-text-color-regular: var(--ink-600);
+  --el-text-color-secondary: var(--ink-400);
+  --el-border-color: var(--line);
+  --el-border-color-light: var(--line);
+  --el-border-color-lighter: var(--ink-150);
+  --el-fill-color-blank: var(--surface);
+  --el-bg-color: var(--surface);
+  --el-bg-color-page: var(--paper);
 }
 
 html,
@@ -23,28 +36,117 @@ body,
   min-height: 100%;
 }
 
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
 body {
   font-family: var(--font-family);
   font-size: var(--font-body);
-  color: var(--color-text);
-  background: var(--color-surface-muted);
+  line-height: var(--line-body);
+  color: var(--ink-600);
+  background: var(--paper);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* B 端不铺垛田纹理，保持纸面干净 */
+body.app {
+  background: var(--paper);
+  background-image: none;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-serif);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-tight);
+  letter-spacing: -0.01em;
+  color: var(--ink-900);
+  text-wrap: balance;
+  margin: 0;
+}
+
+p {
+  text-wrap: pretty;
 }
 
 a {
-  color: var(--color-brand);
+  color: var(--brand-600);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--brand-700);
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+ul,
+ol {
+  list-style: none;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--brand-600);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+::selection {
+  background: var(--brand-200);
+  color: var(--brand-900);
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--ink-200);
+  border-radius: var(--radius-full);
+  border: 3px solid var(--paper);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--ink-300);
 }
 
 .nav-toggle {
   display: none;
 }
 
+/* Element Plus 主按钮：垛田绿配白字（品牌色可被站点配置运行期覆盖） */
 button.el-button.el-button--primary:not(.is-plain):not(.is-text):not(.is-link):not(.is-dashed),
 a.el-button.el-button--primary:not(.is-plain):not(.is-text):not(.is-link):not(.is-dashed) {
-  --el-button-text-color: var(--color-on-brand, #1a1a1a);
-  --el-button-hover-text-color: var(--color-on-brand, #1a1a1a);
-  --el-button-active-text-color: var(--color-on-brand, #1a1a1a);
-  --el-button-disabled-text-color: var(--color-on-brand, #1a1a1a);
-  color: var(--color-on-brand, #1a1a1a);
+  --el-button-text-color: var(--color-on-brand, #ffffff);
+  --el-button-hover-text-color: var(--color-on-brand, #ffffff);
+  --el-button-active-text-color: var(--color-on-brand, #ffffff);
+  --el-button-disabled-text-color: var(--color-on-brand, #ffffff);
+  --el-button-hover-bg-color: var(--color-brand-hover, var(--brand-700));
+  --el-button-hover-border-color: var(--color-brand-hover, var(--brand-700));
+  color: var(--color-on-brand, #ffffff);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.14) inset,
+    0 6px 16px -8px rgba(23, 55, 42, 0.5);
 }
 
 button.el-button.el-button--primary:not(.is-plain):not(.is-text):not(.is-link):not(.is-dashed):hover,
@@ -53,5 +155,68 @@ button.el-button.el-button--primary:not(.is-plain):not(.is-text):not(.is-link):n
 a.el-button.el-button--primary:not(.is-plain):not(.is-text):not(.is-link):not(.is-dashed):hover,
 a.el-button.el-button--primary:not(.is-plain):not(.is-text):not(.is-link):not(.is-dashed):focus,
 a.el-button.el-button--primary:not(.is-plain):not(.is-text):not(.is-link):not(.is-dashed):active {
-  color: var(--color-on-brand, #1a1a1a);
+  color: var(--color-on-brand, #ffffff);
+}
+
+.el-button {
+  font-weight: 500;
+}
+
+.el-button--default:not(.is-text):not(.is-link) {
+  --el-button-bg-color: var(--surface);
+  --el-button-border-color: var(--line-strong);
+  --el-button-text-color: var(--ink-600);
+  --el-button-hover-bg-color: var(--ink-050);
+  --el-button-hover-border-color: var(--ink-300);
+  --el-button-hover-text-color: var(--ink-900);
+}
+
+.el-input__wrapper,
+.el-textarea__inner,
+.el-select__wrapper {
+  border-radius: var(--radius-sm);
+  box-shadow: 0 0 0 1px var(--line-strong) inset;
+  background: var(--surface) !important;
+}
+
+.el-input__wrapper.is-focus,
+.el-input__wrapper:focus-within,
+.el-select__wrapper.is-focused,
+.el-textarea__inner:focus {
+  box-shadow: 0 0 0 1px var(--brand-600) inset, 0 0 0 3px var(--focus-ring) !important;
+}
+
+.el-form-item__label {
+  font-size: 13px;
+  font-weight: var(--font-weight-semibold);
+  color: var(--ink-600);
+}
+
+.el-card,
+.el-dialog,
+.el-drawer {
+  border-radius: var(--radius-lg);
+  border-color: var(--line);
+}
+
+.el-dialog {
+  box-shadow: var(--shadow-lift);
+}
+
+.el-dialog__title {
+  font-family: var(--font-serif);
+  font-weight: var(--font-weight-semibold);
+}
+
+.el-menu {
+  --el-menu-bg-color: transparent;
+  --el-menu-hover-bg-color: var(--ink-100);
+  --el-menu-text-color: var(--ink-600);
+  --el-menu-active-color: var(--brand-700);
+  border-right: 0 !important;
+}
+
+.el-pagination {
+  --el-pagination-button-bg-color: var(--surface);
+  font-variant-numeric: tabular-nums;
 }

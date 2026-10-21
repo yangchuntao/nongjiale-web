@@ -62,30 +62,38 @@ onMounted(() => {
 </script>
 
 <template>
-  <section>
+  <div class="home">
+    <!-- Banner 剧场：0 条不渲染，1 条静帧，≥2 条轮播（规则在 domain/banners） -->
     <HomeBanner v-if="banners.length" :banners="banners" />
-    <div class="hero">
+    <header v-else class="hero--none">
       <h1>{{ welcomeTitle(site.name) }}</h1>
       <p class="lede">挑选苏中农家乐，提交意向后由客服联系确认档期。</p>
-      <form class="search-row" @submit.prevent="search">
-        <label class="field" style="flex: 1">
-          <span class="muted">搜索特色</span>
-          <input v-model="featureText" name="tag" type="search" placeholder="输入特色" />
+    </header>
+
+    <!-- 悬浮搜索：压在剧场下缘 -->
+    <div class="find">
+      <form class="find__card" @submit.prevent="search">
+        <label class="search">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+            <circle cx="11" cy="11" r="6.5" />
+            <path d="m16 16 4 4" stroke-linecap="round" />
+          </svg>
+          <input v-model="featureText" name="tag" type="search" placeholder="搜特色，比如「带院子」「能钓鱼」" aria-label="搜索特色" />
         </label>
-        <button class="btn btn-primary btn-lg" type="submit">找农家乐</button>
+        <button class="btn btn-primary" type="submit">找农家乐</button>
       </form>
     </div>
 
-    <section class="section">
-      <h2>苏中目的地</h2>
+    <div class="dest">
+      <span class="dest__label">去哪儿</span>
       <p v-if="regionError">
-        <button class="btn btn-secondary" type="button" @click="loadRegions">{{ regionError }}</button>
+        <button class="btn btn-ghost btn-sm" type="button" @click="loadRegions">{{ regionError }}</button>
       </p>
       <div v-else-if="!destinations.length" class="empty-inline">
         <p>{{ DESTINATION_PENDING }}</p>
-        <RouterLink class="btn btn-secondary" to="/listings">找农家乐</RouterLink>
+        <RouterLink class="btn btn-ghost btn-sm" to="/listings">找农家乐</RouterLink>
       </div>
-      <div v-else class="chips">
+      <template v-else>
         <RouterLink
           v-for="region in destinations"
           :key="region.id"
@@ -94,12 +102,15 @@ onMounted(() => {
         >
           {{ region.name }}
         </RouterLink>
-      </div>
-    </section>
+      </template>
+    </div>
 
-    <section class="section" :aria-busy="loading">
-      <h2>推荐农家乐</h2>
-      <div v-if="loading" class="card-grid">
+    <section class="floor" :aria-busy="loading">
+      <div class="floor__head">
+        <h2>推荐<em>农家乐</em> <span class="sub">客服确认档期，先看院子再谈</span></h2>
+        <RouterLink class="text-link" to="/listings">查看全部 →</RouterLink>
+      </div>
+      <div v-if="loading" class="stays">
         <div v-for="item in 3" :key="item" class="skeleton-card"></div>
       </div>
       <EmptyState v-else-if="error" :title="error">
@@ -111,19 +122,20 @@ onMounted(() => {
         action="查看全部"
         to="/listings"
       />
-      <div v-else class="card-grid">
+      <div v-else class="stays">
         <StoreCardView v-for="store in stores" :key="store.id" :store="store" />
       </div>
     </section>
 
-    <section class="section">
-      <div class="page-head">
-        <h2>攻略</h2>
-        <RouterLink to="/guides">更多攻略</RouterLink>
+    <section class="floor">
+      <div class="floor__head">
+        <h2>走走<em>看看</em> <span class="sub">村里的事，慢慢讲</span></h2>
+        <RouterLink class="text-link" to="/guides">更多攻略 →</RouterLink>
       </div>
       <div v-if="articles.length" class="card-grid">
         <RouterLink v-for="article in articles" :key="article.id" class="article-card" :to="`/guides/${article.id}`">
           <img v-if="article.coverUrl" class="cover" :src="article.coverUrl" :alt="article.title" />
+          <div v-else class="cover-fallback article-cover" aria-hidden="true"></div>
           <div class="body">
             <h3 class="card-title">{{ article.title }}</h3>
             <p class="muted">{{ article.summary }}</p>
@@ -133,5 +145,5 @@ onMounted(() => {
       </div>
       <p v-else-if="!loading && !error" class="muted">暂无攻略</p>
     </section>
-  </section>
+  </div>
 </template>

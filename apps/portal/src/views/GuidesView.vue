@@ -30,10 +30,15 @@ watch(page, () => void load(), { immediate: true })
 
 <template>
   <section class="stack">
-    <div class="page-head">
-      <h1>攻略</h1>
-      <p class="lede">看看别人怎么安排苏中周末。</p>
-    </div>
+    <header class="list-head">
+      <nav class="crumbs" aria-label="位置">
+        <RouterLink to="/">首页</RouterLink>
+        <span aria-hidden="true">/</span>
+        <span class="now">攻略</span>
+      </nav>
+      <h1>水乡攻略</h1>
+      <p class="desc">看看别人怎么安排苏中周末。</p>
+    </header>
     <div v-if="loading" class="card-grid" aria-busy="true">
       <div v-for="item in 3" :key="item" class="skeleton-card"></div>
     </div>
@@ -45,10 +50,11 @@ watch(page, () => void load(), { immediate: true })
       <div class="card-grid">
         <RouterLink v-for="article in result.items" :key="article.id" class="article-card" :to="`/guides/${article.id}`">
           <img v-if="article.coverUrl" class="cover" :src="article.coverUrl" :alt="article.title" />
+          <div v-else class="cover-fallback article-cover" aria-hidden="true"></div>
           <div class="body">
             <h2 class="card-title">{{ article.title }}</h2>
             <p class="muted">{{ article.summary }}</p>
-            <span class="text-link">查看攻略</span>
+            <span class="text-link">查看攻略 →</span>
           </div>
         </RouterLink>
       </div>

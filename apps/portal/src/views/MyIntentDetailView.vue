@@ -26,11 +26,18 @@ watch(id, () => void load(), { immediate: true })
 </script>
 
 <template>
-  <section class="stack">
-    <RouterLink to="/my/intents">返回我的意向</RouterLink>
+  <section class="stack detail">
+    <nav class="crumbs" aria-label="位置">
+      <RouterLink to="/">首页</RouterLink>
+      <span aria-hidden="true">/</span>
+      <RouterLink to="/my/intents">我的意向</RouterLink>
+      <span aria-hidden="true">/</span>
+      <span class="now">{{ intent?.intentNo || intent?.id || '详情' }}</span>
+    </nav>
     <div v-if="loading" class="skeleton-card" aria-busy="true"></div>
     <div v-else-if="errorKind === 'notFound'" class="empty-state">
       <p>不存在或无权查看</p>
+      <RouterLink class="btn btn-secondary" to="/my/intents">返回我的意向</RouterLink>
     </div>
     <div v-else-if="error" class="empty-state">
       <p>{{ error }}</p>

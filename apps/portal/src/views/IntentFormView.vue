@@ -94,10 +94,17 @@ onMounted(async () => {
 
 <template>
   <section class="stack">
-    <div class="page-head">
+    <header class="list-head">
+      <nav class="crumbs" aria-label="位置">
+        <RouterLink to="/">首页</RouterLink>
+        <span aria-hidden="true">/</span>
+        <RouterLink to="/listings">找农家乐</RouterLink>
+        <span aria-hidden="true">/</span>
+        <span class="now">提交意向</span>
+      </nav>
       <h1>提交意向</h1>
-      <RouterLink v-if="id" :to="`/listings/${id}`">返回房源</RouterLink>
-    </div>
+      <p class="desc">填完后客服会电话联系你确认档期与接待安排。</p>
+    </header>
     <IntentNoticeBanner :text="INTENT_FORM_NOTICE" />
     <div v-if="loading" class="skeleton-card" aria-busy="true"></div>
     <div v-else-if="errorKind === 'notFound'" class="empty-state">
@@ -115,10 +122,14 @@ onMounted(async () => {
       <button class="btn btn-secondary" type="button" @click="loadStore">加载失败，点击重试</button>
     </div>
     <form v-else-if="store" class="panel stack" novalidate @submit.prevent="onSubmit">
-      <p><strong>{{ store.name }}</strong></p>
-      <p v-if="priceLabel(store.priceText, store.priceFrom)" class="muted">
-        {{ priceLabel(store.priceText, store.priceFrom) }}
-      </p>
+      <div class="page-head">
+        <h2>{{ store.name }}</h2>
+        <p v-if="priceLabel(store.priceText, store.priceFrom)" class="muted">
+          {{ priceLabel(store.priceText, store.priceFrom) }}
+        </p>
+        <RouterLink class="text-link" :to="`/listings/${id}`">← 返回房源</RouterLink>
+      </div>
+      <div class="form-grid">
       <label class="field">
         <span>到店日 *</span>
         <DateField id="intent-checkIn" v-model="form.checkIn" required />
@@ -154,6 +165,7 @@ onMounted(async () => {
         <textarea id="intent-userRemark" v-model="form.userRemark" rows="4" maxlength="500"></textarea>
         <small v-if="errors.userRemark">{{ errors.userRemark }}</small>
       </label>
+      </div>
       <p v-if="submitError" class="form-error" role="alert">{{ submitError }}</p>
       <button class="btn btn-primary btn-lg" type="submit" :disabled="submitting || listingBlocked">
         {{ submitting ? '提交中…' : '提交意向' }}

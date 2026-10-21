@@ -94,70 +94,91 @@ function changePage(next: number) {
 
 <template>
   <section>
-    <div class="page-head">
+    <header class="list-head">
+      <nav class="crumbs" aria-label="位置">
+        <RouterLink to="/">首页</RouterLink>
+        <span aria-hidden="true">/</span>
+        <span class="now">找农家乐</span>
+      </nav>
       <h1>找农家乐</h1>
-      <p class="lede">{{ LISTINGS_LEAD }}</p>
-    </div>
+      <p class="desc">{{ LISTINGS_LEAD }}</p>
+    </header>
 
     <div class="list-layout">
-      <aside class="list-filters">
-        <button class="btn btn-text filter-toggle" type="button" @click="filtersOpen = !filtersOpen">
+      <div class="filters__bar">
+        <button class="btn-text filter-toggle" type="button" @click="filtersOpen = !filtersOpen">
           {{ filtersOpen ? '收起筛选' : '筛选' }}
         </button>
-        <form v-show="filtersOpen" class="filter-panel" @submit.prevent="applyTag">
-          <div class="field">
-            <span>地区</span>
-            <div class="chips chips-wrap">
-              <button type="button" class="chip" :class="{ active: !params.regionId }" @click="push({ regionId: undefined })">全部</button>
-              <button
-                v-for="region in ordered"
-                :key="region.id"
-                type="button"
-                class="chip"
-                :class="{ active: params.regionId === String(region.id) }"
-                @click="push({ regionId: String(region.id) })"
-              >
-                {{ region.parentId ? `－ ${region.name}` : region.name }}
-              </button>
-            </div>
+        <span v-if="!loading && result" class="result-bar-inline">
+          共 <b>{{ result.total }}</b> 家
+        </span>
+      </div>
+
+      <form v-show="filtersOpen" class="filter-panel" @submit.prevent="applyTag">
+        <div class="field">
+          <span>地区</span>
+          <div class="chips chips-wrap">
+            <button type="button" class="chip" :class="{ active: !params.regionId }" @click="push({ regionId: undefined })">
+              全部
+            </button>
+            <button
+              v-for="region in ordered"
+              :key="region.id"
+              type="button"
+              class="chip"
+              :class="{ active: params.regionId === String(region.id) }"
+              @click="push({ regionId: String(region.id) })"
+            >
+              {{ region.parentId ? `－ ${region.name}` : region.name }}
+            </button>
           </div>
-          <label class="field">
-            <span>特色</span>
-            <input v-model="tagDraft" type="search" placeholder="输入特色" @change="applyTag" />
-          </label>
-          <div class="field">
-            <span>价格</span>
-            <div class="chips chips-wrap">
-              <button v-if="band === 'custom'" type="button" class="chip active">当前价格</button>
-              <button
-                v-for="item in PRICE_BANDS"
-                :key="item.id"
-                type="button"
-                class="chip"
-                :class="{ active: band === item.id }"
-                @click="onBand(item.id)"
-              >
-                {{ item.label }}
-              </button>
-            </div>
+        </div>
+        <div class="field">
+          <span>特色</span>
+          <div class="filters__bar">
+            <label class="search grow-search">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                <circle cx="11" cy="11" r="6.5" />
+                <path d="m16 16 4 4" stroke-linecap="round" />
+              </svg>
+              <input v-model="tagDraft" type="search" placeholder="输入特色" aria-label="按特色搜索" @change="applyTag" />
+            </label>
+            <button class="btn btn-secondary btn-sm" type="submit">应用</button>
           </div>
-          <div class="field">
-            <span>排序</span>
-            <div class="segmented" role="group" aria-label="排序">
-              <button
-                v-for="item in SORT_OPTIONS"
-                :key="item.id"
-                type="button"
-                :class="{ active: params.sort === item.id }"
-                @click="push({ sort: item.id })"
-              >
-                {{ item.label }}
-              </button>
-            </div>
+        </div>
+        <div class="field">
+          <span>价格</span>
+          <div class="chips chips-wrap">
+            <button v-if="band === 'custom'" type="button" class="chip active">当前价格</button>
+            <button
+              v-for="item in PRICE_BANDS"
+              :key="item.id"
+              type="button"
+              class="chip"
+              :class="{ active: band === item.id }"
+              @click="onBand(item.id)"
+            >
+              {{ item.label }}
+            </button>
           </div>
-          <button class="btn btn-text" type="button" @click="clearFilters">清空筛选</button>
-        </form>
-      </aside>
+        </div>
+        <div class="field">
+          <span>排序</span>
+          <div class="segmented" role="group" aria-label="排序">
+            <button
+              v-for="item in SORT_OPTIONS"
+              :key="item.id"
+              type="button"
+              :class="{ active: params.sort === item.id }"
+              @click="push({ sort: item.id })"
+            >
+              {{ item.label }}
+            </button>
+          </div>
+        </div>
+        <button class="btn-text" type="button" @click="clearFilters">清空筛选</button>
+      </form>
+
       <div class="list-results">
         <div v-if="loading" class="list-stack" aria-busy="true">
           <div v-for="item in 4" :key="item" class="skeleton-row"></div>
@@ -183,6 +204,10 @@ function changePage(next: number) {
           <a v-if="site.phone" class="text-link" :href="`tel:${site.phone.replace(/\s+/g, '')}`">联系客服 {{ site.phone }}</a>
         </EmptyState>
         <template v-else>
+          <div class="result-bar">
+            <span>共 <b>{{ result.total }}</b> 家可提交意向的农家乐</span>
+            <span class="row">按价格由低到高查看 · 客服确认档期</span>
+          </div>
           <div class="list-stack">
             <StoreCardView v-for="store in result.items" :key="store.id" layout="row" :store="store" />
           </div>

@@ -21,21 +21,31 @@ watch(id, () => void load(), { immediate: true })
 </script>
 
 <template>
-  <article class="stack">
-    <RouterLink to="/guides">返回攻略</RouterLink>
+  <article class="stack detail">
+    <nav class="crumbs" aria-label="位置">
+      <RouterLink to="/">首页</RouterLink>
+      <span aria-hidden="true">/</span>
+      <RouterLink to="/guides">攻略</RouterLink>
+      <span aria-hidden="true">/</span>
+      <span class="now">{{ article?.title || '正文' }}</span>
+    </nav>
     <div v-if="loading" class="skeleton-card" aria-busy="true"></div>
     <div v-else-if="errorKind === 'notFound'" class="empty-state">
       <p>攻略不存在或未发布</p>
+      <RouterLink class="btn btn-secondary" to="/guides">返回攻略</RouterLink>
     </div>
     <div v-else-if="error" class="empty-state">
       <p>{{ error }}</p>
       <button class="btn btn-secondary" type="button" @click="load">重试</button>
     </div>
     <template v-else-if="article">
-      <h1>{{ article.title }}</h1>
-      <img v-if="article.coverUrl" class="cover" :src="article.coverUrl" :alt="article.title" />
+      <h1 class="detail-title">{{ article.title }}</h1>
+      <img v-if="article.coverUrl" class="gallery-main" :src="article.coverUrl" :alt="article.title" />
       <p v-if="article.summary" class="lede">{{ article.summary }}</p>
-      <div class="prose">{{ article.content || '暂无正文' }}</div>
+      <div class="detail-section">
+        <div class="prose">{{ article.content || '暂无正文' }}</div>
+      </div>
+      <RouterLink class="btn btn-secondary" to="/guides">← 返回攻略</RouterLink>
     </template>
   </article>
 </template>

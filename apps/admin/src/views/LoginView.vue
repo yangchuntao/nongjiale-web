@@ -58,35 +58,45 @@ async function onSubmit() {
 </script>
 
 <template>
-  <section class="login">
-    <p class="login-kicker">{{ site.name }}</p>
-    <h1 class="login-title">运营登录</h1>
-    <p class="muted">{{ appLabel }} · 手机号 + 密码</p>
-    <el-form class="login-form" label-position="top" @submit.prevent="onSubmit">
-      <el-form-item label="手机号" :error="phoneError">
-        <el-input
-          id="admin-phone"
-          v-model="phone"
-          name="phone"
-          maxlength="11"
-          inputmode="numeric"
-          autocomplete="tel"
-          placeholder="11 位手机号"
-        />
-      </el-form-item>
-      <el-form-item label="密码" :error="passwordError">
-        <el-input
-          id="admin-password"
-          v-model="password"
-          name="password"
-          type="password"
-          show-password
-          autocomplete="current-password"
-          placeholder="密码"
-        />
-      </el-form-item>
-      <el-alert v-if="formError" :title="formError" type="error" :closable="false" show-icon role="alert" />
-      <el-button type="primary" native-type="submit" :loading="submitting">登录</el-button>
-    </el-form>
-  </section>
+  <div class="login-shell">
+    <section class="login">
+      <div class="login-brand">
+        <span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+        <div>
+          <b>{{ site.name }}</b>
+          <div>{{ appLabel }}</div>
+        </div>
+      </div>
+      <p class="login-kicker">运营后台 · OPS CONSOLE</p>
+      <h1 class="login-title">运营登录</h1>
+      <p class="muted">手机号 + 密码</p>
+      <el-form class="login-form" label-position="top" @submit.prevent="onSubmit">
+        <el-form-item label="手机号" :error="phoneError">
+          <el-input
+            id="admin-phone"
+            v-model="phone"
+            name="phone"
+            maxlength="11"
+            inputmode="numeric"
+            autocomplete="tel"
+            placeholder="11 位手机号"
+          />
+        </el-form-item>
+        <el-form-item label="密码" :error="passwordError">
+          <el-input
+            id="admin-password"
+            v-model="password"
+            name="password"
+            type="password"
+            show-password
+            autocomplete="current-password"
+            placeholder="密码"
+          />
+        </el-form-item>
+        <el-alert v-if="formError" :title="formError" type="error" :closable="false" show-icon role="alert" />
+        <el-button type="primary" native-type="submit" :loading="submitting">登录</el-button>
+      </el-form>
+      <p class="login-foot">仅限运营人员使用。请勿把账号密码转交给商家，商家请使用商家端登录。</p>
+    </section>
+  </div>
 </template>

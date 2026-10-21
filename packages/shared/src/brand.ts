@@ -1,8 +1,9 @@
-/** 浅蓝默认主色。站点配置 brandColor 可覆盖，不再回退田园绿。 */
-export const DEFAULT_BRAND = '#4BA3D9'
-export const DEFAULT_BRAND_HOVER = '#3A8FC4'
-export const DEFAULT_BRAND_SOFT = '#E8F4FC'
-export const DEFAULT_SURFACE_MUTED = '#F4F8FB'
+/** 默认主色：水乡绿（垛田墨绿）。站点配置 brandColor 可覆盖。 */
+export const DEFAULT_BRAND = '#2C6B4F'
+export const DEFAULT_BRAND_HOVER = '#255C46'
+export const DEFAULT_BRAND_SOFT = '#EFF6F1'
+/** 门户纸面底色（亚麻暖白），与 --paper 对应。 */
+export const DEFAULT_SURFACE_MUTED = '#FCFCF8'
 export const DEFAULT_SITE_NAME = '站点名称'
 export const DEFAULT_CONTACT_PHONE = '400-000-0000'
 
@@ -40,7 +41,7 @@ function contrast(foreground: string, background: string): number {
   return (lighter + 0.05) / (darker + 0.05)
 }
 
-/** 主按钮字色。浅蓝默认底用深色字，深色主色仍用白字。 */
+/** 主按钮字色。按对比度取黑或白：垛田绿 #2C6B4F 用白字，浅色主色自动落到深字。 */
 export function onBrandText(hex: string): '#1A1A1A' | '#FFFFFF' {
   const dark = '#1A1A1A'
   const light = '#FFFFFF'

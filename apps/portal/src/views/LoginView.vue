@@ -41,7 +41,8 @@ async function onSubmit() {
 </script>
 
 <template>
-  <section class="panel auth-card">
+  <section class="auth-card">
+    <p class="eyebrow">水乡农家</p>
     <h1>登录</h1>
     <p class="lede">{{ site.name }} · 手机号 + 密码</p>
     <form class="form-grid" novalidate @submit.prevent="onSubmit">

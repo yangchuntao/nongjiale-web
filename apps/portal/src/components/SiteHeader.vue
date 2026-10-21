@@ -39,115 +39,57 @@ async function logout() {
 </script>
 
 <template>
-  <header class="header">
-    <div class="bar">
-      <RouterLink class="brand" to="/">{{ site.name }}</RouterLink>
-      <button class="nav-toggle" type="button" :aria-expanded="open" aria-controls="portal-nav" @click="open = !open">
-        菜单
+  <header class="site-head">
+    <div class="site-head__in">
+      <RouterLink class="brandmark" to="/" aria-label="回到首页">
+        <span class="brandmark__mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+        <span class="brandmark__text">
+          <b>{{ site.name }}</b>
+          <span>水乡农家</span>
+        </span>
+      </RouterLink>
+
+      <button
+        class="nav-toggle"
+        type="button"
+        :aria-expanded="open"
+        aria-controls="portal-nav"
+        @click="open = !open"
+      >
+        {{ open ? '收起' : '菜单' }}
       </button>
-      <nav id="portal-nav" :class="{ open }">
-        <RouterLink v-for="link in links" :key="link.to" :to="link.to" :class="{ active: isActive(link.to) }">
+
+      <nav id="portal-nav" class="site-nav" :class="{ open }" aria-label="主导航">
+        <RouterLink
+          v-for="link in links"
+          :key="link.to"
+          :to="link.to"
+          :class="{ 'is-active': isActive(link.to) }"
+          :aria-current="isActive(link.to) ? 'page' : undefined"
+        >
           {{ link.label }}
         </RouterLink>
       </nav>
-      <a class="phone" :href="`tel:${site.phone.replace(/\s+/g, '')}`">客服 {{ site.phone }}</a>
-      <div class="account">
-        <RouterLink :to="mineTo">我的</RouterLink>
-        <button v-if="auth.isAuthenticated" type="button" @click="logout">退出</button>
-        <template v-else>
-          <RouterLink to="/login">登录</RouterLink>
-          <RouterLink to="/register">注册</RouterLink>
-        </template>
+
+      <div class="site-head__right">
+        <a class="phone-link" :href="`tel:${site.phone.replace(/\s+/g, '')}`">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+            <path
+              d="M6.5 3.5h3l1.5 4-2 1.5a12 12 0 0 0 6 6l1.5-2 4 1.5v3a2 2 0 0 1-2.2 2A17 17 0 0 1 4.5 5.7 2 2 0 0 1 6.5 3.5Z"
+              stroke-linejoin="round"
+            />
+          </svg>
+          <span>客服 {{ site.phone }}</span>
+        </a>
+        <div class="account">
+          <RouterLink :to="mineTo">我的</RouterLink>
+          <button v-if="auth.isAuthenticated" type="button" @click="logout">退出</button>
+          <template v-else>
+            <RouterLink to="/login">登录</RouterLink>
+            <RouterLink to="/register">注册</RouterLink>
+          </template>
+        </div>
       </div>
     </div>
   </header>
 </template>
-
-<style scoped>
-.header {
-  background: var(--color-surface);
-  border-bottom: 1px solid var(--color-border);
-}
-
-.bar,
-nav,
-.account {
-  display: flex;
-  align-items: center;
-  gap: var(--space-4);
-}
-
-.bar {
-  min-height: var(--header-height);
-  padding: 0 var(--space-5);
-}
-
-.brand {
-  color: var(--color-brand);
-  font-size: var(--font-brand-name);
-  font-weight: var(--font-weight-semibold);
-  text-decoration: none;
-  white-space: nowrap;
-}
-
-nav {
-  flex: 1;
-  min-width: 0;
-}
-
-nav a,
-.account a,
-.account button,
-.phone,
-.nav-toggle {
-  color: var(--color-text);
-  font-size: var(--font-body);
-  text-decoration: none;
-  background: none;
-  border: 0;
-  padding: 0;
-  cursor: pointer;
-  font: inherit;
-  white-space: nowrap;
-}
-
-.phone {
-  color: var(--color-brand);
-  margin-left: auto;
-}
-
-nav a.active,
-nav a:hover,
-.brand:hover,
-.account a:hover,
-.phone:hover {
-  color: var(--color-brand);
-}
-
-.nav-toggle {
-  display: none;
-}
-
-@media (max-width: 767px) {
-  .bar {
-    flex-wrap: wrap;
-    min-height: 56px;
-    padding: var(--space-2) var(--space-4);
-  }
-
-  .nav-toggle {
-    display: inline-flex;
-  }
-
-  nav {
-    display: none;
-    flex-basis: 100%;
-    order: 5;
-    padding-bottom: var(--space-2);
-  }
-
-  nav.open {
-    display: flex;
-  }
-}
-</style>

@@ -33,19 +33,25 @@ watch(page, () => void load(), { immediate: true })
 
 <template>
   <section class="stack">
-    <div class="page-head">
+    <header class="list-head">
+      <nav class="crumbs" aria-label="位置">
+        <RouterLink to="/">首页</RouterLink>
+        <span aria-hidden="true">/</span>
+        <span class="now">我的意向</span>
+      </nav>
       <h1>我的意向</h1>
-    </div>
+      <p class="desc">每次咨询都会留个单号，方便你和客服对档期。</p>
+    </header>
     <IntentNoticeBanner :text="INTENT_LIST_NOTICE" />
-    <div v-if="loading" class="card-grid" aria-busy="true">
-      <div v-for="item in 3" :key="item" class="skeleton-card"></div>
+    <div v-if="loading" class="list-stack" aria-busy="true">
+      <div v-for="item in 3" :key="item" class="skeleton-row"></div>
     </div>
     <EmptyState v-else-if="error" :title="error">
       <button class="btn btn-secondary" type="button" @click="load">重试</button>
     </EmptyState>
     <EmptyState v-else-if="!result?.items.length" title="还没有意向。去发现农家乐" action="去发现农家乐" to="/listings" />
     <template v-else>
-      <div class="stack">
+      <div class="list-stack">
         <RouterLink v-for="intent in result.items" :key="intent.id" class="panel intent-row" :to="`/my/intents/${intent.id}`">
           <strong class="mono">{{ intent.intentNo || intent.id }}</strong>
           <span>{{ intent.storeName || '房源' }}</span>

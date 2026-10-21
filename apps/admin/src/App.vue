@@ -15,10 +15,6 @@ const route = useRoute()
 <style scoped>
 .bare {
   min-height: 100svh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--space-5);
-  background: var(--color-surface-muted, #f4f8fb);
+  background: var(--paper, #fcfcf8);
 }
 </style>

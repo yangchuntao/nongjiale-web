@@ -17,6 +17,11 @@ const { loading, error, errorKind, run } = useLoadState()
 const result = ref<PageResult<StoreDetail> | null>(null)
 const pendingIds = ref<Set<string>>(new Set())
 
+const pendingCount = computed(() => pendingIds.value.size)
+const shownCount = computed(
+  () => result.value?.items.filter((row) => row.shelfStatus === 'ON_SHELF' || row.shelfStatus === 'PUBLISHED').length ?? 0,
+)
+
 const page = computed(() => {
   const raw = Array.isArray(route.query.page) ? route.query.page[0] : route.query.page
   const value = Number(raw || '1')
@@ -59,9 +64,25 @@ watch(page, () => void load(), { immediate: true })
     <div class="page-head">
       <div>
         <h1>门店</h1>
-        <p class="hint">门店由运营代为开通。</p>
+        <p class="desc">门店由运营代为开通。开通后可在此维护房源、查看游客发来的入住意向。</p>
       </div>
     </div>
+
+    <div class="stats">
+      <div class="stat">
+        <span class="k">我的门店</span>
+        <span class="v">{{ result?.total ?? 0 }}<small>处</small></span>
+      </div>
+      <div class="stat stat--brand">
+        <span class="k">待审上下架</span>
+        <span class="v">{{ pendingCount }}<small>条</small></span>
+      </div>
+      <div class="stat stat--gold">
+        <span class="k">当前展示中</span>
+        <span class="v">{{ shownCount }}<small>处</small></span>
+      </div>
+    </div>
+
     <el-skeleton v-if="loading" :rows="6" animated />
     <el-empty v-else-if="error" :description="error">
       <el-button @click="load">重试</el-button>
@@ -70,24 +91,37 @@ watch(page, () => void load(), { immediate: true })
       <a v-if="site.phone" :href="`tel:${site.phone}`">联系客服 {{ site.phone }}</a>
     </el-empty>
     <template v-else>
-      <ul class="store-cards">
-        <li v-for="row in result.items" :key="row.id" class="merchant-store-card">
-          <img v-if="row.coverUrl" class="thumb" :src="row.coverUrl" :alt="row.name || '门店'" />
-          <div v-else class="thumb-fallback">暂无图片</div>
-          <div>
-            <h2>{{ row.name || '未命名门店' }}</h2>
-            <div class="meta">
-              <span>地区 {{ row.regionId ?? '—' }}</span>
+      <div class="block-head">
+        <div>
+          <h2>门店列表</h2>
+          <div class="sub">由运营开通后展示在这里</div>
+        </div>
+      </div>
+      <ul class="stores">
+        <li v-for="row in result.items" :key="row.id" class="store-row">
+          <div class="store-row__thumb">
+            <img v-if="row.coverUrl" :src="row.coverUrl" :alt="row.name || '门店'" />
+            <div v-else class="cover-art cover-art--paddy" aria-hidden="true"></div>
+          </div>
+          <div class="store-row__body">
+            <div class="store-row__name">{{ row.name || '未命名门店' }}</div>
+            <div class="store-row__meta">
+              <span>地区 {{ row.regionId ?? '待补充' }}</span>
+              <span class="dot" aria-hidden="true"></span>
               <span>{{ priceLabel(row.priceText, row.priceFrom) || '价格待补充' }}</span>
-              <el-tag :type="row.shelfStatus === 'ON_SHELF' || row.shelfStatus === 'PUBLISHED' ? 'success' : 'info'" round>
+              <el-tag :type="row.shelfStatus === 'ON_SHELF' || row.shelfStatus === 'PUBLISHED' ? 'success' : 'info'">
                 {{ shelfStatusLabel(row.shelfStatus) }}
               </el-tag>
-              <el-tag v-if="pendingIds.has(row.id)" type="warning" round>待审</el-tag>
+              <el-tag v-if="pendingIds.has(row.id)" type="warning">待运营审核</el-tag>
             </div>
           </div>
-          <div class="actions">
-            <RouterLink :to="`/stores/${row.id}`">进入编辑</RouterLink>
-            <RouterLink :to="`/stores/${row.id}/shelf`">上下架</RouterLink>
+          <div class="store-row__acts">
+            <RouterLink :to="`/stores/${row.id}`">
+              <el-button size="small">管理房源</el-button>
+            </RouterLink>
+            <RouterLink :to="`/stores/${row.id}/shelf`">
+              <el-button size="small" text>查看上下架</el-button>
+            </RouterLink>
           </div>
         </li>
       </ul>

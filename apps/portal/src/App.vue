@@ -12,42 +12,36 @@ const site = useSiteStore()
     <main class="portal-main">
       <RouterView />
     </main>
-    <footer class="portal-footer">
-      <span>{{ site.name }}</span>
-      <a :href="`tel:${site.phone.replace(/\s+/g, '')}`">客服 {{ site.phone }}</a>
-      <RouterLink to="/merchant/apply">商家入驻</RouterLink>
+    <footer class="site-foot">
+      <div class="site-foot__in">
+        <div>
+          <div class="foot-brand">
+            <span class="brandmark__mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+            <span>{{ site.name }}</span>
+          </div>
+          <p class="slogan">看院子，问档期，到村头去住两晚。</p>
+          <p>本平台仅提供信息与咨询意向，不代收费用。</p>
+        </div>
+        <div>
+          <h5>去哪看看</h5>
+          <ul>
+            <li><RouterLink to="/listings">找农家乐</RouterLink></li>
+            <li><RouterLink to="/guides">水乡攻略</RouterLink></li>
+            <li><RouterLink to="/my/intents">我的意向</RouterLink></li>
+            <li><RouterLink to="/merchant/apply">商家入驻</RouterLink></li>
+          </ul>
+        </div>
+        <div>
+          <h5>联系我们</h5>
+          <ul>
+            <li>
+              <a :href="`tel:${site.phone.replace(/\s+/g, '')}`">客服 {{ site.phone }}</a>
+            </li>
+            <li>服务时间 08:00 - 20:00</li>
+          </ul>
+        </div>
+      </div>
+      <div class="site-foot__bottom">© {{ new Date().getFullYear() }} {{ site.name }}</div>
     </footer>
   </div>
 </template>
-
-<style scoped>
-.portal {
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-}
-
-.portal-main {
-  flex: 1;
-  width: min(var(--content-width), calc(100% - var(--space-6)));
-  margin: 0 auto;
-  padding: var(--space-5) 0 var(--space-7);
-}
-
-.portal-footer {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: var(--space-4);
-  margin-top: var(--space-7);
-  padding: var(--space-6) var(--space-5);
-  border-top: 1px solid var(--color-border);
-  background: var(--color-surface);
-  color: var(--color-text);
-  font-size: var(--font-body);
-}
-
-.portal-footer a {
-  color: var(--color-brand);
-}
-</style>

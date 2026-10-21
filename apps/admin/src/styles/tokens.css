@@ -1,19 +1,96 @@
+/* ============================================================
+   设计令牌 · 水乡绿（v2）
+   令牌源：nongjiale-api/docs/hifi-v2/tokens.css，三端同源。
+   - 主色取垛田水面墨绿 #2C6B4F；中性色整体偏暖（亚麻暖白）
+   - 标题用宋体，正文用系统无衬线；圆角偏方（4–12px）
+   - 运行期可由站点配置的 brandColor 覆盖 --color-brand 及其色阶
+   ============================================================ */
+
 :root {
-  --color-brand: #4ba3d9;
-  --color-brand-hover: #3a8fc4;
-  --color-brand-soft: #e8f4fc;
-  --color-on-brand: #1a1a1a;
-  --color-text: #1a1a1a;
-  --color-text-secondary: #5c5c5c;
+  /* ---------- 品牌主色 · 垛田绿 ---------- */
+  --brand-900: #17372a;
+  --brand-800: #1f4b39;
+  --brand-700: #255c46;
+  --brand-600: #2c6b4f;
+  --brand-500: #3d8463;
+  --brand-400: #5b9e7e;
+  --brand-300: #8cbfa6;
+  --brand-200: #bfddcd;
+  --brand-100: #dfeee6;
+  --brand-050: #eff6f1;
+
+  /* ---------- 辅助 · 垛田稻金 ---------- */
+  --gold-700: #8a5e16;
+  --gold-600: #a87320;
+  --gold-500: #c08b2e;
+  --gold-300: #e7c687;
+  --gold-100: #f7edd8;
+  --gold-050: #fbf6ea;
+
+  /* ---------- 辅助 · 芦苇青 ---------- */
+  --reed-700: #2a5c63;
+  --reed-500: #4a8a93;
+  --reed-100: #dceaed;
+
+  /* ---------- 中性 · 亚麻暖灰 ---------- */
+  --ink-900: #1c211e;
+  --ink-800: #2a302c;
+  --ink-700: #3e463f;
+  --ink-600: #525b54;
+  --ink-500: #6c756e;
+  --ink-400: #8c948d;
+  --ink-300: #b4bab3;
+  --ink-200: #d8dcd5;
+  --ink-150: #e6e9e2;
+  --ink-100: #eff1eb;
+  --ink-050: #f6f7f2;
+
+  /* ---------- 表面与纸 ---------- */
+  --paper: #fcfcf8;
+  --paper-sunk: #f4f5ef;
+  --surface: #ffffff;
+  --surface-muted: #fafaf5;
+  --line: #e3e6dd;
+  --line-strong: #cfd4c9;
+
+  /* ---------- 语义状态（与品牌绿分开，避免「全都绿」） ---------- */
+  --ok-600: #2f7d55;
+  --ok-050: #e7f4ec;
+  --warn-600: #96631a;
+  --warn-050: #faf0dc;
+  --danger-600: #a83b32;
+  --danger-050: #fae9e6;
+  --info-600: #2a5c63;
+  --info-050: #e4eef0;
+
+  /* ---------- 兼容别名：既有页面引用旧名，统一映射到新令牌 ---------- */
+  --color-brand: var(--brand-600);
+  --color-brand-hover: var(--brand-700);
+  --color-brand-soft: var(--brand-050);
+  --color-on-brand: #ffffff;
+  --color-text: var(--ink-900);
+  --color-text-secondary: var(--ink-600);
   --color-text-inverse: #ffffff;
-  --color-border: #e5e5e5;
-  --color-surface: #ffffff;
-  --color-surface-muted: #f4f8fb;
-  --color-overlay: rgba(0, 0, 0, 0.45);
-  --color-success: #1b7f4e;
-  --color-warning: #c47e00;
-  --color-error: #c62828;
-  --color-info: #1565c0;
+  --color-border: var(--line);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--paper);
+  --color-overlay: rgba(28, 33, 30, 0.46);
+  --color-success: var(--ok-600);
+  --color-success-soft: var(--ok-050);
+  --color-warning: var(--warn-600);
+  --color-warning-soft: var(--warn-050);
+  --color-error: var(--danger-600);
+  --color-error-soft: var(--danger-050);
+  --color-info: var(--info-600);
+  --color-info-soft: var(--info-050);
+  --color-brand-light-3: #6b9683;
+  --color-brand-light-5: #96b5a7;
+  --color-brand-light-7: #c0d3ca;
+  --color-brand-light-8: #d8e4de;
+  --color-brand-light-9: #ebf1ee;
+  --color-brand-dark-2: #23553f;
+
+  /* ---------- 间距（8pt 栅格 + 4pt 半步） ---------- */
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;
@@ -21,41 +98,90 @@
   --space-5: 24px;
   --space-6: 32px;
   --space-7: 48px;
+  --space-8: 64px;
+
+  /* ---------- 圆角（偏方，靠近乡村门窗比例） ---------- */
   --radius-sm: 4px;
   --radius-md: 8px;
   --radius-lg: 12px;
-  --radius-full: 9999px;
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
-  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
-  --bp-sm: 640px;
-  --bp-md: 768px;
-  --bp-lg: 1024px;
-  --bp-xl: 1280px;
-  --font-family: "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", "Microsoft YaHei", sans-serif;
-  --font-display: 32px;
-  --font-h1: 24px;
-  --font-h2: 20px;
-  --font-h3: 16px;
+  --radius-xl: 18px;
+  --radius-full: 999px;
+
+  /* ---------- 阴影（暖影，不用纯黑） ---------- */
+  --shadow-sm: 0 1px 2px rgba(28, 33, 30, 0.05), 0 1px 1px rgba(28, 33, 30, 0.03);
+  --shadow-md: 0 4px 14px -4px rgba(28, 33, 30, 0.12), 0 1px 3px rgba(28, 33, 30, 0.05);
+  --shadow-lg: 0 18px 40px -16px rgba(28, 33, 30, 0.22), 0 2px 8px rgba(28, 33, 30, 0.06);
+  --shadow-lift: 0 24px 56px -24px rgba(23, 55, 42, 0.32);
+
+  /* ---------- 字体 ---------- */
+  --font-family: "PingFang SC", -apple-system, "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", system-ui, sans-serif;
+  --font-serif: "Songti SC", "STSong", "Noto Serif SC", "Source Han Serif SC", "SimSun", Georgia, serif;
+  --font-mono: "SFMono-Regular", ui-monospace, "JetBrains Mono", Menlo, Consolas, monospace;
+
+  /* ---------- 字阶 ---------- */
+  --font-display: 30px;
+  --font-h1: 28px;
+  --font-h2: 22px;
+  --font-h3: 17px;
   --font-body: 14px;
   --font-caption: 12px;
-  --font-brand-name: 18px;
+  --font-brand-name: 20px;
   --font-weight-regular: 400;
   --font-weight-semibold: 600;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  --line-tight: 1.35;
-  --line-body: 1.6;
-  --header-height: 64px;
-  --sidebar-width: 220px;
-  --color-success-soft: #e6f4ec;
-  --color-warning-soft: #f8edd9;
-  --color-error-soft: #fdecea;
-  --color-info-soft: #e3eef8;
-  --color-brand-light-3: #81bfe4;
-  --color-brand-light-5: #a5d1ec;
-  --color-brand-light-7: #c9e3f4;
-  --color-brand-light-8: #dbedf7;
-  --color-brand-light-9: #edf6fb;
-  --color-brand-dark-2: #3c82ae;
-  --content-width: 1200px;
+  --line-tight: 1.3;
+  --line-body: 1.7;
+
+  /* ---------- 动效 ---------- */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-fast: 120ms;
+  --dur-base: 220ms;
+  --dur-slow: 420ms;
+
+  /* ---------- 层级与布局 ---------- */
+  --z-sticky: 40;
+  --z-overlay: 80;
+  --z-modal: 100;
+  --header-height: 68px;
+  --sidebar-width: 236px;
+  --content-width: 1080px;
+
+  /* ---------- 设计稿别名（v2 稿直接引用这一层，保持同名以便对照） ---------- */
+  --bg: var(--paper);
+  --bg-sunk: var(--paper-sunk);
+  --bg-card: var(--surface);
+  --text-1: var(--ink-900);
+  --text-2: var(--ink-600);
+  --text-3: var(--ink-400);
+  --text-invert: #ffffff;
+  --border: var(--line);
+  --border-strong: var(--line-strong);
+  --focus-ring: color-mix(in oklab, var(--brand-600) 55%, transparent);
+  --s-1: var(--space-1);
+  --s-2: var(--space-2);
+  --s-3: var(--space-3);
+  --s-4: var(--space-4);
+  --s-5: var(--space-5);
+  --s-6: var(--space-6);
+  --s-7: var(--space-7);
+  --s-8: var(--space-8);
+  --r-1: var(--radius-sm);
+  --r-2: var(--radius-md);
+  --r-3: var(--radius-lg);
+  --r-4: var(--radius-xl);
+  --r-pill: var(--radius-full);
+  --fs-003: 11px;
+  --fs-100: var(--font-caption);
+  --fs-200: 13px;
+  --fs-300: var(--font-body);
+  --fs-400: 16px;
+  --fs-500: 19px;
+  --fs-600: 24px;
+  --fs-700: var(--font-h1);
+  --lh-tight: var(--line-tight);
+  --lh-snug: 1.45;
+  --lh-body: var(--line-body);
+  --ls-tight: -0.01em;
+  --ls-wide: 0.16em;
+  --sidebar-w: var(--sidebar-width);
+  --topbar-h: var(--header-height);
 }
