@@ -2,7 +2,7 @@
 import type { PageResult } from '@nongjiale/shared'
 import { computed, onMounted, ref, watch } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
-import { fetchApplies, fetchIntents, fetchShelfQueue } from '../api/admin'
+import { fetchApplies, fetchQueueCounts } from '../api/admin'
 import { orgLabel, pageFromQuery, readQueryText, reviewStatusLabel, reviewTagType, type MerchantApply } from '../api/readers'
 import { EMPTY_APPLIES } from '../domain/copy'
 import { useAuthStore } from '../stores/auth'
@@ -45,24 +45,14 @@ function resetFilters() {
 }
 
 async function loadCounts() {
-  const [intents, applies, shelf] = await Promise.allSettled([
-    fetchIntents({
-      status: 'PENDING',
-      storeId: '',
-      merchantOrgId: '',
-      checkInFrom: '',
-      checkInTo: '',
-      createdFrom: '',
-      createdTo: '',
-      page: 1,
-    }),
-    fetchApplies('PENDING', 1),
-    fetchShelfQueue('PENDING', 1),
-  ])
-  counts.value = {
-    intents: intents.status === 'fulfilled' ? String(intents.value.total) : '—',
-    applies: applies.status === 'fulfilled' ? String(applies.value.total) : '—',
-    shelf: shelf.status === 'fulfilled' ? String(shelf.value.total) : '—',
+  try {
+    counts.value = await fetchQueueCounts().then((data) => ({
+      intents: String(data.intents),
+      applies: String(data.merchantApplies),
+      shelf: String(data.shelfApplications),
+    }))
+  } catch {
+    counts.value = { intents: '—', applies: '—', shelf: '—' }
   }
 }
 

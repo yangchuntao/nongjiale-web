@@ -2,7 +2,7 @@
 import { ElMessage } from 'element-plus'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import { exportCityIntents, fetchCities, fetchCityIntents } from '../api/admin'
+import { exportCityIntents, fetchCityOptions, fetchCityIntents } from '../api/admin'
 import { describeAdminError } from '../api/errors'
 import {
   cityIntentCities,
@@ -67,7 +67,7 @@ async function onExport() {
 }
 
 onMounted(() => {
-  void fetchCities()
+  void fetchCityOptions()
     .then((items) => {
       cities.value = items
     })

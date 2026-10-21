@@ -36,6 +36,7 @@ import {
   buildRejectBody,
   buildSiteConfigBody,
   cityIntentQuery,
+  cityListQuery,
   intentExportQuery,
   intentListQuery,
   presentIntentCsv,
@@ -45,12 +46,13 @@ import {
   readBanner,
   readCityDetail,
   readCityIntentMetrics,
-  readCityList,
+  readCitySummary,
   readIntent,
   readMerchantApply,
   readMerchantOrg,
   readPage,
   readPlainPassword,
+  readQueueCounts,
   readShelfApplication,
   readSiteConfig,
   readStore,
@@ -73,6 +75,7 @@ import {
   type ListingDraft,
   type MerchantApply,
   type MerchantOrg,
+  type QueueCounts,
   type ShelfApplication,
   type SiteConfigRecord,
   type StoreDetail,
@@ -337,9 +340,42 @@ export async function fetchSiteConfig(signal?: AbortSignal): Promise<SiteConfigR
   return readSiteConfig(data)
 }
 
-export async function fetchCities(signal?: AbortSignal): Promise<CitySummary[]> {
-  const data = await http.request<unknown>(ADMIN_API.cities, { signal })
-  return readCityList(data)
+export interface CityListQuery {
+  page?: number
+  pageSize?: number
+  status?: string
+  province?: string
+  keyword?: string
+}
+
+/** 开城列表（分页 + 筛选）。 */
+export async function fetchCities(query: CityListQuery, signal?: AbortSignal): Promise<PageResult<CitySummary>> {
+  const data = await http.request<unknown>(ADMIN_API.cities, { query: cityListQuery(query), signal })
+  return readPage(data, readCitySummary)
+}
+
+/**
+ * 城市下拉选项：翻页拉全启用市（全国区划同步后可能超过单页 100 的上限）。
+ * 上限 10 页（1000 个市）防御异常数据。
+ */
+export async function fetchCityOptions(signal?: AbortSignal): Promise<CitySummary[]> {
+  const PAGE_SIZE = 100
+  const MAX_PAGES = 10
+  const items: CitySummary[] = []
+  let total = Infinity
+  for (let page = 1; items.length < total && page <= MAX_PAGES; page++) {
+    const result = await fetchCities({ page, pageSize: PAGE_SIZE }, signal)
+    total = result.total
+    items.push(...result.items)
+    if (result.items.length < PAGE_SIZE) break
+  }
+  return items
+}
+
+/** 工作台待办队列计数（待跟进意向 / 待审入驻 / 待审上下架）。 */
+export async function fetchQueueCounts(signal?: AbortSignal): Promise<QueueCounts> {
+  const data = await http.request<unknown>(ADMIN_API.queueCounts, { signal })
+  return readQueueCounts(data)
 }
 
 export interface RegionSyncResult {

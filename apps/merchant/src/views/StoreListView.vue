@@ -33,9 +33,19 @@ async function load() {
     const stores = await fetchMerchantStores(page.value, signal)
     const pending = new Set<string>()
     try {
-      const applications = await fetchShelfApplications({ page: 1, pageSize: 100 }, signal)
-      for (const item of applications.items) {
-        if (item.status === 'PENDING' && item.storeId) pending.add(item.storeId)
+      // 待审集合必须翻页拉全：单页 100 条会漏标「待运营审核」。上限 10 页（1000 条）防御异常数据。
+      const PAGE_SIZE = 100
+      const MAX_PAGES = 10
+      let fetched = 0
+      let total = Infinity
+      for (let pageNo = 1; fetched < total && pageNo <= MAX_PAGES; pageNo++) {
+        const applications = await fetchShelfApplications({ page: pageNo, pageSize: PAGE_SIZE }, signal)
+        total = applications.total
+        fetched += applications.items.length
+        for (const item of applications.items) {
+          if (item.status === 'PENDING' && item.storeId) pending.add(item.storeId)
+        }
+        if (applications.items.length < PAGE_SIZE) break
       }
     } catch (cause) {
       if (signal.aborted) throw cause

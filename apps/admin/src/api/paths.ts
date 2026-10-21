@@ -12,6 +12,7 @@ export const ADMIN_API = {
   siteConfig: '/api/admin/site-config',
   banners: '/api/admin/banners',
   cities: '/api/admin/cities',
+  queueCounts: '/api/admin/queue-counts',
   regions: '/api/admin/regions',
   regionSync: '/api/admin/regions/sync',
   cityIntents: '/api/admin/metrics/city-intents',

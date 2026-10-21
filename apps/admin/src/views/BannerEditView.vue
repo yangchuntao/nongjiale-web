@@ -2,7 +2,7 @@
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { computed, reactive, ref, watch } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
-import { createBanner, fetchBanner, fetchCities, updateBanner } from '../api/admin'
+import { createBanner, fetchBanner, fetchCityOptions, updateBanner } from '../api/admin'
 import { describeAdminError } from '../api/errors'
 import {
   bannerFieldErrors,
@@ -79,7 +79,7 @@ function applyDraft(next: BannerRecord) {
 
 async function loadCities() {
   try {
-    cities.value = await fetchCities()
+    cities.value = await fetchCityOptions()
   } catch (cause) {
     const view = describeAdminError(cause)
     if (await leaveIfDisabled(view.kind, auth, router)) return

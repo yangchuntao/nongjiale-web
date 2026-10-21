@@ -36,6 +36,9 @@
       <view>{{item.storeName}}</view>
       <view class="muted">{{item.checkIn}} {{item.guests ? item.guests + ' 人' : ''}}</view>
     </view>
+    <view wx:if="{{items.length}}" class="muted more">
+      {{loadingMore ? '加载中…' : (hasMore ? '上拉加载更多' : '没有更多了')}}
+    </view>
     <view wx:if="{{contactPhone}}" class="card" bindtap="onCall">
       <view class="muted">客服电话</view>
       <view class="link">{{contactPhone}}</view>

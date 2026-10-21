@@ -1105,6 +1105,41 @@ export function buildCityVersionBody(version: number): { version: number } {
   return { version }
 }
 
+/** 开城列表查询参数：分页 + 状态/省/关键字筛选，空值不下发。 */
+export function cityListQuery(filter: {
+  page?: number
+  pageSize?: number
+  status?: string
+  province?: string
+  keyword?: string
+}): Record<string, string> {
+  const query: Record<string, string> = {}
+  if (filter.page && filter.page > 0) query.page = String(Math.floor(filter.page))
+  if (filter.pageSize && filter.pageSize > 0) query.pageSize = String(Math.floor(filter.pageSize))
+  if (filter.status === 'OPEN' || filter.status === 'CLOSED') query.status = filter.status
+  const province = filter.province?.trim()
+  if (province) query.province = province
+  const keyword = filter.keyword?.trim()
+  if (keyword) query.keyword = keyword
+  return query
+}
+
+/** 工作台待办队列计数。 */
+export interface QueueCounts {
+  intents: number
+  merchantApplies: number
+  shelfApplications: number
+}
+
+export function readQueueCounts(data: unknown): QueueCounts {
+  const body = record(data) ?? {}
+  return {
+    intents: countOf(body.intents),
+    merchantApplies: countOf(body.merchantApplies),
+    shelfApplications: countOf(body.shelfApplications),
+  }
+}
+
 export function cityIntentQuery(filter: CityIntentQuery): Record<string, string> {
   const window: CityIntentWindow = filter.window === '30' || filter.window === 'ALL' ? filter.window : '7'
   const query: Record<string, string> = { window }

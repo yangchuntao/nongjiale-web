@@ -22,6 +22,24 @@ interface IntentView {
   statusText: string
 }
 
+function toIntentView(item: {
+  id: number
+  intentNo: string
+  storeName: string
+  checkIn: string
+  guests: number | null
+  status: string
+}): IntentView {
+  return {
+    id: item.id,
+    intentNo: item.intentNo,
+    storeName: item.storeName,
+    checkIn: item.checkIn,
+    guests: item.guests ? String(item.guests) : '',
+    statusText: intentStatusLabel(item.status),
+  }
+}
+
 Page({
   data: {
     phase: 'wall' as 'wall' | 'unlinked' | 'loading' | 'error' | 'ready',
@@ -30,6 +48,9 @@ Page({
     contactPhone: '',
     phone: '',
     items: [] as IntentView[],
+    pageNo: 1,
+    hasMore: false,
+    loadingMore: false,
     banner: UNLINKED_BANNER,
   },
 
@@ -39,6 +60,11 @@ Page({
 
   onPullDownRefresh() {
     void this.load().finally(() => wx.stopPullDownRefresh())
+  },
+
+  onReachBottom() {
+    if (this.data.phase !== 'ready' || this.data.loadingMore || !this.data.hasMore) return
+    void this.loadMore()
   },
 
   onLogin() {
@@ -66,7 +92,7 @@ Page({
       success: (res) => {
         if (!res.confirm) return
         clearStoredToken()
-        this.setData({ phase: 'wall', items: [], phone: '' })
+        this.setData({ phase: 'wall', items: [], phone: '', pageNo: 1, hasMore: false })
       },
     })
   },
@@ -90,16 +116,17 @@ Page({
     try {
       await wechatUnbind()
       applyHold(holdAfterUnbind())
-      this.setData({ phase: 'wall', items: [], phone: '' })
+      this.setData({ phase: 'wall', items: [], phone: '', pageNo: 1, hasMore: false })
     } catch (error) {
       toast(errorMessage(error, '加载失败，请重试'))
     }
   },
 
+  /** 首屏 / 下拉刷新 / 重试：重置到第 1 页。 */
   async load() {
     const stored = readStoredToken()
     if (!stored) {
-      this.setData({ phase: 'wall', items: [], phone: '' })
+      this.setData({ phase: 'wall', items: [], phone: '', pageNo: 1, hasMore: false })
       return
     }
     this.setData({ phase: 'loading' })
@@ -112,6 +139,8 @@ Page({
           phase: 'unlinked',
           items: [],
           phone: '',
+          pageNo: 1,
+          hasMore: false,
           brandColor: site.brandColor,
           onBrand: site.onBrand,
           contactPhone: site.contactPhone,
@@ -126,28 +155,47 @@ Page({
       } catch {
         phone = link.phone || ''
       }
-      const items: IntentView[] = page.items.map((item) => ({
-        id: item.id,
-        intentNo: item.intentNo,
-        storeName: item.storeName,
-        checkIn: item.checkIn,
-        guests: item.guests ? String(item.guests) : '',
-        statusText: intentStatusLabel(item.status),
-      }))
+      const items = page.items.map(toIntentView)
       this.setData({
         phase: 'ready',
         items,
         phone,
+        pageNo: 1,
+        hasMore: items.length > 0 && items.length < page.total,
         brandColor: site.brandColor,
         onBrand: site.onBrand,
         contactPhone: site.contactPhone,
       })
     } catch (error) {
       if (isUnauthorized(error)) {
-        this.setData({ phase: 'wall', items: [], phone: '' })
+        this.setData({ phase: 'wall', items: [], phone: '', pageNo: 1, hasMore: false })
         return
       }
       this.setData({ phase: 'error' })
+    }
+  },
+
+  /** 上拉加载下一页，追加到现有列表。 */
+  async loadMore() {
+    const next = this.data.pageNo + 1
+    this.setData({ loadingMore: true })
+    try {
+      const page = await fetchMyIntents(next)
+      const incoming = page.items.map(toIntentView)
+      const items = this.data.items.concat(incoming)
+      this.setData({
+        items,
+        pageNo: next,
+        loadingMore: false,
+        hasMore: incoming.length > 0 && items.length < page.total,
+      })
+    } catch (error) {
+      this.setData({ loadingMore: false })
+      if (isUnauthorized(error)) {
+        this.setData({ phase: 'wall', items: [], phone: '', pageNo: 1, hasMore: false })
+        return
+      }
+      toast(errorMessage(error, '加载失败，请重试'))
     }
   },
 })

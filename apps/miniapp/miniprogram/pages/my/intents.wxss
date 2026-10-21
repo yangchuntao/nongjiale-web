@@ -12,3 +12,9 @@
 .no {
   font-family: ui-monospace, monospace;
 }
+
+.more {
+  text-align: center;
+  padding: 8rpx 0 24rpx;
+  font-size: 24rpx;
+}
