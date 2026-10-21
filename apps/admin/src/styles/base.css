@@ -219,4 +219,7 @@ a.el-button.el-button--primary:not(.is-plain):not(.is-text):not(.is-link):not(.i
 .el-pagination {
   --el-pagination-button-bg-color: var(--surface);
   font-variant-numeric: tabular-nums;
+  /* 列表页的分页器统一放页面右下角 */
+  justify-content: flex-end;
+  margin-top: 16px;
 }

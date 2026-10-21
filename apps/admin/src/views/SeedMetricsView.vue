@@ -9,24 +9,30 @@ import {
   cityIntentTotal,
   type CityIntentMetrics,
   type CityIntentWindow,
-  type CitySummary,
 } from '../api/readers'
 import { SEED_EMPTY, SEED_ERROR, SEED_NOTICE } from '../domain/copy'
 import { useAuthStore } from '../stores/auth'
 import { leaveIfDisabled, useLoadState } from '../utils/load'
 
+const PAGE_SIZE = 20
+
 const router = useRouter()
 const auth = useAuthStore()
 const { loading, error, errorKind, run } = useLoadState()
 const metrics = ref<CityIntentMetrics | null>(null)
-const cities = ref<CitySummary[]>([])
+const provinces = ref<string[]>([])
 const timeWindow = ref<CityIntentWindow>('7')
-const cityId = ref('')
+const province = ref('')
 const exporting = ref(false)
+const pageNo = ref(1)
 
-const filter = computed(() => ({ window: timeWindow.value, cityId: cityId.value }))
+const filter = computed(() => ({ window: timeWindow.value, province: province.value }))
 const total = computed(() => (metrics.value ? cityIntentTotal(metrics.value) : null))
-const rows = computed(() => (metrics.value ? cityIntentCities(metrics.value) : []))
+const allRows = computed(() => (metrics.value ? cityIntentCities(metrics.value) : []))
+const rows = computed(() => {
+  const start = (pageNo.value - 1) * PAGE_SIZE
+  return allRows.value.slice(start, start + PAGE_SIZE)
+})
 const quiet = computed(
   () => !!total.value && total.value.intentCount === 0 && total.value.confirmedCount === 0 && total.value.checkedInCount === 0,
 )
@@ -66,17 +72,29 @@ async function onExport() {
   }
 }
 
+function changePage(next: number) {
+  pageNo.value = next
+}
+
 onMounted(() => {
   void fetchCityOptions()
     .then((items) => {
-      cities.value = items
+      const names = new Set<string>()
+      for (const city of items) {
+        if (city.provinceName) names.add(city.provinceName)
+      }
+      provinces.value = [...names]
     })
     .catch(() => {
-      cities.value = []
+      provinces.value = []
     })
 })
 
-watch(filter, () => void load(), { immediate: true })
+// 筛选变化后回到第 1 页再请求
+watch(filter, () => {
+  pageNo.value = 1
+  void load()
+}, { immediate: true })
 </script>
 
 <template>
@@ -96,10 +114,9 @@ watch(filter, () => void load(), { immediate: true })
           <el-radio-button label="ALL">全部</el-radio-button>
         </el-radio-group>
       </el-form-item>
-      <el-form-item label="市">
-        <el-select v-model="cityId" style="width: 12rem">
-          <el-option label="全部" value="" />
-          <el-option v-for="city in cities" :key="city.id" :label="city.name" :value="city.id" />
+      <el-form-item label="省">
+        <el-select v-model="province" clearable filterable placeholder="全部" style="width: 12rem">
+          <el-option v-for="name in provinces" :key="name" :label="name" :value="name" />
         </el-select>
       </el-form-item>
     </el-form>
@@ -132,6 +149,14 @@ watch(filter, () => void load(), { immediate: true })
           <el-table-column prop="checkedInCount" label="已入住" min-width="100" />
         </el-table>
       </div>
+      <el-pagination
+        v-if="allRows.length > PAGE_SIZE"
+        layout="prev, pager, next"
+        :total="allRows.length"
+        :page-size="PAGE_SIZE"
+        :current-page="pageNo"
+        @current-change="changePage"
+      />
     </template>
   </section>
 </template>

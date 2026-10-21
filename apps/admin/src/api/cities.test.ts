@@ -108,8 +108,8 @@ describe('city open contract', () => {
   it('reads seed totals without a drill-down field', () => {
     expect(ADMIN_API.cityIntents).toBe('/api/admin/metrics/city-intents')
     expect(ADMIN_API.cityIntentExport).toBe('/api/admin/metrics/city-intents/export')
-    expect(cityIntentQuery({ window: '7', cityId: '' })).toEqual({ window: '7' })
-    expect(cityIntentQuery({ window: 'ALL', cityId: '2' })).toEqual({ window: 'ALL', cityId: '2' })
+    expect(cityIntentQuery({ window: '7', province: '' })).toEqual({ window: '7' })
+    expect(cityIntentQuery({ window: 'ALL', province: ' 江苏省 ' })).toEqual({ window: 'ALL', province: '江苏省' })
     const metrics = readCityIntentMetrics({
       window: '7',
       from: '2026-10-10T00:00:00+08:00',

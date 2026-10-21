@@ -970,7 +970,8 @@ export type CityIntentWindow = '7' | '30' | 'ALL'
 
 export interface CityIntentQuery {
   window: CityIntentWindow
-  cityId: string
+  /** 省名筛选：该省下全部启用市；空串表示全部。 */
+  province: string
 }
 
 export interface CityIntentRow {
@@ -1143,7 +1144,8 @@ export function readQueueCounts(data: unknown): QueueCounts {
 export function cityIntentQuery(filter: CityIntentQuery): Record<string, string> {
   const window: CityIntentWindow = filter.window === '30' || filter.window === 'ALL' ? filter.window : '7'
   const query: Record<string, string> = { window }
-  if (/^[1-9]\d*$/.test(filter.cityId.trim())) query.cityId = filter.cityId.trim()
+  const province = filter.province?.trim()
+  if (province) query.province = province
   return query
 }
 
