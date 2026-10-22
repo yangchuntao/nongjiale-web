@@ -87,6 +87,7 @@ watch(() => route.query, () => {
         <h1>入驻申请</h1>
         <p class="hint">通过后开通商家账号并绑定主体。驳回须填写原因。</p>
       </div>
+      <el-button type="primary" @click="router.push('/applies/new')">代商家录入</el-button>
     </div>
     <el-form class="filters" @submit.prevent="pushQuery(1)">
       <el-form-item label="状态">
@@ -117,6 +118,12 @@ watch(() => route.query, () => {
           <el-table-column prop="contactPhone" label="手机" min-width="130" />
           <el-table-column label="地区" min-width="100">
             <template #default="{ row }">{{ row.regionId ?? '—' }}</template>
+          </el-table-column>
+          <el-table-column label="来源" width="90">
+            <template #default="{ row }">
+              <el-tag v-if="row.source === 'ADMIN'" type="warning" effect="plain">运营代录</el-tag>
+              <el-tag v-else type="info" effect="plain">商家自填</el-tag>
+            </template>
           </el-table-column>
           <el-table-column prop="createdAt" label="提交时间" min-width="160" />
           <el-table-column label="状态" width="100">

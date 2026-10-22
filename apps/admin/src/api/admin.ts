@@ -108,6 +108,57 @@ export async function fetchApply(id: string, signal?: AbortSignal): Promise<Merc
   return apply
 }
 
+/** 运营代商家录入入驻申请的表单体（字段与门户提交 DTO 对齐）。 */
+export interface ApplyCreateDraft {
+  orgName: string
+  contactName: string
+  contactPhone: string
+  plannedStoreName: string
+  regionId: string
+  description: string
+}
+
+/** 校验代录入表单，返回逐字段错误信息。 */
+export function applyCreateErrors(draft: ApplyCreateDraft): Partial<Record<keyof ApplyCreateDraft, string>> {
+  const errors: Partial<Record<keyof ApplyCreateDraft, string>> = {}
+  if (!draft.orgName.trim()) errors.orgName = '请填写主体名称'
+  else if (draft.orgName.trim().length > 128) errors.orgName = '主体名称过长（最多 128 字）'
+  if (draft.contactName.trim().length > 64) errors.contactName = '联系人过长（最多 64 字）'
+  if (draft.contactPhone.trim() && !/^1\d{10}$/.test(draft.contactPhone.trim())) {
+    errors.contactPhone = '请输入 11 位手机号'
+  }
+  if (draft.plannedStoreName.trim().length > 128) errors.plannedStoreName = '门店名过长（最多 128 字）'
+  if (draft.description.trim().length > 1000) errors.description = '介绍过长（最多 1000 字）'
+  return errors
+}
+
+function buildApplyCreateBody(draft: ApplyCreateDraft): Record<string, unknown> {
+  const errors = applyCreateErrors(draft)
+  const first = (Object.keys(errors) as (keyof ApplyCreateDraft)[]).find((key) => errors[key])
+  if (first) throw new Error(errors[first])
+  const body: Record<string, unknown> = {
+    orgName: draft.orgName.trim(),
+    contactName: draft.contactName.trim(),
+    contactPhone: draft.contactPhone.trim(),
+    plannedStoreName: draft.plannedStoreName.trim(),
+    description: draft.description.trim(),
+  }
+  const regionId = draft.regionId.trim()
+  if (regionId && !Number.isNaN(Number(regionId))) body.regionId = Number(regionId)
+  return body
+}
+
+/** 代商家录入入驻申请：落 PENDING 记录并标记来源 ADMIN，返回新申请 ID。 */
+export async function createApplyForMerchant(draft: ApplyCreateDraft): Promise<string> {
+  const data = await http.request<{ id?: unknown }>(ADMIN_API.merchantApplies, {
+    method: 'POST',
+    body: buildApplyCreateBody(draft),
+  })
+  const id = typeof data?.id === 'number' ? String(data.id) : typeof data?.id === 'string' ? data.id : ''
+  if (!id) throw new Error('入驻申请响应缺少编号')
+  return id
+}
+
 export async function fetchAdminMe(signal?: AbortSignal): Promise<AdminMe> {
   const data = await http.request<unknown>(ADMIN_API.me, { signal })
   return readAdminMe(data)

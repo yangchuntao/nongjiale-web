@@ -1,4 +1,5 @@
 import type { RouteRecordRaw } from 'vue-router'
+import ApplyCreateView from '../views/ApplyCreateView.vue'
 import ApplyDetailView from '../views/ApplyDetailView.vue'
 import AppliesView from '../views/AppliesView.vue'
 import BannerEditView from '../views/BannerEditView.vue'
@@ -32,6 +33,12 @@ export const routes: RouteRecordRaw[] = [
     name: 'applies',
     component: AppliesView,
     meta: { title: '入驻申请', pageId: 'A-APPLY-QUEUE', requiresAuth: true },
+  },
+  {
+    path: '/applies/new',
+    name: 'apply-new',
+    component: ApplyCreateView,
+    meta: { title: '代录入驻', pageId: 'A-APPLY-CREATE', requiresAuth: true },
   },
   {
     path: '/applies/:id',

@@ -69,10 +69,10 @@ describe('merchant apply', () => {
       remark: '  ',
     })
     expect(result.body).toEqual({
-      subjectName: '苏中农庄',
+      orgName: '苏中农庄',
       contactName: '李四',
       contactPhone: '13900139000',
-      storeName: '河畔小院',
+      plannedStoreName: '河畔小院',
       regionId: 3,
     })
   })

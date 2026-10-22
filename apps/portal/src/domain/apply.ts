@@ -11,13 +11,14 @@ export interface MerchantApplyDraft {
 
 export type ApplyErrors = Partial<Record<keyof MerchantApplyDraft, string>>
 
+/** 后端 POST /api/merchant-applies 的请求体（字段名与 MerchantApplyRequest 对齐）。 */
 export interface MerchantApplyBody {
-  subjectName: string
+  orgName: string
   contactName: string
   contactPhone: string
-  storeName: string
+  plannedStoreName: string
   regionId: number
-  remark?: string
+  description?: string
 }
 
 export function validateMerchantApply(draft: MerchantApplyDraft): ApplyErrors {
@@ -39,13 +40,14 @@ export function buildMerchantApplyBody(draft: MerchantApplyDraft): {
   const errors = validateMerchantApply(draft)
   if (Object.keys(errors).length > 0) return { errors, body: null }
   const remark = draft.remark.trim()
+  // 后端 DTO 字段名：orgName / plannedStoreName / description（未知字段会被 400 拒绝）
   const body: MerchantApplyBody = {
-    subjectName: draft.subjectName.trim(),
+    orgName: draft.subjectName.trim(),
     contactName: draft.contactName.trim(),
     contactPhone: draft.contactPhone.trim(),
-    storeName: draft.storeName.trim(),
+    plannedStoreName: draft.storeName.trim(),
     regionId: Number(draft.regionId),
   }
-  if (remark) body.remark = remark
+  if (remark) body.description = remark
   return { errors, body }
 }

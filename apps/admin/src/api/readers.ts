@@ -51,6 +51,7 @@ export interface MerchantApply {
   regionId: number | null
   description: string
   licenseUrls: string[]
+  source: string
   status: string
   rejectReason: string
   reviewedBy: string
@@ -409,6 +410,7 @@ export function readMerchantApply(value: unknown): MerchantApply | null {
     regionId: num(body.regionId),
     description: text(body.description),
     licenseUrls: readUrlList(body.licenseUrls),
+    source: text(body.source) || 'PORTAL',
     status: text(body.status),
     rejectReason: text(body.rejectReason),
     reviewedBy: idOf(body.reviewedBy),
