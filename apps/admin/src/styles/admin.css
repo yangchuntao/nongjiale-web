@@ -832,6 +832,46 @@
   background: var(--brand-600);
 }
 
+/* 分组标题（可折叠一级目录） */
+.console-aside .el-sub-menu__title {
+  height: 38px;
+  line-height: 38px;
+  margin-top: var(--space-2);
+  padding-left: var(--space-3) !important;
+  border-radius: var(--radius-md);
+  color: var(--ink-500);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.console-aside .el-sub-menu__title:hover {
+  background: var(--ink-100);
+  color: var(--ink-900);
+}
+
+.console-aside .el-sub-menu.is-active > .el-sub-menu__title {
+  color: var(--brand-700);
+}
+
+.console-aside .el-sub-menu .el-menu {
+  padding: 0;
+}
+
+/* 二级菜单相对一级缩进，形成层级 */
+.console-aside .el-sub-menu .el-menu-item {
+  height: 36px;
+  line-height: 36px;
+  padding-left: calc(var(--space-3) + 16px) !important;
+  font-size: var(--font-caption);
+}
+
+.console-aside .el-sub-menu .el-menu-item.is-active::before {
+  top: 7px;
+  bottom: 7px;
+}
+
 .side-group {
   padding: var(--space-4) var(--space-3) var(--space-2);
   font-size: 11px;

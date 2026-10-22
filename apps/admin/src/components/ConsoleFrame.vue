@@ -37,6 +37,7 @@ const active = computed(() => {
 
 const crumb = computed(() => navItems.find((item) => item.path === active.value)?.label ?? '运营后台')
 const initial = computed(() => (auth.displayName || site.name || '运').slice(0, 1))
+const groupNames = computed(() => groups.value.map((group) => group.name))
 
 async function logout() {
   auth.logout()
@@ -57,13 +58,21 @@ async function logout() {
         </div>
         <div class="role">OPS CONSOLE · {{ appLabel }}</div>
       </div>
-      <el-menu router :default-active="active" :key="active" class="side__nav">
-        <template v-for="group in groups" :key="group.name">
-          <div class="side-group">{{ group.name }}</div>
+      <el-menu
+        router
+        :default-active="active"
+        :default-openeds="groupNames"
+        class="side__nav"
+        aria-label="运营后台主导航"
+      >
+        <el-sub-menu v-for="group in groups" :key="group.name" :index="group.name">
+          <template #title>
+            <span class="group-title">{{ group.name }}</span>
+          </template>
           <el-menu-item v-for="item in group.items" :key="item.path" :index="item.path">
             {{ item.label }}
           </el-menu-item>
-        </template>
+        </el-sub-menu>
       </el-menu>
       <div class="side__foot">
         <span class="avatar" aria-hidden="true">{{ initial }}</span>
@@ -107,13 +116,15 @@ async function logout() {
     </el-container>
 
     <el-drawer v-model="navOpen" direction="ltr" size="236px" title="导航">
-      <el-menu router :default-active="active" @select="navOpen = false">
-        <template v-for="group in groups" :key="group.name">
-          <div class="side-group">{{ group.name }}</div>
+      <el-menu router :default-active="active" :default-openeds="groupNames" @select="navOpen = false">
+        <el-sub-menu v-for="group in groups" :key="group.name" :index="group.name">
+          <template #title>
+            <span class="group-title">{{ group.name }}</span>
+          </template>
           <el-menu-item v-for="item in group.items" :key="item.path" :index="item.path">
             {{ item.label }}
           </el-menu-item>
-        </template>
+        </el-sub-menu>
       </el-menu>
     </el-drawer>
   </el-container>

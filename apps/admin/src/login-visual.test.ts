@@ -16,9 +16,10 @@ describe('admin login visual', () => {
     // 暖纸底，不再用冷灰 #f4f8fb
     expect(shell).toContain('var(--paper, #fcfcf8)')
     expect(shell).not.toContain('#f4f8fb')
-    // 外壳：分组侧栏 + 面包屑 + 头像区
+    // 外壳：可折叠分组侧栏 + 面包屑 + 头像区
     expect(frame).toContain('class="crumb"')
-    expect(frame).toContain('class="side-group"')
+    expect(frame).toContain('el-sub-menu')
+    expect(frame).toContain('内容与货架')
     expect(frame).toContain('class="avatar"')
   })
 })
